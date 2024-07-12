@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "institution")
+@Table(name = "institutions")
 public class Institution {
 
     @Id
@@ -25,7 +25,7 @@ public class Institution {
     @Column(length = 100)
     private String openingHours;
     
-    @Column(length = 100, unique = true, nullable = false)
+    @Column(length = 100)
 	private String email;
     
     @Column(columnDefinition="TEXT")
@@ -43,9 +43,9 @@ public class Institution {
     @JoinColumn(name = "id_contact", referencedColumnName = "idContact")
     private Contact contact;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_mark", referencedColumnName = "idMark")
-    private Marker marker;
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_direction", referencedColumnName = "idDirection")
+    private Direction direction;
     
     @Column(name = "status", nullable = false)
     private boolean status;
@@ -79,12 +79,11 @@ public class Institution {
     public Contact getContact() { return contact; }
     public void setContact(Contact contact) { this.contact = contact; }
 
-    public Marker getMarker() { return marker; }
-    public void setMarker(Marker marker) { this.marker = marker; }
+    public Direction getDirection() { return direction; }
+	public void setDirection(Direction direction) {	this.direction = direction; }
 
     public boolean isStatus() { return status; }
     public void setStatus(boolean status) { this.status = status; }
-    
     
     public String getEmail() {	return email; }
 	public void setEmail(String email) {this.email = email; }

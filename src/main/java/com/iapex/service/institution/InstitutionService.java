@@ -1,17 +1,22 @@
 package com.iapex.service.institution;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.institution.DTO.InstitutionDTO;
 import com.iapex.model.Response;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.institution.Contact;
-import com.iapex.model.institution.Marker;
+import com.iapex.model.institution.Direction;
 import com.iapex.repository.InstitutionRepository;
 import com.iapex.service.mail.EmailService;
 
@@ -31,9 +36,8 @@ public class InstitutionService {
     
     //CREAR UNA INSTITUCION
     public Response register(InstitutionDTO request) throws Exception {
-        if (institutionRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este correo electrónico.");
-        }
+        //if (institutionRepository.findByEmail(request.getEmail()).isPresent()) {
+            //throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este correo electrónico.");}
         
         if (institutionRepository.findByName(request.getName()).isPresent()) {
             throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
@@ -52,15 +56,19 @@ public class InstitutionService {
         // CONFIGURAR CONTACT
         Contact contact = new Contact();
         contact.setPhone(request.getContactPhone());
-        contact.setAdress(request.getContactAddress());
         contact.setWebsite(request.getContactWebsite());
         institution.setContact(contact);
         
-        // CONFIGURAR MARKER
-        Marker marker = new Marker();
-        marker.setCoordinates(request.getMarkerCoordinates());
-        marker.setNameLoc(request.getMarkerNameLoc());
-        institution.setMarker(marker);
+        // CONFIGURAR DIRECTION
+        Direction direction = new Direction();
+        direction.setUrlMapsInstitution(request.getDirectionUrlMapsInstitution());
+        direction.setState(request.getDirectionState());
+        direction.setMunicipality(request.getDirectionMunicipality());
+        direction.setPostalCode(request.getDirectionPostalCode());
+        direction.setColony(request.getDirectionColony());
+        direction.setStreet(request.getDirectionStreet());
+        direction.setNumber(request.getDirectionNumber());
+        institution.setDirection(direction);
 
         institution.setStatus(false); // INSTITUCIÓN NO VERIFICADA INICIALMENTE
 
@@ -74,40 +82,45 @@ public class InstitutionService {
     public Response updateInstitution(Long id, InstitutionDTO request) throws Exception {
         Institution institution = getInstitutionById(id);
 
-        if (!institution.getEmail().equals(request.getEmail()) && institutionRepository.findByEmail(request.getEmail()).isPresent())
-            throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este correo electrónico.");
+        if (!Objects.equals(institution.getName(), request.getName()) && institutionRepository.findByName(request.getName()).isPresent()) throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
 
-        if (!institution.getName().equals(request.getName()) && institutionRepository.findByName(request.getName()).isPresent())
-            throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
-
-        if (!institution.getName().equals(request.getName())) institution.setName(request.getName());
-        if (!institution.getEmail().equals(request.getEmail())) institution.setEmail(request.getEmail());
-        if (!institution.getTypeInstitution().equals(request.getTypeInstitution())) institution.setTypeInstitution(request.getTypeInstitution());
-        if (!institution.getOpeningHours().equals(request.getOpeningHours())) institution.setOpeningHours(request.getOpeningHours());
-        if (!institution.getHistory().equals(request.getHistory())) institution.setHistory(request.getHistory());
-        if (!institution.getImage().equals(request.getImage())) institution.setImage(request.getImage());
-        if (!institution.getImageUrl().equals(request.getImageUrl())) institution.setImageUrl(request.getImageUrl());
+        if (!Objects.equals(institution.getName(), request.getName())) institution.setName(request.getName());
+        if (!Objects.equals(institution.getEmail(), request.getEmail())) institution.setEmail(request.getEmail());
+        if (!Objects.equals(institution.getTypeInstitution(), request.getTypeInstitution())) institution.setTypeInstitution(request.getTypeInstitution());
+        if (!Objects.equals(institution.getOpeningHours(), request.getOpeningHours())) institution.setOpeningHours(request.getOpeningHours());
+        if (!Objects.equals(institution.getHistory(), request.getHistory())) institution.setHistory(request.getHistory());
+        if (!Objects.equals(institution.getImage(), request.getImage())) institution.setImage(request.getImage());
+        if (!Objects.equals(institution.getImageUrl(), request.getImageUrl())) institution.setImageUrl(request.getImageUrl());
         if (institution.isStatus() != request.isStatus()) institution.setStatus(request.isStatus());
-        
-        Contact contact = institution.getContact();
-        if (!contact.getPhone().equals(request.getContactPhone())) contact.setPhone(request.getContactPhone());
-        if (!contact.getAdress().equals(request.getContactAddress())) contact.setAdress(request.getContactAddress());
-        if (!contact.getWebsite().equals(request.getContactWebsite())) contact.setWebsite(request.getContactWebsite());
 
-        Marker marker = institution.getMarker();
-        if (!marker.getCoordinates().equals(request.getMarkerCoordinates())) marker.setCoordinates(request.getMarkerCoordinates());
-        if (!marker.getNameLoc().equals(request.getMarkerNameLoc())) marker.setNameLoc(request.getMarkerNameLoc());
+        Contact contact = institution.getContact();
+        if (!Objects.equals(contact.getPhone(), request.getContactPhone())) contact.setPhone(request.getContactPhone());
+        if (!Objects.equals(contact.getWebsite(), request.getContactWebsite())) contact.setWebsite(request.getContactWebsite());
+
+        Direction direction = institution.getDirection();
+        if (!Objects.equals(direction.getUrlMapsInstitution(), request.getDirectionUrlMapsInstitution())) direction.setUrlMapsInstitution(request.getDirectionUrlMapsInstitution());
+        if (!Objects.equals(direction.getState(), request.getDirectionState())) direction.setState(request.getDirectionState());
+        if (!Objects.equals(direction.getMunicipality(), request.getDirectionMunicipality())) direction.setMunicipality(request.getDirectionMunicipality());
+        if (!Objects.equals(direction.getPostalCode(), request.getDirectionPostalCode())) direction.setPostalCode(request.getDirectionPostalCode());
+        if (!Objects.equals(direction.getColony(), request.getDirectionColony())) direction.setColony(request.getDirectionColony());
+        if (!Objects.equals(direction.getStreet(), request.getDirectionStreet())) direction.setStreet(request.getDirectionStreet());
+        if (!Objects.equals(direction.getNumber(), request.getDirectionNumber())) direction.setNumber(request.getDirectionNumber());
 
         institutionRepository.save(institution);
 
         return new Response("La institución ha sido actualizada exitosamente.");
     }
     
-    
     //OBTENER POR ID
     public Institution getInstitutionById(Long id) throws Exception {
         return institutionRepository.findById(id)
             .orElseThrow(() -> new Exception("Institución no encontrada "));
+    }
+    
+    //OBTENER POR ID SOLO SI STATUS ES TRUE
+    public Institution getInstitutionByIdTrue(Long id) throws Exception {
+        return institutionRepository.findByIdInstitutionAndStatusTrue(id)
+            .orElseThrow(() -> new Exception("Institución no encontrada o no está activa"));
     }
 
     //LISTAR INSTITUCIONES
@@ -115,6 +128,11 @@ public class InstitutionService {
         return institutionRepository.findAll();
     }
 
+    //LISTAR INSTITUCIONES CON STATUS TRUE
+    public List<Institution> getAllInstitutionsTrue() {
+        return institutionRepository.findByStatusTrue();
+    }
+    
     //ELIMINAR POR ID
     public Response deleteInstitution(Long id) throws Exception {
         Institution institution = getInstitutionById(id);
@@ -122,11 +140,10 @@ public class InstitutionService {
         return new Response("La institución ha sido eliminada exitosamente.");
     }
     
-    //BUSCAR POR NOMBRE
+    //BUSCAR POR NOMBRE CON STATUS TRUE
     public Institution getInstitutionByName(String name) throws Exception {
-        return institutionRepository.findByName(name)
+        return institutionRepository.findByNameAndStatusTrue(name)
             .orElseThrow(() -> new Exception("Institución no encontrada con nombre: " + name));
-    }
-    
+    }    
     
 }

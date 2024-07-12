@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iapex.dto.UserDTO;
-import com.iapex.service.TokenService;
+import com.iapex.model.Response;
+import com.iapex.model.User;
 import com.iapex.service.UserService;
 
 
@@ -26,40 +26,19 @@ public class AdminController {
 
     @Autowired
     private final UserService userService;
-    private final TokenService tokenService;
 
-    public AdminController(UserService userService, TokenService tokenService) {
+    public AdminController(UserService userService ) {
         this.userService = userService;
-        this.tokenService = tokenService;
     }
 
-    // ENDPOINT PARA OBTENER TODOS LOS USUARIOS DE LA APP MOVIL
+    // ENDPOINT PARA OBTENER TODOS LOS USUARIOS
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllUsers")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> userDtos = userService.getAllUsers().stream()
-                                    .map(user -> {
-                                        UserDTO dto = new UserDTO();
-                                        dto.setIdUser(user.getIdUser());
-                                        dto.setEmail(user.getEmail());
-                                        dto.setPhone(user.getPhone());
-                                        dto.setStatus(user.isConfirmed());
-                                        dto.setRole(user.getRole());
-                                        return dto;
-                                    })
-                                    .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
-    // ENDPOINT PARA ELIMINAR USUARIO
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/deleteUserById/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
-        // Eliminar los tokens asociados al usuario
-        tokenService.deleteTokensByUserId(id);
-        // Eliminar el usuario
-        userService.deleteById(id);
-        return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
-    }
+
 
 }

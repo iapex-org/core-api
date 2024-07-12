@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class UserInstitutionDTO {
+	
+	private Long idUserInstitution;
 
 	@Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
 	@NotBlank(message = "El correo es obligatorio")	
@@ -30,6 +32,16 @@ public class UserInstitutionDTO {
 	private String charge;
 
 	private Role role;
+	
+    private boolean status;  
+
+    
+    // Getters y setters existentes...
+    public boolean isStatus() { return status; }
+    public void setStatus(boolean status) { this.status = status; }
+	
+	public Long getIdUserInstitution() { return idUserInstitution; }
+	public void setIdUserInstitution(Long idUserInstitution) {this.idUserInstitution = idUserInstitution; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -55,3 +67,5 @@ public class UserInstitutionDTO {
     public String getInstitutionName() { return institutionName;	}
 	public void setInstitutionName(String institutionName) {this.institutionName = institutionName; }
 }
+
+

@@ -44,9 +44,7 @@ public class AuthenticationController {
             Map<String, String> errors = result.getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
             return ResponseEntity.badRequest().body(errors);
-        }
-
-        try {
+        } try {
             Response response = userService.register(request); 
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistsException e) {
@@ -131,7 +129,6 @@ public class AuthenticationController {
         }
     }
 
-///
     //REENVIAR CORREO DE RESTABLECIMIENTO DE CONTRASEÑA
     //http://localhost:8080/auth/resend-reset-password?email=20223l001010@utcv.edu.mx
     @PostMapping("/resend-reset-password")

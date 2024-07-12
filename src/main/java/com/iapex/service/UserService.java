@@ -156,7 +156,7 @@ public class UserService {
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
-
+    
     //ACTUALIZA UN USUARIO POR SU ID.
 
     public User updateUserById(Long id, UserDTO userDto) {
@@ -274,7 +274,7 @@ public class UserService {
         Token token = new Token();
         token.setToken(jwt);
         token.setUser(user);
-        token.setExpirationDate(calcularFechaExpiracion());
+        token.setExpirationDate(calculateExpireDate());
         token.setLoggedOut(false);
 
         tokenRepository.save(token);
@@ -288,7 +288,7 @@ public class UserService {
      * 
      * @return LA FECHA DE EXPIRACIÓN DEL TOKEN.
      */
-    public Date calcularFechaExpiracion() {
+    public Date calculateExpireDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MINUTE, 1);

@@ -4,17 +4,21 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.institution.DTO.UserInstitutionAuthDTO;
+import com.iapex.institution.DTO.UserInstitutionAuthenticationDTO;
 import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.AuthenticationResponse;
 import com.iapex.model.Response;
@@ -27,6 +31,9 @@ import com.iapex.repository.TokenInstitutionRepository;
 import com.iapex.repository.UserInstitutionRepository;
 import com.iapex.service.JwtService;
 import com.iapex.service.mail.InstitutionEmailService;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserInstitutionService {
@@ -103,8 +110,8 @@ public class UserInstitutionService {
 
         // Buscar la institución por su nombre
         Institution institution = institutionRepository.findByName(request.getInstitutionName())
-                .orElseThrow(() -> new Exception("Institución no encontrada"));
-        userInstitution.setInstitution(institution);
+        	    .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
+        	userInstitution.setInstitution(institution);
 
         userInstitutionRepository.save(userInstitution);
 
@@ -123,7 +130,7 @@ public class UserInstitutionService {
      * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE ÉXITO.
      * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
      */
-    public AuthenticationResponse authenticateInstitution(UserInstitutionAuthDTO request) {
+    public AuthenticationResponse authenticateInstitution(UserInstitutionAuthenticationDTO request) {
     	UserInstitution userInstitution;
         if (request.getEmail() != null) {
         	userInstitution = userInstitutionRepository.findByEmail(request.getEmail())
@@ -154,7 +161,47 @@ public class UserInstitutionService {
         return new AuthenticationResponse(token, "Inicio de sesión exitoso", authorities);
     }
     
+    /**
+     * OBTIENE TODOS LOS USUARIOS INSTITUCIONALES.
+     *
+     * ESTE MÉTODO RECUPERA TODOS LOS USUARIOS INSTITUCIONALES ALMACENADOS EN LA BASE DE DATOS.
+     *
+     * @return UNA LISTA DE TODOS LOS USUARIOS INSTITUCIONALES.
+     */
+    public List<UserInstitutionDTO> getAllUserDTOs() {
+        List<UserInstitution> users = userInstitutionRepository.findAll();
+        return users.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+    }
+
     
+    //OBTIENE TODOS LOS USUARIOS DE LA INSTITUCIÓN DEL USUARIO AUTENTICADO.
+    public List<UserInstitutionDTO> getUsersFromSameInstitution(String authenticatedEmail) {
+        UserInstitution authenticatedUser = userInstitutionRepository.findByEmail(authenticatedEmail)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        List<UserInstitution> users = userInstitutionRepository.findByInstitution(authenticatedUser.getInstitution());
+        
+        return users.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+    }
+
+    private UserInstitutionDTO convertToDTO(UserInstitution userInstitution) {
+        UserInstitutionDTO dto = new UserInstitutionDTO();
+        dto.setIdUserInstitution(userInstitution.getIdUserInstitution());
+        dto.setName(userInstitution.getName());
+        dto.setFathername(userInstitution.getFathername());
+        dto.setMothername(userInstitution.getMothername());
+        dto.setEmail(userInstitution.getEmail());
+        dto.setPassword(userInstitution.getPassword()); // Nota: normalmente no se devuelve la contraseña
+        dto.setCharge(userInstitution.getCharge());
+        dto.setInstitutionName(userInstitution.getInstitution().getName());
+        dto.setRole(userInstitution.getRole());
+        dto.setStatus(userInstitution.isStatus());
+        return dto;
+    }
     
 
     // 5. MÉTODOS AUXILIARES
@@ -198,7 +245,7 @@ public class UserInstitutionService {
         TokenInstitution tokenInstitution = new TokenInstitution();
         tokenInstitution.setToken(jwt);
         tokenInstitution.setUserInstitution(userInstitution);
-        tokenInstitution.setExpirationDate(calcularFechaExpiracion());
+        tokenInstitution.setExpirationDate(calculateExpireDate());
         tokenInstitution.setLoggedOut(false);
 
         tokenInstitutionRepository.save(tokenInstitution);
@@ -212,7 +259,7 @@ public class UserInstitutionService {
      * 
      * @return LA FECHA DE EXPIRACIÓN DEL TOKEN.
      */
-    public Date calcularFechaExpiracion() {
+    public Date calculateExpireDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MINUTE, 1);
@@ -228,7 +275,7 @@ public class UserInstitutionService {
      */
     public UserInstitution findByEmail(String email) {
         return userInstitutionRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("El correo no está registrado en la aplicación"));
     }
     
     public boolean verifyCodeAndResetPassword(String verificationCode, String newPassword) {
@@ -251,4 +298,68 @@ public class UserInstitutionService {
         }
         return false;
     }    
+     
+    //OBTENER POR ID PARA DTO TRANSFER
+    public UserInstitutionDTO getUserInstitutionDTOById(Long id) throws Exception {
+        UserInstitution userInstitution = getUserInstitutionById(id);
+        return convertToDTO(userInstitution);
+    }
+    
+    // ELIMINA UN USUARIO POR SU ID.
+    @Transactional
+    public void deleteById(Long id) {
+        // Busca el usuario institución por su ID o lanza una excepción si no se encuentra
+        UserInstitution userInstitution = userInstitutionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
+        // Busca y elimina todos los tokens asociados al usuario institución
+        List<TokenInstitution> tokens = tokenInstitutionRepository.findByUserInstitution_IdUserInstitution(id);
+        tokenInstitutionRepository.deleteAll(tokens);
+        // Elimina la referencia a la institución para evitar la violación de clave foránea
+        userInstitution.setInstitution(null); 
+        // Guarda el usuario institución actualizado para aplicar el cambio
+        userInstitutionRepository.save(userInstitution);
+        // Elimina físicamente el usuario institución de la base de datos
+        userInstitutionRepository.delete(userInstitution);
+    }
+
+    
+    //OBTENER POR ID
+    public UserInstitution getUserInstitutionById(Long id) throws Exception {
+        return userInstitutionRepository.findById(id)
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+    }
+    
+    //ACTUALIZAR UN USUARIO POR SU ID.
+    public Response updateUserInstitution(Long id, UserInstitutionDTO request) throws Exception {
+        UserInstitution userInstitution = getUserInstitutionById(id);
+        boolean emailChanged = false; // Verificar si el email está cambiando
+        if (!Objects.equals(userInstitution.getEmail(), request.getEmail())) { 
+        if (userInstitutionRepository.findByEmail(request.getEmail()).isPresent()) { throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
+        } emailChanged = true; }
+
+        // Actualizar campos
+        if (!Objects.equals(userInstitution.getName(), request.getName())) userInstitution.setName(request.getName());
+        if (emailChanged) userInstitution.setEmail(request.getEmail());
+        if (!Objects.equals(userInstitution.getFathername(), request.getFathername())) userInstitution.setFathername(request.getFathername());
+        if (!Objects.equals(userInstitution.getMothername(), request.getMothername())) userInstitution.setMothername(request.getMothername());
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) userInstitution.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (!Objects.equals(userInstitution.getCharge(), request.getCharge())) userInstitution.setCharge(request.getCharge());
+        if (request.getRole() != null) {
+        if (!Objects.equals(userInstitution.getRole(), request.getRole())) userInstitution.setRole(request.getRole()); } else {request.setRole(userInstitution.getRole()); }        
+       
+        if (!Objects.equals(userInstitution.getInstitution().getName(), request.getInstitutionName())) {
+            Institution institution = institutionRepository.findByName(request.getInstitutionName())
+                .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada: " + request.getInstitutionName()));
+            userInstitution.setInstitution(institution);
+        }
+        if (emailChanged) {userInstitution.setStatus(false); }
+        userInstitutionRepository.save(userInstitution);
+        
+        if (emailChanged) {
+            String verificationCode = institutionEmailService.sendVerificationUserInstitutionEmail(userInstitution);
+            return new Response("El usuario ha sido actualizado exitosamente. Se ha enviado un correo de verificación al nuevo email.");
+        }
+        return new Response("El usuario ha sido actualizado exitosamente.");
+    }
 }
+

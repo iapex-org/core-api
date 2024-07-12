@@ -1,29 +1,59 @@
 package com.iapex.institution.DTO;
 
-public class InstitutionDTO {
+import jakarta.validation.constraints.Size;
 
-    private Long id;
+public class InstitutionDTO {
+    @Size(max = 50, message = "El nombre de la institución no puede tener más de 50 caracteres")
     private String name;
+
+    @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
     private String email;
-	private String typeInstitution;
+
+    @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
+    private String typeInstitution;
+
+    @Size(max = 100, message = "El horario de apertura no puede tener más de 100 caracteres")
     private String openingHours;
+
     private String history;
+
+    @Size(max = 100, message = "La URL de la imagen no puede tener más de 100 caracteres")
     private String image;
+
     private String imageUrl;
+
     private boolean status;
-	private String contactPhone;
-    private String contactAddress;
-    private String contactWebsite;
-    private String markerCoordinates;
-    private String markerNameLoc;
     
+    @Size(max = 100, message = "El numero maximo de caracteres para el campo telefono es de 100 caracteres")
+    private String contactPhone;
+
+    @Size(max = 100, message = "La URL del sitio web no puede tener más de 100 caracteres")
+    private String contactWebsite;
+
+    private String directionUrlMapsInstitution;
+
+    @Size(max = 35, message = "El estado no debe exceder los 35 caracteres")
+    private String directionState;
+
+    @Size(max = 35, message = "El municipio no debe exceder los 35 caracteres")
+    private String directionMunicipality;
+
+    @Size(max = 35, message = "El código postal no debe exceder los 35 caracteres")
+    private String directionPostalCode;
+
+    @Size(max = 35, message = "La colonia no debe exceder los 35 caracteres")
+    private String directionColony;
+
+    @Size(max = 35, message = "La calle no debe exceder los 35 caracteres")
+    private String directionStreet;
+
+    @Size(max = 35, message = "El número de dirección no debe exceder los 35 caracteres")
+    private String directionNumber;
+
     // Constructor vacío
     public InstitutionDTO() {}
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -48,19 +78,30 @@ public class InstitutionDTO {
     public String getContactPhone() { return contactPhone; }
     public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
 
-    public String getContactAddress() { return contactAddress; }
-    public void setContactAddress(String contactAddress) { this.contactAddress = contactAddress; }
-
     public String getContactWebsite() { return contactWebsite; }
     public void setContactWebsite(String contactWebsite) { this.contactWebsite = contactWebsite; }
 
-    public String getMarkerCoordinates() { return markerCoordinates; }
-    public void setMarkerCoordinates(String markerCoordinates) { this.markerCoordinates = markerCoordinates; }
-
-    public String getMarkerNameLoc() { return markerNameLoc; }
-    public void setMarkerNameLoc(String markerNameLoc) { this.markerNameLoc = markerNameLoc; }
+    public String getTypeInstitution() { return typeInstitution; }
+    public void setTypeInstitution(String typeInstitution) { this.typeInstitution = typeInstitution; }
     
-    public String getTypeInstitution() { return typeInstitution;}
-	public void setTypeInstitution(String typeInstitution) { this.typeInstitution = typeInstitution; }
-
+    public String getDirectionUrlMapsInstitution() { return directionUrlMapsInstitution; }
+    public void setDirectionUrlMapsInstitution(String directionUrlMapsInstitution) { this.directionUrlMapsInstitution = directionUrlMapsInstitution; }
+    
+    public String getDirectionState() { return directionState; }
+    public void setDirectionState(String directionState) { this.directionState = directionState; }
+    
+    public String getDirectionMunicipality() { return directionMunicipality; }
+    public void setDirectionMunicipality(String directionMunicipality) { this.directionMunicipality = directionMunicipality; }
+    
+    public String getDirectionPostalCode() { return directionPostalCode; }
+    public void setDirectionPostalCode(String directionPostalCode) { this.directionPostalCode = directionPostalCode; }
+    
+    public String getDirectionColony() { return directionColony; }
+    public void setDirectionColony(String directionColony) { this.directionColony = directionColony; }
+    
+    public String getDirectionStreet() { return directionStreet; }
+    public void setDirectionStreet(String directionStreet) { this.directionStreet = directionStreet; }
+    
+    public String getDirectionNumber() { return directionNumber; }
+    public void setDirectionNumber(String directionNumber) { this.directionNumber = directionNumber; }
 }

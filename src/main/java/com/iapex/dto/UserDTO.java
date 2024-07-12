@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class UserDTO {
-	
-    private Long idUser;
-   
+	   
     @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
     @NotNull(message = "El correo es obligatorio")
     private String email;
@@ -27,9 +25,6 @@ public class UserDTO {
 
     public UserDTO() {}
 
-    public Long getIdUser() { return idUser; } 
-    public void setIdUser(Long idUser) { this.idUser = idUser; }
-    
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     

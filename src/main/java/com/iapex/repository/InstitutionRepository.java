@@ -2,6 +2,7 @@ package com.iapex.repository;
 
 import com.iapex.model.institution.Institution;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,16 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
     // DEVUELVE UN OPTIONAL QUE CONTIENE LA ENTIDAD SI SE ENCUENTRA, O VACÍO SI NO SE ENCUENTRA.
     Optional<Institution> findByName(String name);
     
+    // ESTE MÉTODO BUSCA LAS INSTITUCIONES CON STATUS TRUE.
+    List<Institution> findByStatusTrue();
+    
+    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU NOMBRE CON STATUS TRUE.
+    Optional<Institution> findByNameAndStatusTrue(String name);
+
+    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON STATUS TRUE.
+    Optional<Institution> findByIdInstitutionAndStatusTrue(Long idInstitution);
+
+
 
 
 }

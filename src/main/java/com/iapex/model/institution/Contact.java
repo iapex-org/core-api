@@ -8,18 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "contact")
+@Table(name = "contacts")
 public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idContact;
     
-    @Column(length = 10)
-    private String phone;
-    
     @Column(length = 100)
-    private String adress;
+    private String phone;
     
     @Column(length = 100)
     private String website;
@@ -34,9 +31,6 @@ public class Contact {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-
-    public String getAdress() { return adress; }
-    public void setAdress(String adress) { this.adress = adress; }
 
     public String getWebsite() { return website; }
     public void setWebsite(String website) { this.website = website; }

@@ -2,7 +2,7 @@ package com.iapex.institution.DTO;
 
 import jakarta.validation.constraints.NotNull;
 
-public class UserInstitutionAuthDTO {
+public class UserInstitutionAuthenticationDTO {
 		
     @NotNull(message = "El email es obligatorio")
 	private String email;

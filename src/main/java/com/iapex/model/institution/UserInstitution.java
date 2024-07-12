@@ -23,7 +23,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_institution")
+@Table(name = "users_institution")
 public class UserInstitution implements AppUserDetails   {
 
     @Id
@@ -31,11 +31,16 @@ public class UserInstitution implements AppUserDetails   {
     @Column(name = "id_user_institution")
     private Long idUserInstitution;
 
+    @Column(length = 50)
 	private String name;
+    @Column(length = 50)
     private String fathername;
+    @Column(length = 50)
     private String mothername;
+    @Column(length = 100)
     private String email;
     private String password;
+    @Column(length = 50)
     private String charge;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -50,7 +55,7 @@ public class UserInstitution implements AppUserDetails   {
     private Role role;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "userInstitution")
+    @OneToMany(mappedBy = "userInstitution", cascade = CascadeType.ALL)
     private List<TokenInstitution> tokens;
 
     // CONSTRUCTOR VACIO
@@ -64,7 +69,7 @@ public class UserInstitution implements AppUserDetails   {
     // Getters and Setters
     
     public Long getIdUserInstitution() {return idUserInstitution;}
-	public void setIdUserInstitution(Long idUserInstitution) {		this.idUserInstitution = idUserInstitution;	}
+	public void setIdUserInstitution(Long idUserInstitution) {this.idUserInstitution = idUserInstitution;	}
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
