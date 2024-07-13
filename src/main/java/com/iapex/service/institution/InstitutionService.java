@@ -1,15 +1,12 @@
 package com.iapex.service.institution;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.institution.DTO.InstitutionDTO;
@@ -71,6 +68,9 @@ public class InstitutionService {
         institution.setDirection(direction);
 
         institution.setStatus(false); // INSTITUCIÓN NO VERIFICADA INICIALMENTE
+
+        // ESTABLECER LA FECHA DE REGISTRO A LA FECHA ACTUAL
+        institution.setRegistrationDate(new Date());
 
         institutionRepository.save(institution);
 

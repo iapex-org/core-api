@@ -62,7 +62,6 @@ public class AuthenticationInstitutionController {
         }
     }
     
-    
 
     //EL USUARIO CONFIRMA QUE LA CUENTA ES REAL
     //WEB
@@ -92,6 +91,7 @@ public class AuthenticationInstitutionController {
             return ResponseEntity.badRequest().body(new Response(e.getMessage()));
         }
     }
+    
 
     //EL USUARIO ENTRA A LA APLICACION Y SE LOGUEA
     //WEB
@@ -114,6 +114,7 @@ public class AuthenticationInstitutionController {
         }
     }
 
+    
     //EL USUARIO SOLICITA EL CORREO CON EL CODIGO PARA RESTABLECER LA CONTRASEÑA
     //WEB
     //http://localhost:8080/userInstitution/request-password-reset?email=misraelaltamirano@gmail.com
@@ -131,9 +132,6 @@ public class AuthenticationInstitutionController {
         }
         return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
     }
-
-
-
     
 
     //EL USUARIO RESTABLECE SU CONTRASEÑA
@@ -157,6 +155,7 @@ public class AuthenticationInstitutionController {
         }
     }
 
+    
     //ENVIAR DE NUEVO EL CORREO CON EL CODIGO PARA RESTABLECER LA CONTRASEÑA
     //WEB
     //http://localhost:8080/userInstitution/resend-reset-password?email=misraelaltamirano@gmail.com

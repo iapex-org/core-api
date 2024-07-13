@@ -1,7 +1,6 @@
 package com.iapex.controller.institution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +12,6 @@ import com.iapex.service.img.StorageService;
 import com.iapex.service.institution.InstitutionService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.core.io.Resource;
-
-import java.io.IOException;
-import java.nio.file.Files;
 
 import java.util.List;
 

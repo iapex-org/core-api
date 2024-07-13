@@ -1,5 +1,7 @@
 package com.iapex.model.institution;
 
+import java.util.Date;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "institutions")
@@ -38,6 +42,10 @@ public class Institution {
     
     @Column(length = 50)
     private String typeInstitution;
+	
+    @Temporal(TemporalType.DATE)
+	@Column(name = "registration_date")
+    private Date registrationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_contact", referencedColumnName = "idContact")
@@ -75,6 +83,9 @@ public class Institution {
 
     public String getTypeInstitution() { return typeInstitution; }
     public void setTypeInstitution(String typeInstitution) { this.typeInstitution = typeInstitution; }
+    
+    public Date getRegistrationDate() { return registrationDate; }
+	public void setRegistrationDate(Date registrationDate) { this.registrationDate = registrationDate; }
 
     public Contact getContact() { return contact; }
     public void setContact(Contact contact) { this.contact = contact; }

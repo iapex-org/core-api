@@ -1,5 +1,7 @@
 package com.iapex.institution.DTO;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.Size;
 
 public class InstitutionDTO {
@@ -49,6 +51,8 @@ public class InstitutionDTO {
 
     @Size(max = 35, message = "El número de dirección no debe exceder los 35 caracteres")
     private String directionNumber;
+
+    private Date registrationDate;
 
     // Constructor vacío
     public InstitutionDTO() {}
@@ -104,4 +108,8 @@ public class InstitutionDTO {
     
     public String getDirectionNumber() { return directionNumber; }
     public void setDirectionNumber(String directionNumber) { this.directionNumber = directionNumber; }
+    
+    public Date getRegistrationDate() { return registrationDate; }
+    public void setRegistrationDate(Date registrationDate) { this.registrationDate = registrationDate; }
+
 }

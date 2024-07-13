@@ -17,7 +17,6 @@ import com.iapex.institution.DTO.InstitutionDTO;
 import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.Response;
 import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.UserInstitution;
 import com.iapex.service.img.StorageService;
 import com.iapex.service.institution.InstitutionService;
 import com.iapex.service.institution.UserInstitutionService;
@@ -51,6 +50,7 @@ public class AdminInstitutionController {
     
     
     // AL HACER UNA SOLICITUD POST A ESTA RUTA, SE CREA UNA NUEVA INSTITUCIÓN CON DATOS MULTIPART
+    //SUPERADMIN
     //http://localhost:8080/adminInstitution/createInstitution
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/createInstitution", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -100,6 +100,7 @@ public class AdminInstitutionController {
     
     // AL HACER UNA SOLICITUD PUT A ESTA RUTA, SE ACTUALIZA UNA INSTITUCIÓN ESPECÍFICA POR SU ID
     // SOLO EL USUARIO CON LAS CREDENCIALES NESESARIAS PODRA ACCEDER AL RECURSO
+    //SUPERADMIN
     //http://localhost:8080/adminInstitution/updateInstitution/12
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     @PutMapping("/updateInstitution/{id}")
@@ -156,6 +157,7 @@ public class AdminInstitutionController {
     
     //ELIMINAR POR COMPLETO UNA INSTITUCION
     //http://localhost:8080/adminInstitution/deleteInstitution/15
+    //SUPERADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/deleteInstitution/{id}")
     public ResponseEntity<?> deleteInstitution(@PathVariable Long id) {
@@ -182,6 +184,7 @@ public class AdminInstitutionController {
     
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A LA LISTA DE TODAS LAS INSTITUCIONES
     //http://localhost:8080/adminInstitution/getAllInstitutions
+    //SUPERADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllInstitutions")
     public ResponseEntity<List<Institution>> getAllInstitutions() {
@@ -193,6 +196,7 @@ public class AdminInstitutionController {
     
     //OBTIENE TODOS LOS USUARIOS INSTITUCIONALES.
     //WEB
+    //SUPERADMINA
     //PENIDENTE: ELIGIR CAMPOS
     //http://localhost:8080/adminInstitution/getAllUsersInstitutions
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -224,6 +228,7 @@ public class AdminInstitutionController {
     
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UNA INSTITUCIÓN ESPECÍFICA POR SU ID
     //http://localhost:8080/adminInstitution/getInstitutionById/12
+    //SUPERADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getInstitutionById/{id}")
     public ResponseEntity<?> getInstitution(@PathVariable Long id) {
