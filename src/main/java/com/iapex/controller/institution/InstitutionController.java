@@ -1,7 +1,6 @@
 package com.iapex.controller.institution;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +47,6 @@ public class InstitutionController {
     @Autowired
     private UserInstitutionService userInstitutionService;
     
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationInstitutionController.class);
     
     // AL HACER UNA SOLICITUD POST A ESTA RUTA, SE CREA UNA NUEVA INSTITUCIÓN CON DATOS MULTIPART
     //EL BODY SE ENVIA A TRAVEZ DE UN FORMDATA

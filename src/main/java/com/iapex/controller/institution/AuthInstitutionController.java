@@ -19,21 +19,18 @@ import com.iapex.service.mail.InstitutionEmailService;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userInstitution")
-public class AuthenticationInstitutionController {
+public class AuthInstitutionController {
 
     private final UserInstitutionService userInstitutionService;
     private final InstitutionEmailService institutionEmailService;
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationInstitutionController.class);
 
-    public AuthenticationInstitutionController(UserInstitutionService userInstitutionService, InstitutionEmailService institutionEmailService) {
+    public AuthInstitutionController(UserInstitutionService userInstitutionService, InstitutionEmailService institutionEmailService) {
         this.userInstitutionService = userInstitutionService;
         this.institutionEmailService = institutionEmailService;
     }
