@@ -43,9 +43,10 @@ public class PatientController {
     private HttpServletRequest request;
 
 
-@PostMapping(value = "/createPatient", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<?> registerPatient(
-        @Valid @ModelAttribute PatientDTO patientDTO,
+    //http://localhost:8080/patients/createPatient
+	@PostMapping(value = "/createPatient", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> registerPatient(
+	        @Valid @ModelAttribute PatientDTO patientDTO,
         BindingResult result,
         @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles) {
 
@@ -80,19 +81,13 @@ public ResponseEntity<?> registerPatient(
                     Image image = new Image();
                     image.setImage(storedFilename); // NOMBRE DEL ARCHIVO ALMACENADO
                     image.setImageUrl(imageUrl);   // URL COMPLETA DE LA IMAGEN
-                    images.add(image);
-                }
-            }
-        }
-
+                    images.add(image); }          }        }
         // CONVERTIR LA LISTA DE Image A ImageDTO
         List<ImageDTO> imageDTOs = images.stream()
                 .map(image -> new ImageDTO(image.getIdImage(), image.getImage(), image.getImageUrl()))
                 .collect(Collectors.toList());
-
         // ESTABLECER LAS IMÁGENES CONVERTIDAS EN EL DTO DEL PACIENTE
         patientDTO.setImages(imageDTOs);
-
         // LLAMAR AL SERVICIO PARA REGISTRAR EL PACIENTE
         Response response = patientService.registerPatient(patientDTO);
         return ResponseEntity.ok(response);
@@ -117,20 +112,25 @@ public ResponseEntity<?> registerPatient(
 	    }
 	}
 	
-    // ENDPOINT PARA OBTENER UN PACIENTE POR SU ID
-	    @GetMapping("/getPatientById/{id}")
-	    public ResponseEntity<?> getPatientById(@PathVariable Long id) {
-	        try {
-	            PatientDTO patientDTO = patientService.getPatientById(id);
-	            return ResponseEntity.ok(patientDTO);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return ResponseEntity.notFound().build();
-	        }
-	    }
-	
+	    // ENDPOINT PARA OBTENER UN PACIENTE POR SU ID NO IMPORTA SU ESTATUS
+		//WEB
+	    //http://localhost:8080/patients/getPatientById/1
+		@GetMapping("/getPatientById/{id}")
+		public ResponseEntity<?> getPatientById(@PathVariable Long id) {
+		    try {
+		        PatientDTO patientDTO = patientService.getPatientById(id);
+		        return ResponseEntity.ok(patientDTO);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        Response errorResponse = new Response("Paciente no encontrado");
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+		    }
+		}
 	    
-	 // ENDPOINT PARA OBTENER TODOS LOS PACIENTES
+	    // ENDPOINT PARA OBTENER TODOS LOS PACIENTES DENTRO DEL DASHBOARD NO IMPORTA SU ESTATUS
+	    //LISTA TODOS LOS PACIENTES
+	    //WEB///
+	    //http://localhost:8080/patients/getAllPatients    
 	    @GetMapping("/getAllPatients")
 	    public ResponseEntity<List<PatientDTO>> getAllPatients() {
 	        List<PatientDTO> patients = patientService.getAllPatients();
@@ -138,7 +138,10 @@ public ResponseEntity<?> registerPatient(
 	    }
 	    
 	    
-	 // ENDPOINT PARA OBTENER UN PACIENTE POR SU ID SI STATUS ES FALSE
+	    // ENDPOINT PARA OBTENER UN PACIENTE POR SU ID SI STATUS ES FALSE, IDEAL PARA MOSTRAR EN LA MOVIL YA QUE SOLO SE DEBEN MOSTRAR PACIENTES NO ENCONTRADOS
+	    //MOVIL
+	    //ACCEDE AL PACIENTE NO ENCONTRADO
+	    //http://localhost:8080/patients/getPatientByIdFalse/1    
 	    @GetMapping("/getPatientByIdFalse/{id}")
 	    public ResponseEntity<?> getPatientByIdFalse(@PathVariable Long id) {
 	        try {
@@ -146,12 +149,17 @@ public ResponseEntity<?> registerPatient(
 	            return ResponseEntity.ok(patientDTO);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            return ResponseEntity.notFound().build();
+	            // Creamos un objeto Response con el mensaje de error
+	            Response errorResponse = new Response("Paciente no encontrado, contacta a la institucion.");
+	            // Devolvemos un ResponseEntity con estado NOT_FOUND y el objeto Response
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	        }
 	    }
 	    
 	    
-	  // ENDPOINT PARA OBTENER TODOS LOS PACIENTES
+	    // ENDPOINT PARA OBTENER TODOS LOS PACIENTES,  IDEAL PARA MOSTRAR EN LA MOVIL YA QUE SOLO SE DEBEN MOSTRAR PACIENTES NO ENCONTRADO
+	    //MOVIL//
+	    //http://localhost:8080/patients/getPatientByIdFalse    
 	    @GetMapping("/getAllPatientsFalse")
 	    public ResponseEntity<List<PatientDTO>> getAllPatientsFalse() {
 	        List<PatientDTO> patients = patientService.getAllPatientsFalse();

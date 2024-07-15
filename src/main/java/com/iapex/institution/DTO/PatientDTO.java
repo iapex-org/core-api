@@ -9,7 +9,7 @@ public class PatientDTO {
     private String hairColor;
     private String skinColor;
     private String eyeColor;
-    private String gender;
+    private String sex;
     private double height;
     private double weight;
     private String birthDate;
@@ -26,6 +26,8 @@ public class PatientDTO {
     private String nationality;
     private String insuranceNumber;
 	private String institutionName;
+	private String nameRegister;
+
     private boolean status;
 
     private List<ImageDTO> images;
@@ -33,17 +35,16 @@ public class PatientDTO {
     // Constructor
     public PatientDTO() {}
     
-    // Constructor con todos los campos necesarios, incluida la lista de imágenes
-    public PatientDTO(Long idPatient, String hairColor, String skinColor, String eyeColor, String gender, double height,
+    public PatientDTO(Long idPatient, String hairColor, String skinColor, String eyeColor, String sex, double height,
                       double weight, String birthDate, int age, String hairType, String traits, String build,
                       String posture, String physicalConditions, String name, String fathername, String mothername,
-                      String bloodType, String nationality, String insuranceNumber, String institutionName,
+                      String bloodType, String nationality, String insuranceNumber, String institutionName, String nameRegister,
                       boolean status, List<ImageDTO> images) {
         this.idPatient = idPatient;
         this.hairColor = hairColor;
         this.skinColor = skinColor;
         this.eyeColor = eyeColor;
-        this.gender = gender;
+        this.sex = sex;
         this.height = height;
         this.weight = weight;
         this.birthDate = birthDate;
@@ -60,6 +61,7 @@ public class PatientDTO {
         this.nationality = nationality;
         this.insuranceNumber = insuranceNumber;
         this.institutionName = institutionName;
+        this.nameRegister = nameRegister;
         this.status = status;
         this.images = images;
     }
@@ -81,8 +83,8 @@ public class PatientDTO {
     public String getEyeColor() { return eyeColor; }
     public void setEyeColor(String eyeColor) { this.eyeColor = eyeColor; }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public String getSex() { return sex; }
+    public void setSex(String sex) { this.sex = sex; }
 
     public double getHeight() { return height; }
     public void setHeight(double height) { this.height = height; }
@@ -134,5 +136,8 @@ public class PatientDTO {
 	
     public boolean getStatus() { return status; }
     public void setStatus(boolean status) { this.status = status; }
+    
+    public String getNameRegister() {		return nameRegister; }
+	public void setNameRegister(String nameRegister) { this.nameRegister = nameRegister; }
 
 }

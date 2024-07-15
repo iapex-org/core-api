@@ -22,18 +22,16 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPatient;
 
-    @Column(length = 20)
+    @Column(length = 25)
     private String hairColor;
     
-    @Column(length = 15)
+    @Column(length = 25)
     private String skinColor;
     
-    @Column(length = 15)
+    @Column(length = 25)
     private String eyeColor;
-    
-    @Column(length = 15)
-    
-    private String gender;
+        
+    private String sex;
     
     private double height;
     
@@ -75,6 +73,8 @@ public class Patient {
     @Column(length = 11)
     private String insuranceNumber;
     
+	private String nameRegister;
+    
     private boolean status;
     
     @ManyToOne
@@ -100,8 +100,8 @@ public class Patient {
     public String getEyeColor() { return eyeColor; }
     public void setEyeColor(String eyeColor) { this.eyeColor = eyeColor; }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public String getSex() { return sex; }
+    public void setSex(String sex) { this.sex = sex; }
 
     public double getHeight() { return height; }
     public void setHeight(double height) { this.height = height; }
@@ -153,4 +153,7 @@ public class Patient {
     
     public Institution getInstitution() { return institution; }
     public void setInstitution(Institution institution) { this.institution = institution; }
+    
+    public String getNameRegister() {		return nameRegister; }
+	public void setNameRegister(String nameRegister) { this.nameRegister = nameRegister; }
 }

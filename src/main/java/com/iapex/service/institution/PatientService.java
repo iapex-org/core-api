@@ -37,7 +37,7 @@ public class PatientService {
             patient.setHairColor(request.getHairColor());
             patient.setSkinColor(request.getSkinColor());
             patient.setEyeColor(request.getEyeColor());
-            patient.setGender(request.getGender());
+            patient.setSex(request.getSex());
             patient.setHeight(request.getHeight());
             patient.setWeight(request.getWeight());
             patient.setBirthDate(request.getBirthDate());
@@ -129,7 +129,7 @@ public class PatientService {
                 patient.getHairColor(),
                 patient.getSkinColor(),
                 patient.getEyeColor(),
-                patient.getGender(),
+                patient.getSex(),
                 patient.getHeight(),
                 patient.getWeight(),
                 patient.getBirthDate(),
@@ -146,6 +146,7 @@ public class PatientService {
                 patient.getNationality(),
                 patient.getInsuranceNumber(),
                 patient.getInstitution().getName(),
+                patient.getNameRegister(),
                 patient.getStatus(),
                 imageDTOs
         );

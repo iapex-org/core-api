@@ -1,5 +1,6 @@
 package com.iapex.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response("Error al obtener el usuario: " + e.getMessage()));
         }
     }
+    
+
+    // ENDPOINT PARA OBTENER TODOS LOS USUARIOS
+    //SOLO DASHBOARD
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+
 
 	 // ENDPOINT PARA ENVIAR UN CORREO A TRAVÉS DE LA APLICACIÓN
 	 // LOS MENSAJES LLEGAN AL CORREO DE IAPEX6500@GMAIL.COM

@@ -62,7 +62,7 @@ public class Institution {
     private Membership membership;
 
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
-    private List<Patient> patients; // Relación con paciente 
+    private List<Patient> patients;  
     
     @Column(name = "status", nullable = false)
     private boolean status;
