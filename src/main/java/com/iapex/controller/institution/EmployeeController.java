@@ -1,8 +1,6 @@
 package com.iapex.controller.institution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +17,6 @@ import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.Response;
-import com.iapex.model.institution.UserInstitution;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

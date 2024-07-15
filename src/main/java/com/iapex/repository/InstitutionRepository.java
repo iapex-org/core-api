@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -28,7 +30,9 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
     // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON STATUS TRUE.
     Optional<Institution> findByIdInstitutionAndStatusTrue(Long idInstitution);
 
-
-
+    
+    @Modifying
+    @Query("UPDATE Institution i SET i.status = false WHERE i.id NOT IN (SELECT DISTINCT m.institution.id FROM Membership m WHERE m.status = true)")
+    void updateInstitutionStatusWithNoActiveMemberships();
 
 }

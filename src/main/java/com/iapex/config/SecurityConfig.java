@@ -58,8 +58,12 @@ public class SecurityConfig {
                         						"/userInstitution/**",
                         						"/adminInstitution/**",
                         						"/v3/api-docs/**", 
-                        						"/swagger-ui/**", 
+                        						"/swagger-ui/**",
+                        						"/memberships/**", 
+                        						"/conversations/**",
+                        						"/patients/**", 
                         						"/swagger-ui.html")
+                        
                                 .permitAll()
                                 .requestMatchers("/protected-route").authenticated()
 

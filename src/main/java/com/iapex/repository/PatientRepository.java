@@ -1,0 +1,20 @@
+package com.iapex.repository;
+
+import com.iapex.model.institution.Patient;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PatientRepository extends JpaRepository<Patient, Long> {
+
+	// ESTE MÉTODO BUSCA LAS PACIENTES POR SU ID CON STATUS TRUE.
+    Optional<Patient> findByIdPatientAndStatusFalse(Long idPatient);
+
+    // ESTE MÉTODO BUSCA LOS PACIENTES CON STATUS TRUE.
+    List<Patient> findByStatusFalse();
+    
+}

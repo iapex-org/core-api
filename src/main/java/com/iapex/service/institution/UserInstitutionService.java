@@ -305,22 +305,23 @@ public class UserInstitutionService {
         return convertToDTO(userInstitution);
     }
     
-    // ELIMINA UN USUARIO POR SU ID.
+ // ELIMINA UN USUARIO POR SU ID.
     @Transactional
     public void deleteById(Long id) {
-        // Busca el usuario institución por su ID o lanza una excepción si no se encuentra
+        // BUSCA EL USUARIO INSTITUCIÓN POR SU ID O LANZA UNA EXCEPCIÓN SI NO SE ENCUENTRA
         UserInstitution userInstitution = userInstitutionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
-        // Busca y elimina todos los tokens asociados al usuario institución
+        // BUSCA Y ELIMINA TODOS LOS TOKENS ASOCIADOS AL USUARIO INSTITUCIÓN
         List<TokenInstitution> tokens = tokenInstitutionRepository.findByUserInstitution_IdUserInstitution(id);
         tokenInstitutionRepository.deleteAll(tokens);
-        // Elimina la referencia a la institución para evitar la violación de clave foránea
-        userInstitution.setInstitution(null); 
-        // Guarda el usuario institución actualizado para aplicar el cambio
+        // ELIMINA LA REFERENCIA A LA INSTITUCIÓN PARA EVITAR LA VIOLACIÓN DE CLAVE FORÁNEA
+        userInstitution.setInstitution(null);
+        // GUARDA EL USUARIO INSTITUCIÓN ACTUALIZADO PARA APLICAR EL CAMBIO
         userInstitutionRepository.save(userInstitution);
-        // Elimina físicamente el usuario institución de la base de datos
+        // ELIMINA FÍSICAMENTE EL USUARIO INSTITUCIÓN DE LA BASE DE DATOS
         userInstitutionRepository.delete(userInstitution);
     }
+
 
     
     //OBTENER POR ID
