@@ -180,11 +180,10 @@ public class PatientController {
 	        return ResponseEntity.ok(patients);
 	    }
 	    
-	    // OBTENER LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO, IDEAL PARA USARLOS EN EL DASHBOARD, CUANDO UN EMPLEADO INGRESE SOLO SE LE MOSTRARA CONVERSACIONES DE SU INSTITUCION
+	    // OBTENER LAS PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO, IDEAL PARA USARLOS EN EL DASHBOARD, CUANDO UN EMPLEADO INGRESE SOLO SE LE MOSTRARA PACIENTES DE SU INSTITUCION
 	    //WEB
-	    //http://localhost:8080/conversations/getConversationsByInstitution
+	    //http://localhost:8080/patients/getConversationsByInstitution
 	    @PreAuthorize("hasAuthority('ADMIN')")
-	    // ENDPOINT PARA OBTENER LOS PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
 	    @GetMapping("/getPatientsByInstitution")
 	    public ResponseEntity<List<PatientDTO>> getPatientsByInstitution() {
 	        try {
