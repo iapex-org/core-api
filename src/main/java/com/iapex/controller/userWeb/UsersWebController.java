@@ -14,7 +14,7 @@ import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.userWeb.UserInstitution;
-import com.iapex.service.email.WebEmailService;
+import com.iapex.service.emailWeb.WebEmailService;
 import com.iapex.service.userWeb.UsersWebService;
 
 import jakarta.validation.Valid;

@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import com.iapex.model.token.Token;
+import com.iapex.model.tokenMovil.Token;
 import com.iapex.repository.token.TokenMovilRepository;
 
 import jakarta.servlet.http.HttpServletRequest;

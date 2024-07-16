@@ -16,11 +16,11 @@ import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.role.Role;
-import com.iapex.model.token.Token;
+import com.iapex.model.tokenMovil.Token;
 import com.iapex.model.userMovil.UserMovil;
 import com.iapex.repository.token.TokenMovilRepository;
 import com.iapex.repository.userMovil.UserMovilRepository;
-import com.iapex.service.email.MovilEmailService;
+import com.iapex.service.emailMovil.MovilEmailService;
 import com.iapex.service.security.JwtService;
 
 @Service

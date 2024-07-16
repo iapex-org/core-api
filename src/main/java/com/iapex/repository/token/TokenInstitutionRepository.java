@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.model.token.TokenInstitution;
+import com.iapex.model.tokenWeb.TokenInstitution;
 import com.iapex.model.userWeb.UserInstitution;
 
 public interface TokenInstitutionRepository extends JpaRepository<TokenInstitution, Long> {

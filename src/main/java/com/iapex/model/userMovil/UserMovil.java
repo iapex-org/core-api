@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iapex.config.AppUserDetails;
 import com.iapex.model.role.Role;
-import com.iapex.model.token.Token;
+import com.iapex.model.tokenMovil.Token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

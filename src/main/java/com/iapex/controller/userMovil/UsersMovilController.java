@@ -20,7 +20,7 @@ import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.userMovil.UserMovil;
-import com.iapex.service.email.MovilEmailService;
+import com.iapex.service.emailMovil.MovilEmailService;
 import com.iapex.service.userMovil.UserMovilService;
 
 import jakarta.validation.Valid;

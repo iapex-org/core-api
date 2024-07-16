@@ -1,4 +1,4 @@
-package com.iapex.model.token;
+package com.iapex.model.tokenWeb;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

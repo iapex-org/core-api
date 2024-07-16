@@ -24,12 +24,12 @@ import com.iapex.model.institution.Institution;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.role.Role;
-import com.iapex.model.token.TokenInstitution;
+import com.iapex.model.tokenWeb.TokenInstitution;
 import com.iapex.model.userWeb.UserInstitution;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.token.TokenInstitutionRepository;
 import com.iapex.repository.userWeb.UserWebRepository;
-import com.iapex.service.email.WebEmailService;
+import com.iapex.service.emailWeb.WebEmailService;
 import com.iapex.service.security.JwtService;
 
 import jakarta.persistence.EntityNotFoundException;
