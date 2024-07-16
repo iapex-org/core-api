@@ -24,7 +24,8 @@ public class TokenUserScheduled {
 
 
     // Método programado para ejecutarse periódicamente según la expresión Cron durante una vez al día a la medianoche.
-    @Scheduled(cron = "0 * * * * *") // CADA 1 MINUTO
+    //@Scheduled(cron = "0 * * * * *") // CADA 1 MINUTO
+    @Scheduled(cron = "0 0/10 * * * *") // CADA 10 MINUTOS
     public void scheduleTaskToPurgeExpiredTokens() {
         // Registro de inicio de la tarea programada+
         System.out.println("Ejecutando tarea programada para eliminar tokens expirados: " + new Date());

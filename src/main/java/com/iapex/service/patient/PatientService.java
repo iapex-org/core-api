@@ -1,19 +1,26 @@
 package com.iapex.service.patient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.iapex.dto.patient.ConversationDTO;
 import com.iapex.dto.patient.ImageDTO;
 import com.iapex.dto.patient.PatientDTO;
 import com.iapex.model.institution.Institution;
+import com.iapex.model.patient.Conversation;
 import com.iapex.model.patient.Image;
 import com.iapex.model.patient.Patient;
 import com.iapex.model.response.Response;
+import com.iapex.model.user.UserInstitution;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.patient.PatientRepository;
 
@@ -27,7 +34,7 @@ public class PatientService {
     private InstitutionRepository institutionRepository;
 
     @Transactional
-    public Response registerPatient(PatientDTO request) throws Exception {
+    public Response registerPatient(PatientDTO request, String name, String fatherName, String motherName) throws Exception {
         try {
             // BUSCAR LA INSTITUCIÓN POR NOMBRE
             Institution institution = institutionRepository.findByName(request.getInstitutionName())
@@ -53,6 +60,7 @@ public class PatientService {
             patient.setBloodType(request.getBloodType());
             patient.setNationality(request.getNationality());
             patient.setInsuranceNumber(request.getInsuranceNumber());
+            patient.setAdditionalNotes(request.getAdditionalNotes());
             patient.setInstitution(institution);
             // ESTABLECER EL STATUS EN FALSE
             patient.setStatus(false);
@@ -72,6 +80,11 @@ public class PatientService {
             }
             // ASIGNAR LA LISTA DE IMÁGENES AL PACIENTE
             patient.setImages(images);
+            
+            // CREAR EL NOMBRE COMPLETO DE LA PERSONA QUE REGISTRA
+            String fullName = buildFullName(name, fatherName, motherName);
+            patient.setNameRegister(fullName);
+
             // GUARDAR EL PACIENTE
             patientRepository.save(patient);
             return new Response("El registro del paciente fue exitoso.");
@@ -79,7 +92,15 @@ public class PatientService {
             throw new Exception("Error al registrar el paciente: " + e.getMessage());
         }
     }
-    
+
+    private String buildFullName(String name, String fatherName, String motherName) {
+        return String.format("%s %s %s", 
+                name != null ? name : "",
+                fatherName != null ? fatherName : "",
+                motherName != null ? motherName : "")
+                .trim().replaceAll("\\s+", " ");
+    }
+
     
     // OBTENER PACIENTE POR ID
     public PatientDTO getPatientById(Long id) throws Exception {
@@ -117,6 +138,55 @@ public class PatientService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional
+    public Response updateById(Long id, PatientDTO request) {
+        try {
+            // BUSCAR EL PACIENTE POR SU ID O LANZAR UNA EXCEPCIÓN SI NO SE ENCUENTRA
+            Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new Exception("Paciente no encontrado"));
+            
+            // ACTUALIZAR EL ESTADO DEL PACIENTE SI ES DIFERENTE
+            if (patient.getStatus() != request.getStatus()) {
+                patient.setStatus(request.getStatus());
+                
+                // GUARDAR LOS CAMBIOS
+                patientRepository.save(patient);
+                return new Response("Estado del paciente actualizado exitosamente");
+            } else {
+                return new Response("El estado proporcionado es igual al estado actual. No se realizaron cambios.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Response("Error al actualizar el estado del paciente: " + e.getMessage());
+        }
+    }
+    
+    
+    // OBTIENE LAS pacientes DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
+ // OBTENER PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
+    public List<PatientDTO> getPatientsByAuthenticatedUser() {
+        try {
+            // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
+            Institution institution = userInstitution.getInstitution();
+
+            // OBTENER LOS PACIENTES DE LA MISMA INSTITUCIÓN
+            List<Patient> patients = patientRepository.findByInstitution(institution);
+
+            // CONVERTIR LOS PACIENTES A DTOs
+            return patients.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // MANEJAR LA EXCEPCIÓN ADECUADAMENTE SEGÚN TUS REQUERIMIENTOS
+            return Collections.emptyList(); // O PODRÍAS RETORNAR UN MENSAJE DE ERROR
+        }
+    }
+
+    
     
 
     private PatientDTO convertToDTO(Patient patient) {
@@ -125,7 +195,6 @@ public class PatientService {
                 .collect(Collectors.toList());
 
         return new PatientDTO(
-                patient.getIdPatient(),
                 patient.getHairColor(),
                 patient.getSkinColor(),
                 patient.getEyeColor(),
@@ -147,8 +216,10 @@ public class PatientService {
                 patient.getInsuranceNumber(),
                 patient.getInstitution().getName(),
                 patient.getNameRegister(),
+                patient.getAdditionalNotes(),
                 patient.getStatus(),
                 imageDTOs
         );
     }
 }
+

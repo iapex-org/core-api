@@ -5,6 +5,9 @@ import java.util.Date;
 import jakarta.validation.constraints.Size;
 
 public class InstitutionDTO {
+	
+    private Long idInstitution;
+
     @Size(max = 50, message = "El nombre de la institución no puede tener más de 50 caracteres")
     private String name;
 
@@ -56,6 +59,9 @@ public class InstitutionDTO {
 
     // Constructor vacío
     public InstitutionDTO() {}
+
+    public Long getIdInstitution() { return idInstitution; }
+    public void setIdInstitution(Long idInstitution) { this.idInstitution = idInstitution; }
 
     // Getters and Setters
     public String getName() { return name; }

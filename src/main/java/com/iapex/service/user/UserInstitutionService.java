@@ -261,7 +261,7 @@ public class UserInstitutionService {
     public Date calculateExpireDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 1);
+        calendar.add(Calendar.MINUTE, 10);
         return calendar.getTime();
     }
     

@@ -113,7 +113,8 @@ public class JwtService {
             .subject(user.getEmail())
             .claim("authorities", user.getRole().getAuthorities())
             .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + 60*1000 ))
+            //.expiration(new Date(System.currentTimeMillis() + 60*1000 )) //1 MINUTO
+            .expiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) //10 MINUTOS
             .signWith(getSigninKey())
             .compact();
         //logger.debug("Generated token: {}", token);
@@ -127,8 +128,8 @@ public class JwtService {
             .subject(userInstitution.getEmail())
             .claim("authorities", userInstitution.getRole().getAuthorities())
             .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + 60*1000 ))
-            //.expiration(new Date(System.currentTimeMillis() + 10*60*1000 ))
+            //.expiration(new Date(System.currentTimeMillis() + 60*1000 )) //1 MINUTO
+            .expiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) //10 MINUTOS
             .signWith(getSigninKey())
             .compact();
         //logger.debug("Generated token: {}", token);

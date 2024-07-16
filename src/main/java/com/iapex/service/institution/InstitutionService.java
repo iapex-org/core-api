@@ -3,6 +3,7 @@ package com.iapex.service.institution;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +15,7 @@ import com.iapex.model.institution.Contact;
 import com.iapex.model.institution.Direction;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.response.Response;
+import com.iapex.model.user.UserInstitution;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.service.email.EmailService;
 
@@ -124,14 +126,21 @@ public class InstitutionService {
     }
 
     //LISTAR INSTITUCIONES
-    public List<Institution> getAllInstitutions() {
-        return institutionRepository.findAll();
+    public List<InstitutionDTO> getAllInstitutions() {
+        List<Institution> institutions = institutionRepository.findAll();
+        return institutions.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     //LISTAR INSTITUCIONES CON STATUS TRUE
-    public List<Institution> getAllInstitutionsTrue() {
-        return institutionRepository.findByStatusTrue();
+    public List<InstitutionDTO> getAllInstitutionsTrue() {
+        List<Institution> institutions = institutionRepository.findByStatusTrue();
+        return institutions.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
+
     
     //ELIMINAR POR ID
     public Response deleteInstitution(Long id) throws Exception {
@@ -144,6 +153,45 @@ public class InstitutionService {
     public Institution getInstitutionByName(String name) throws Exception {
         return institutionRepository.findByNameAndStatusTrue(name)
             .orElseThrow(() -> new Exception("Institución no encontrada con nombre: " + name));
-    }    
+    }
     
+    // MÉTODO PARA OBTENER LA INSTITUCIÓN DTO POR USUARIO
+    public InstitutionDTO getInstitutionDTOByUser(UserInstitution userInstitution) throws Exception {
+        Institution institution = userInstitution.getInstitution();
+        if (institution == null) {
+            throw new Exception("Institución no encontrada para el usuario autenticado");
+        }
+        return convertToDto(institution);
+    }
+
+    
+    public InstitutionDTO convertToDto(Institution institution) {
+        InstitutionDTO dto = new InstitutionDTO();
+        dto.setIdInstitution(institution.getIdInstitution());
+        dto.setName(institution.getName());
+        dto.setEmail(institution.getEmail());
+        dto.setTypeInstitution(institution.getTypeInstitution());
+        dto.setOpeningHours(institution.getOpeningHours());
+        dto.setHistory(institution.getHistory());
+        dto.setImageUrl(institution.getImageUrl());
+        dto.setStatus(institution.isStatus());
+        dto.setRegistrationDate(institution.getRegistrationDate());
+
+        if (institution.getContact() != null) {
+            dto.setContactPhone(institution.getContact().getPhone());
+        }
+
+        if (institution.getDirection() != null) {
+            dto.setDirectionUrlMapsInstitution(institution.getDirection().getUrlMapsInstitution());
+            dto.setDirectionState(institution.getDirection().getState());
+            dto.setDirectionMunicipality(institution.getDirection().getMunicipality());
+            dto.setDirectionPostalCode(institution.getDirection().getPostalCode());
+            dto.setDirectionColony(institution.getDirection().getColony());
+            dto.setDirectionStreet(institution.getDirection().getStreet());
+            dto.setDirectionNumber(institution.getDirection().getNumber());
+        }
+
+        return dto;
+    }
 }
+

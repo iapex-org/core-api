@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.response.Response;
+import com.iapex.model.user.UserInstitution;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.institution.InstitutionService;
 import com.iapex.service.user.UserInstitutionService;
@@ -182,31 +184,6 @@ public class InstitutionController {
     }
     
     
-    
-    // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A LA LISTA DE TODAS LAS INSTITUCIONES DENTRO DEL DASHBOARD
-    //http://localhost:8080/institutions/getAllInstitutions
-    //ADMIN-WEB
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/getAllInstitutions")
-    public ResponseEntity<List<Institution>> getAllInstitutions() {
-        List<Institution> institutions = institutionService.getAllInstitutions();
-        return ResponseEntity.ok(institutions);
-    }
-    
-    
-    
-    //OBTIENE TODOS LOS USUARIOS INSTITUCIONALES DENTRO DEL DASHBOARD.
-    //WEB
-    //ADMIN-WEB
-    //http://localhost:8080/institutions/getAllUsersInstitutions
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/getAllUsersInstitutions")
-    public ResponseEntity<List<UserInstitutionDTO>> getAllUsers() {
-        List<UserInstitutionDTO> userDTOs = userInstitutionService.getAllUserDTOs();
-        return ResponseEntity.ok(userDTOs);
-    }
-
-
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UNA INSTITUCIÓN ESPECÍFICA POR SU ID CON STATUS TRUE
     //MOVIL
     //http://localhost:8080/institutions/getInstitutionById/12
@@ -226,10 +203,11 @@ public class InstitutionController {
     //MOVIL
     //http://localhost:8080/institutions/getAllInstitutionsTrue
     @GetMapping("/getAllInstitutionsTrue")
-    public ResponseEntity<List<Institution>> getAllInstitutionsTrue() {
-        List<Institution> institutions = institutionService.getAllInstitutionsTrue();
+    public ResponseEntity<List<InstitutionDTO>> getAllInstitutionsTrue() {
+        List<InstitutionDTO> institutions = institutionService.getAllInstitutionsTrue();
         return ResponseEntity.ok(institutions);
     }
+    
     
     
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UNA INSTITUCIÓN ESPECÍFICA POR SU NOMBRE CON STATUS TRUE
@@ -245,8 +223,68 @@ public class InstitutionController {
                 .body(new Response("No se encontró la institución con nombre: " + name));
         }
     }
+    
+    
+    //OBTIENE LA INSTITUCIÓN A LA QUE EL USUARIO AUTENTICADO PERTENECE.
+    //http://localhost:8080/institutions/getInstitutionByAuth
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/getInstitutionByAuth")
+    public ResponseEntity<?> getAuthenticatedInstitution() {
+        try {
+            // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            
+            // OBTENER LA INSTITUCIÓN Y CONVERTIR A DTO USANDO EL SERVICIO
+            InstitutionDTO institutionDTO = institutionService.getInstitutionDTOByUser(userInstitution);
+            
+            return ResponseEntity.ok(institutionDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(new Response("Error al obtener la institución del usuario autenticado: " + e.getMessage()));
+        }
+    }
 
-    // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UN USUARIO ESPECÍFICO POR SU ID
+    // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A LA LISTA DE TODAS LAS INSTITUCIONES DENTRO DEL DASHBOARD
+    //http://localhost:8080/institutions/getAllInstitutions
+    //ADMIN-WEB
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/getAllInstitutions")
+    public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
+        List<InstitutionDTO> institutions = institutionService.getAllInstitutions();
+        return ResponseEntity.ok(institutions);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //OBTIENE TODOS LOS USUARIOS INSTITUCIONALES DENTRO DEL DASHBOARD.
+    //WEB
+    //ADMIN-WEB
+    //http://localhost:8080/institutions/getAllUsersInstitutions
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/getAllUsersInstitutions")
+    public ResponseEntity<List<UserInstitutionDTO>> getAllUsers() {
+        List<UserInstitutionDTO> userDTOs = userInstitutionService.getAllUserDTOs();
+        return ResponseEntity.ok(userDTOs);
+    }
+
+    
+    // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UN USUARIO ESPECÍFICO POR SU ID, SE ACCEDE A TODO EL OBJETO RELACIONADO AL USUARIO
     //ADMIN-WEB
     // http://localhost:8080/institutions/getUserInstitutionById/12
     @GetMapping("/getUserInstitutionById/{id}")

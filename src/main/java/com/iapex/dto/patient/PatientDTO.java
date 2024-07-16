@@ -1,32 +1,72 @@
 package com.iapex.dto.patient;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.validation.constraints.Size;
 
 
 public class PatientDTO {
 
+    @JsonIgnore
     private Long idPatient;
+    @Size(max = 30, message = "El color de cabello debe tener máximo 30 caracteres")
     private String hairColor;
+
+    @Size(max = 30, message = "El color de piel debe tener máximo 30 caracteres")
     private String skinColor;
+
+    @Size(max = 30, message = "El color de ojos debe tener máximo 30 caracteres")
     private String eyeColor;
+
+    @Size(max = 10, message = "El sexo debe tener máximo 10 caracteres")
     private String sex;
+
     private double height;
     private double weight;
-    private String birthDate;
+    private LocalDate birthDate;
     private int age;
+
+    @Size(max = 30, message = "El tipo de cabello debe tener máximo 30 caracteres")
     private String hairType;
+
     private String traits;
+
+    @Size(max = 30, message = "El tipo de cuerpo debe tener máximo 30 caracteres")
     private String build;
+
+    @Size(max = 30, message = "La postura debe tener máximo 30 caracteres")
     private String posture;
+
     private String physicalConditions;
+
+    @Size(max = 50, message = "El nombre debe tener máximo 50 caracteres")
     private String name;
+
+    @Size(max = 50, message = "El apellido paterno debe tener máximo 50 caracteres")
     private String fathername;
+
+    @Size(max = 50, message = "El apellido materno debe tener máximo 50 caracteres")
     private String mothername;
+
+    @Size(max = 10, message = "El tipo de sangre debe tener máximo 10 caracteres")
     private String bloodType;
+
+    @Size(max = 30, message = "La nacionalidad debe tener máximo 30 caracteres")
     private String nationality;
+
+    @Size(max = 11, message = "El número de seguro debe tener máximo 11 caracteres")
     private String insuranceNumber;
-	private String institutionName;
-	private String nameRegister;
+
+    private String institutionName;
+
+    @Size(max = 75, message = "El nombre de registro debe tener máximo 75 caracteres")
+    private String nameRegister;
+
+	
+    private String additionalNotes;
 
     private boolean status;
 
@@ -35,12 +75,11 @@ public class PatientDTO {
     // Constructor
     public PatientDTO() {}
     
-    public PatientDTO(Long idPatient, String hairColor, String skinColor, String eyeColor, String sex, double height,
-                      double weight, String birthDate, int age, String hairType, String traits, String build,
+    public PatientDTO(String hairColor, String skinColor, String eyeColor, String sex, double height,
+                      double weight, LocalDate birthDate, int age, String hairType, String traits, String build,
                       String posture, String physicalConditions, String name, String fathername, String mothername,
-                      String bloodType, String nationality, String insuranceNumber, String institutionName, String nameRegister,
+                      String bloodType, String nationality, String insuranceNumber, String institutionName, String nameRegister, String additionalNotes,
                       boolean status, List<ImageDTO> images) {
-        this.idPatient = idPatient;
         this.hairColor = hairColor;
         this.skinColor = skinColor;
         this.eyeColor = eyeColor;
@@ -62,6 +101,7 @@ public class PatientDTO {
         this.insuranceNumber = insuranceNumber;
         this.institutionName = institutionName;
         this.nameRegister = nameRegister;
+        this.additionalNotes = additionalNotes;
         this.status = status;
         this.images = images;
     }
@@ -92,8 +132,8 @@ public class PatientDTO {
     public double getWeight() { return weight; }
     public void setWeight(double weight) { this.weight = weight; }
 
-    public String getBirthDate() { return birthDate; }
-    public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
 
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
@@ -140,4 +180,7 @@ public class PatientDTO {
     public String getNameRegister() {		return nameRegister; }
 	public void setNameRegister(String nameRegister) { this.nameRegister = nameRegister; }
 
+	public String getAdditionalNotes() { return additionalNotes;}
+	public void setAdditionalNotes(String additionalNotes) {	this.additionalNotes = additionalNotes; }
 }
+

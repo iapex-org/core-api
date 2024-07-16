@@ -1,5 +1,6 @@
 package com.iapex.model.patient;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.iapex.model.institution.Institution;
@@ -24,37 +25,39 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPatient;
 
-    @Column(length = 25)
+    @Column(length = 30)
     private String hairColor;
     
-    @Column(length = 25)
+    @Column(length = 30)
     private String skinColor;
     
-    @Column(length = 25)
+    @Column(length = 30)
     private String eyeColor;
-        
+       
+    @Column(length = 10)
     private String sex;
     
     private double height;
     
     private double weight;
     
-    @Column(length = 25)
-    private String birthDate;
+    private LocalDate birthDate;
     
     private int age;
     
-    @Column(length = 20)
+    @Column(length = 30)
     private String hairType;
     
+	@Column(columnDefinition="TEXT")
     private String traits;
     
-    @Column(length = 20)
+    @Column(length = 30)
     private String build;
     
-    @Column(length = 20)
+    @Column(length = 30)
     private String posture;
     
+    @Column(columnDefinition="TEXT")
     private String physicalConditions;
 
     @Column(length = 50)
@@ -69,13 +72,17 @@ public class Patient {
     @Column(length = 10)
     private String bloodType;
     
-    @Column(length = 20)
+    @Column(length = 30)
     private String nationality;
     
     @Column(length = 11)
     private String insuranceNumber;
     
+    @Column(length = 75)
 	private String nameRegister;
+	
+	@Column(columnDefinition="TEXT")
+	private String additionalNotes;
     
     private boolean status;
     
@@ -111,8 +118,8 @@ public class Patient {
     public double getWeight() { return weight; }
     public void setWeight(double weight) { this.weight = weight; }
 
-    public String getBirthDate() { return birthDate; }
-    public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate  birthDate) { this.birthDate = birthDate; }
 
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
@@ -158,4 +165,7 @@ public class Patient {
     
     public String getNameRegister() {		return nameRegister; }
 	public void setNameRegister(String nameRegister) { this.nameRegister = nameRegister; }
+	
+    public String getAdditionalNotes() { 		return additionalNotes; }
+	public void setAdditionalNotes(String additionalNotes) {		this.additionalNotes = additionalNotes;	}
 }

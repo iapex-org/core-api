@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.iapex.model.institution.Institution;
 import com.iapex.model.patient.Patient;
 
 @Repository
@@ -18,5 +19,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByStatusFalse();
     
     Optional<Patient> findByName(String name);
+
+    List<Patient> findByInstitution(Institution institution);
 
 }
