@@ -15,16 +15,16 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.iapex.dto.institution.InstitutionDTO;
-import com.iapex.dto.institution.UserInstitutionDTO;
+import com.iapex.dto.userWeb.UserInstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.Response;
+import com.iapex.model.userWeb.UserInstitution;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.institution.InstitutionService;
-import com.iapex.service.user.UsersWebService;
+import com.iapex.service.userWeb.UsersWebService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

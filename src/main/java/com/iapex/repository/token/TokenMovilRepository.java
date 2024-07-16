@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.model.token.Token;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.userMovil.UserMovil;
 
 import java.util.Date;
 import java.util.List;

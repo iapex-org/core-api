@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.repository.institution.InstitutionRepository;
-import com.iapex.repository.institution.MembershipRepository;
+import com.iapex.repository.membership.MembershipRepository;
 
 @Component
 public class MembershipScheduler {
@@ -20,7 +20,7 @@ public class MembershipScheduler {
         this.institutionRepository = institutionRepository;
     }
 
-    @Scheduled(cron = "0 * * * * *") // CADA 1 MINUTO
+    @Scheduled(cron = "0 0/10 * * * *") // CADA 10 MINUTOS
     @Transactional
     public void scheduleTaskToUpdateExpiredMemberships() {
         System.out.println("Ejecutando tarea programada para actualizar membresías expiradas: " + LocalDateTime.now());

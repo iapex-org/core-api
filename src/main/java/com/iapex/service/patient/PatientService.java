@@ -11,13 +11,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.dto.institution.ImageDTO;
-import com.iapex.dto.institution.PatientDTO;
-import com.iapex.model.institution.Image;
+import com.iapex.dto.patient.ImageDTO;
+import com.iapex.dto.patient.PatientDTO;
 import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.Patient;
-import com.iapex.model.institution.UserInstitution;
+import com.iapex.model.patient.Image;
+import com.iapex.model.patient.Patient;
 import com.iapex.model.response.Response;
+import com.iapex.model.userWeb.UserInstitution;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.patient.PatientRepository;
 

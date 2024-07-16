@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.dto.institution.MembershipDTO;
+import com.iapex.dto.membership.MembershipDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.Membership;
+import com.iapex.model.membership.Membership;
 import com.iapex.model.response.Response;
 import com.iapex.repository.institution.InstitutionRepository;
-import com.iapex.repository.institution.MembershipRepository;
+import com.iapex.repository.membership.MembershipRepository;
 
 @Service
 public class MembershipService {

@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.iapex.filter.JwtAuthenticationFilter;
-import com.iapex.service.user.UserDetailsServiceImp;
+import com.iapex.service.security.UserDetailsServiceImp;
 
 import jakarta.servlet.http.HttpServletResponse;
 

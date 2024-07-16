@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.iapex.service.user.JwtService;
-import com.iapex.service.user.UserDetailsServiceImp;
+import com.iapex.service.security.JwtService;
+import com.iapex.service.security.UserDetailsServiceImp;
 
 import java.io.IOException;
 

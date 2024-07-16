@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.iapex.model.institution.UserInstitution;
+import com.iapex.model.userWeb.UserInstitution;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
