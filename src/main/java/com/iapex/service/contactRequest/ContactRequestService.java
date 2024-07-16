@@ -35,7 +35,7 @@ public class ContactRequestService  {
         try {
         	ContactRequest contactRequest = new ContactRequest();
         	contactRequest.setInterestedName(request.getInterestedName());
-            contactRequest.setSearcherName(request.getSearcherName());
+            contactRequest.setMissingPersonName(request.getmissingPersonName());
             
             if (request.getIdPatient() != null) {
                 Patient patient = patientRepository.findById(request.getIdPatient())
@@ -47,7 +47,7 @@ public class ContactRequestService  {
 
             contactRequest.setPhoneNumber(request.getPhoneNumber());
             contactRequest.setEmail(request.getEmail());
-            contactRequest.setPatientRelationship(request.getPatientRelationship());
+            contactRequest.setRelationship(request.getRelationship());
             contactRequest.setRequestDate(LocalDateTime.now());
             contactRequest.setMessage(request.getMessage());
             contactRequest.setStatus("Nueva");
@@ -141,12 +141,12 @@ public class ContactRequestService  {
         		contactRequest.getIdContactRequest(),
         		contactRequest.getInterestedName(),
         		contactRequest.getAttendedBy(),
-        		contactRequest.getSearcherName(),
+        		contactRequest.getMissingPersonName(),
             patient != null ? patient.getIdPatient() : null,
             patientName.isEmpty() ? null : patientName,
             		contactRequest.getPhoneNumber(),
             		contactRequest.getEmail(),
-            		contactRequest.getPatientRelationship(),
+            		contactRequest.getRelationship(),
             		contactRequest.getRequestDate(),
             		contactRequest.getMessage(),
             		contactRequest.getStatus()

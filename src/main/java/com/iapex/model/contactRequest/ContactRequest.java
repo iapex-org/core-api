@@ -30,7 +30,7 @@ public class ContactRequest {
     private String attendedBy;
 
     @Column(length = 50)
-    private String searcherName;
+    private String missingPersonName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
@@ -43,7 +43,7 @@ public class ContactRequest {
     private String email;
 
     @Column(length = 25)
-    private String patientRelationship;
+    private String relationship;
 
     private LocalDateTime requestDate;
 
@@ -67,8 +67,8 @@ public class ContactRequest {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
-    public String getPatientRelationship() { return patientRelationship; }
-    public void setPatientRelationship(String patientRelationship) { this.patientRelationship = patientRelationship; }
+    public String getRelationship() { return relationship; }
+    public void setRelationship(String relationship) { this.relationship = relationship; }
     
     public LocalDateTime getRequestDate() { return requestDate; }
     public void setRequestDate(LocalDateTime requestDate) { this.requestDate = requestDate; }
@@ -82,8 +82,8 @@ public class ContactRequest {
     public String getAttendedBy() { return attendedBy; }
     public void setAttendedBy(String attendedBy) { this.attendedBy = attendedBy; }
 
-    public String getSearcherName() { return searcherName; }
-    public void setSearcherName(String searcherName) { this.searcherName = searcherName; }
+    public String getMissingPersonName() { return missingPersonName; }
+    public void setMissingPersonName(String missingPersonName) { this.missingPersonName = missingPersonName; }
 
     public Patient getPatient() { return patient; }
     public void setPatient(Patient patient) { this.patient = patient; }
