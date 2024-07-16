@@ -182,7 +182,7 @@ public class PatientController {
 	    
 	    // OBTENER LAS PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO, IDEAL PARA USARLOS EN EL DASHBOARD, CUANDO UN EMPLEADO INGRESE SOLO SE LE MOSTRARA PACIENTES DE SU INSTITUCION
 	    //WEB
-	    //http://localhost:8080/patients/getConversationsByInstitution
+	    //http://localhost:8080/patients/getPatientsByInstitution
 	    @PreAuthorize("hasAuthority('ADMIN')")
 	    @GetMapping("/getPatientsByInstitution")
 	    public ResponseEntity<List<PatientDTO>> getPatientsByInstitution() {
