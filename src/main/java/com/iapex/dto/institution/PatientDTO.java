@@ -1,4 +1,4 @@
-package com.iapex.dto.patient;
+package com.iapex.dto.institution;
 
 import java.time.LocalDate;
 import java.util.List;

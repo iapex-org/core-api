@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import com.iapex.dto.user.PasswordResetRequestDTO;
+import com.iapex.dto.institution.PasswordResetRequestDTO;
 import com.iapex.dto.user.UserAuthenticationDTO;
 import com.iapex.dto.user.UserDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;

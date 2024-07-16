@@ -1,7 +1,7 @@
 package com.iapex.repository.user;
 
 import com.iapex.model.institution.Institution;
-import com.iapex.model.user.UserInstitution;
+import com.iapex.model.institution.UserInstitution;
 
 import java.util.List;
 import java.util.Optional;

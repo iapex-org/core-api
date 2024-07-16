@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.iapex.model.user.UserInstitution;
+import com.iapex.model.institution.UserInstitution;
 import com.iapex.repository.user.UserInstitutionRepository;
 
 import jakarta.mail.MessagingException;

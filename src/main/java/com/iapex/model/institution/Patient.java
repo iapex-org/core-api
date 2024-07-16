@@ -1,9 +1,7 @@
-package com.iapex.model.patient;
+package com.iapex.model.institution;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import com.iapex.model.institution.Institution;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

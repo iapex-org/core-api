@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.iapex.config.AppUserDetails;
+import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.user.User;
-import com.iapex.model.user.UserInstitution;
 import com.iapex.repository.user.UserInstitutionRepository;
 import com.iapex.repository.user.UserRepository;
 

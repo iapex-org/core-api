@@ -1,4 +1,4 @@
-package com.iapex.dto.user;
+package com.iapex.dto.institution;
 
 public class PasswordResetRequestDTO   {
 

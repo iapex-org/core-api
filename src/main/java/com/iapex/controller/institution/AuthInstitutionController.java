@@ -6,14 +6,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import com.iapex.dto.user.PasswordResetRequestDTO;
-import com.iapex.dto.user.UserInstitutionAuthenticationDTO;
-import com.iapex.dto.user.UserInstitutionDTO;
+import com.iapex.dto.institution.PasswordResetRequestDTO;
+import com.iapex.dto.institution.UserInstitutionAuthenticationDTO;
+import com.iapex.dto.institution.UserInstitutionDTO;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
+import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
-import com.iapex.model.user.UserInstitution;
 import com.iapex.service.email.InstitutionEmailService;
 import com.iapex.service.user.UserInstitutionService;
 

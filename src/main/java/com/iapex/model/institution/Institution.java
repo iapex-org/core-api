@@ -3,8 +3,6 @@ package com.iapex.model.institution;
 import java.util.Date;
 import java.util.List;
 
-import com.iapex.model.patient.Patient;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

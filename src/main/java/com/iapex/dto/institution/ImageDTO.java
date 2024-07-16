@@ -1,4 +1,4 @@
-package com.iapex.dto.patient;
+package com.iapex.dto.institution;
 
 
 public class ImageDTO {

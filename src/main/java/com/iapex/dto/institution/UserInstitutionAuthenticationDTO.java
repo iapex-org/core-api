@@ -1,4 +1,4 @@
-package com.iapex.dto.user;
+package com.iapex.dto.institution;
 
 import jakarta.validation.constraints.NotNull;
 

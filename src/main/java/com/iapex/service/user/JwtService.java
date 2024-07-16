@@ -14,8 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
 
+import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.user.User;
-import com.iapex.model.user.UserInstitution;
 import com.iapex.repository.token.TokenInstitutionRepository;
 import com.iapex.repository.token.TokenRepository;
 

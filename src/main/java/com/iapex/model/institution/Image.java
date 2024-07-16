@@ -1,4 +1,4 @@
-package com.iapex.model.patient;
+package com.iapex.model.institution;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

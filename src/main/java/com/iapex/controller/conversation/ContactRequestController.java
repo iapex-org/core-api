@@ -5,13 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.iapex.dto.institution.InstitutionDTO;
-import com.iapex.dto.patient.ConversationDTO;
+import com.iapex.dto.institution.ContactRequestDTO;
+import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.Response;
-import com.iapex.model.user.UserInstitution;
-import com.iapex.service.patient.ConversationService;
+import com.iapex.service.patient.ContactRequestService;
 
 import jakarta.validation.Valid;
 
@@ -25,17 +23,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 @RestController
-@RequestMapping("/conversations")
-public class ConversationController {
+@RequestMapping("/contact-requests")
+public class ContactRequestController  {
 
     @Autowired
-    private ConversationService conversationService;
+    private ContactRequestService contactRequestService;
 
+    //http://localhost:8080/contact-requests/getConversationById/3
     //CREAR CONVERSACION
     //MOVIL
     @PostMapping("/createConversation")
     public ResponseEntity<?> registerConversation(
-            @Valid @RequestBody ConversationDTO request,
+            @Valid @RequestBody ContactRequestDTO request,
             BindingResult result) {
         if (result.hasErrors()) {
             // SI HAY ERRORES DE VALIDACIÓN EN EL DTO, SE RECOPILAN Y SE DEVUELVEN COMO RESPUESTA
@@ -44,17 +43,17 @@ public class ConversationController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Response response = conversationService.registerConversation(request);
+        Response response = contactRequestService.registerConversation(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     //OBTENER CONVERSACION POR ID
     //WEB
-    //http://localhost:8080/conversations/getConversationById/3
+    //http://localhost:8080/contact-requests/getConversationById/3
     @GetMapping("/getConversationById/{id}")
     public ResponseEntity<?> getConversationById(@PathVariable Long id) {
         try {
-            ConversationDTO conversation = conversationService.getConversationById(id);
+        	ContactRequestDTO conversation = contactRequestService.getConversationById(id);
             return new ResponseEntity<>(conversation, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new Response(e.getMessage()), HttpStatus.NOT_FOUND);
@@ -63,27 +62,27 @@ public class ConversationController {
 
     //OBTENER CONVERSACIONES
     //WEB
-    // http://localhost:8080/conversations/getAllConversations
+    // http://localhost:8080/contact-requests/getAllConversations
     @GetMapping("/getAllConversations")
-    public ResponseEntity<List<ConversationDTO>> getAllConversations() {
-        List<ConversationDTO> conversations = conversationService.getAllConversations();
+    public ResponseEntity<List<ContactRequestDTO>> getAllConversations() {
+        List<ContactRequestDTO> conversations = contactRequestService.getAllConversations();
         return new ResponseEntity<>(conversations, HttpStatus.OK);
     }
     
     
     // OBTENER LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO, IDEAL PARA USARLOS EN EL DASHBOARD, CUANDO UN EMPLEADO INGRESE SOLO SE LE MOSTRARA CONVERSACIONES DE SU INSTITUCION
     //WEB
-    //http://localhost:8080/conversations/getConversationsByInstitution
+    //http://localhost:8080/contact-requests/getConversationsByInstitution
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getConversationsByInstitution")
-    public ResponseEntity<List<ConversationDTO>> getConversationsForAuthenticatedUser() {
+    public ResponseEntity<List<ContactRequestDTO>> getConversationsForAuthenticatedUser() {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             @SuppressWarnings("unused")
 			UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
             // LLAMAR AL SERVICIO PARA OBTENER LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN
-            List<ConversationDTO> conversations = conversationService.getConversationsForAuthenticatedUser();
+            List<ContactRequestDTO> conversations = contactRequestService.getConversationsForAuthenticatedUser();
             return new ResponseEntity<>(conversations, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,15 +92,15 @@ public class ConversationController {
 
 
     //ACTUALIZAR LA CONVERSACION, SOLO SE PUEDE EL STATUS: Y SE CAMBIA EN EL JSON
-    //http://localhost:8080/conversations/updateConversationById/5
+    //http://localhost:8080/contact-requests/updateConversationById/5
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/updateConversationById/{id}")
-    public ResponseEntity<Response> updateConversationStatus(@PathVariable Long id, @RequestBody ConversationDTO request) {
+    public ResponseEntity<Response> updateConversationStatus(@PathVariable Long id, @RequestBody ContactRequestDTO request) {
         // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
         // LLAMAR AL SERVICIO CON LA INFORMACIÓN DEL USUARIO
-        Response response = conversationService.updateById(id, request, 
+        Response response = contactRequestService.updateById(id, request, 
             userInstitution.getName(), 
             userInstitution.getFathername(), 
             userInstitution.getMothername());
