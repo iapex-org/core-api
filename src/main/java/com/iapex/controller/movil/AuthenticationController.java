@@ -1,4 +1,4 @@
-package com.iapex.controller;
+package com.iapex.controller.movil;
 
 import java.util.Map;
 import java.util.stream.Collectors;
