@@ -1,4 +1,4 @@
-package com.iapex.service.institution;
+package com.iapex.service;
 
 import java.time.LocalDateTime;
 import java.util.List;

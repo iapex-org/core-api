@@ -1,4 +1,4 @@
-package com.iapex.service.institution;
+package com.iapex.service;
 
 import java.util.Date;
 import java.util.List;
@@ -10,12 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.institution.DTO.InstitutionDTO;
+import com.iapex.model.Contact;
+import com.iapex.model.Direction;
+import com.iapex.model.Institution;
 import com.iapex.model.Response;
-import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.Contact;
-import com.iapex.model.institution.Direction;
 import com.iapex.repository.InstitutionRepository;
-import com.iapex.service.mail.EmailService;
 
 @Service
 public class InstitutionService {

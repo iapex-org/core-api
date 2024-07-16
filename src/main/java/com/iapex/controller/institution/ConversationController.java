@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.iapex.institution.DTO.ConversationDTO;
 import com.iapex.model.Response;
-import com.iapex.service.institution.ConversationService;
+import com.iapex.service.ConversationService;
 
 import java.util.List;
 

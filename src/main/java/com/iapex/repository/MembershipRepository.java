@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.Membership;
+import com.iapex.model.Institution;
+import com.iapex.model.Membership;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
 	

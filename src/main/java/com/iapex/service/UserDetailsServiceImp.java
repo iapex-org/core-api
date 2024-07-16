@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.config.AppUserDetails;
 import com.iapex.model.User;
-import com.iapex.model.institution.UserInstitution;
+import com.iapex.model.UserInstitution;
 import com.iapex.repository.UserInstitutionRepository;
 import com.iapex.repository.UserRepository;
 import org.slf4j.Logger;

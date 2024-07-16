@@ -13,9 +13,9 @@ import com.iapex.institution.DTO.UserInstitutionAuthenticationDTO;
 import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.AuthenticationResponse;
 import com.iapex.model.Response;
-import com.iapex.model.institution.UserInstitution;
-import com.iapex.service.institution.UserInstitutionService;
-import com.iapex.service.mail.InstitutionEmailService;
+import com.iapex.model.UserInstitution;
+import com.iapex.service.InstitutionEmailService;
+import com.iapex.service.UserInstitutionService;
 
 import jakarta.validation.Valid;
 

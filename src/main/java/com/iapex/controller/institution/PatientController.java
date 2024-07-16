@@ -14,10 +14,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.iapex.institution.DTO.ImageDTO;
 import com.iapex.institution.DTO.PatientDTO;
+import com.iapex.model.Image;
 import com.iapex.model.Response;
-import com.iapex.model.institution.Image;
-import com.iapex.service.img.StorageService;
-import com.iapex.service.institution.PatientService;
+import com.iapex.service.PatientService;
+import com.iapex.service.StorageService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

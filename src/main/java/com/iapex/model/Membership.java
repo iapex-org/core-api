@@ -1,4 +1,4 @@
-package com.iapex.model.institution;
+package com.iapex.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

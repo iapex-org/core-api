@@ -1,4 +1,4 @@
-package com.iapex.model.institution;
+package com.iapex.model;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iapex.config.AppUserDetails;
-import com.iapex.model.Role;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

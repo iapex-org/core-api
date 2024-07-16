@@ -1,4 +1,4 @@
-package com.iapex.service.img;
+package com.iapex.service;
 
 
 import org.apache.commons.io.FilenameUtils;

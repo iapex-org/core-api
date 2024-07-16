@@ -1,4 +1,4 @@
-package com.iapex.model.institution;
+package com.iapex.model;
 
 import java.util.List;
 

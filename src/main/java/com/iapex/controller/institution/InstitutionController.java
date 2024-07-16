@@ -18,11 +18,11 @@ import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.institution.DTO.InstitutionDTO;
 import com.iapex.institution.DTO.UserInstitutionDTO;
+import com.iapex.model.Institution;
 import com.iapex.model.Response;
-import com.iapex.model.institution.Institution;
-import com.iapex.service.img.StorageService;
-import com.iapex.service.institution.InstitutionService;
-import com.iapex.service.institution.UserInstitutionService;
+import com.iapex.service.InstitutionService;
+import com.iapex.service.StorageService;
+import com.iapex.service.UserInstitutionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

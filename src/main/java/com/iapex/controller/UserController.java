@@ -10,11 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.iapex.dto.UserDTO;
+import com.iapex.institution.DTO.UserDTO;
 import com.iapex.model.Response;
 import com.iapex.model.User;
+import com.iapex.service.EmailService;
 import com.iapex.service.UserService;
-import com.iapex.service.mail.EmailService;
 
 import jakarta.validation.Valid;
 

@@ -1,4 +1,4 @@
-package com.iapex.service.mail;
+package com.iapex.service;
 
 import java.util.Random;
 
@@ -10,15 +10,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.iapex.model.User;
-import com.iapex.repository.UserRepository;
+import com.iapex.model.UserInstitution;
+import com.iapex.repository.UserInstitutionRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class EmailService {
+public class InstitutionEmailService {
 
     @Autowired
     private JavaMailSender mailSender;
@@ -27,11 +27,11 @@ public class EmailService {
     private CacheManager cacheManager;
     
     @Autowired
-    private UserRepository userRepository;
+    private UserInstitutionRepository userInstitutionRepository;
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
-    public String sendPasswordResetEmail(User user) throws MessagingException {
+    public String sendPasswordResetUserInstitutionEmail(UserInstitution userInstitution) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -73,14 +73,15 @@ public class EmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(user.getEmail());
+            helper.setTo(userInstitution.getEmail());
             helper.setSubject("Restablecimiento de Contraseña en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(user.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, user.getEmail());
+            // ALMACENAR EL CÓDIGO EN EL CACHÉ
+            cacheManager.getCache("verificationCodes").put(userInstitution.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userInstitution.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -88,7 +89,7 @@ public class EmailService {
         }
     }
     
-    public String sendVerificationEmail(User user) throws MessagingException {
+    public String sendVerificationUserInstitutionEmail(UserInstitution userInstitution) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -114,7 +115,7 @@ public class EmailService {
                     "            <td style=\"padding: 20px;\">\n" +
                     "                <img src=\"" + IMAGE_URL + "\" alt=\"IAPEX Logo\" style=\"max-width: 200px; height: auto; display: block; margin: 0 auto 20px;\">\n" +
                     "                <h2 style=\"text-align: center;\">Gracias por registrarte. Confirma tu correo electrónico para confirmar tu cuenta.</h2>\n" +
-                    "                <p>Una vez que tu cuenta haya sido confirmada, podrás acceder a todos los servicios de IAPEX.</p>\n" +
+                    "                <p>Una vez que tu cuenta haya sido confirmada, podrás acceder a la institución correspondiente. Recuerda que debes esperar a que la institución en la que estás registrado confirme tu acceso.</p>\n" +
                     "                <h3 style=\"text-align: center;\">Tu código de verificación es: " + verificationCode + "</h3>\n" +
                     "            </td>\n" +
                     "        </tr>\n" +
@@ -129,14 +130,14 @@ public class EmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(user.getEmail());
+            helper.setTo(userInstitution.getEmail());
             helper.setSubject("Confirmación de Registro en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(user.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, user.getEmail());
+            cacheManager.getCache("verificationCodes").put(userInstitution.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userInstitution.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -144,11 +145,13 @@ public class EmailService {
         }
     }
     
+    // OBTENER EL CORREO ELECTRÓNICO ASOCIADO CON UN CÓDIGO DE VERIFICACIÓN
     public String getEmailForVerificationCode(String code) {
         Cache codeToEmailCache = cacheManager.getCache("codeToEmailCache");
         return codeToEmailCache != null ? codeToEmailCache.get(code, String.class) : null;
     }
     
+    // VALIDAR EL CÓDIGO DE VERIFICACIÓN
     public boolean verifyCode(String code) {
         String email = getEmailForVerificationCode(code);
         if (email != null) {
@@ -167,8 +170,9 @@ public class EmailService {
         return false;
     }
     
-    public void verifyUserWithCode(String email, String verificationCode) throws Exception {
-        User user = userRepository.findByEmail(email)
+    // VERIFICAR LA INSTITUCIÓN DEL USUARIO CON EL CÓDIGO
+    public void verifyUserInstitutionWithCode(String email, String verificationCode) throws Exception {
+        UserInstitution userInstitution = userInstitutionRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -181,46 +185,58 @@ public class EmailService {
             throw new Exception("Código de verificación no válido.");
         }
 
-        user.setStatus(true);
-        userRepository.save(user);
+        userInstitution.setStatus(true);
+        userInstitutionRepository.save(userInstitution);
 
         verificationCache.evict(email);
         cacheManager.getCache("codeToEmailCache").evict(verificationCode);
     }
     
+    
+    // REENVIAR EL CÓDIGO DE VERIFICACIÓN
     public String resendVerificationCode(String email) throws MessagingException {
-        User user = userRepository.findByEmail(email)
+        UserInstitution userInstitution = userInstitutionRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
-        if (user.isStatus()) {
+        if (userInstitution.isStatus()) {
             throw new IllegalStateException("La cuenta ya está verificada");
         }
 
-        return sendVerificationEmail(user);
+        return sendVerificationUserInstitutionEmail(userInstitution);
     }
     
-    public void sendEmail(String from, String body) throws MessagingException {
+    
+    // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO
+    public void sendEmailInstitution(String from, String body) throws MessagingException {
         try {
-            User user = userRepository.findByEmail(from)
+            // BUSCAR AL USUARIO POR CORREO ELECTRÓNICO
+            UserInstitution userInstitution = userInstitutionRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
+            // CREAR EL MENSAJE MIME
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
+            // CONFIGURAR LOS DETALLES DEL CORREO ELECTRÓNICO
             helper.setFrom("ayuda@iapex.com");
             helper.setTo("iapex6500@gmail.com");
             String subject = "Mensaje enviado por " + from + " desde ayuda@iapex.com";
             helper.setSubject(subject);
             helper.setText(body, true);
 
+            // ENVIAR EL CORREO ELECTRÓNICO
             mailSender.send(message);
         } catch (EntityNotFoundException e) {
+            // LANZAR EXCEPCIÓN SI EL CORREO NO ES ENCONTRADO
             throw new IllegalArgumentException("Correo electrónico no encontrado. Por favor, asegúrate de usar tu correo electrónico registrado.", e);
         } catch (MessagingException | MailSendException e) {
+            // LANZAR EXCEPCIÓN SI HAY UN ERROR AL ENVIAR EL CORREO
             throw new MessagingException("Error al enviar el correo electrónico: " + e.getMessage(), e);
         }
     }
 
+    
+    //GENERAR CODIGO DE 6 CIFRAS
     private String generateVerificationCode() {
         Random random = new Random();
         int code = 100000 + random.nextInt(900000);

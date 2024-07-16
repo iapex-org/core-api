@@ -1,4 +1,4 @@
-package com.iapex.dto;
+package com.iapex.institution.DTO;
 
 
 public class TokenDTO {

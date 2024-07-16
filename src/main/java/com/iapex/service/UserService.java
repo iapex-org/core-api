@@ -10,13 +10,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.iapex.dto.UserAuthenticationDTO;
-import com.iapex.dto.UserDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
+import com.iapex.institution.DTO.UserAuthenticationDTO;
+import com.iapex.institution.DTO.UserDTO;
 import com.iapex.model.*;
 import com.iapex.repository.TokenRepository;
 import com.iapex.repository.UserRepository;
-import com.iapex.service.mail.EmailService;
 
 @Service
 public class UserService {

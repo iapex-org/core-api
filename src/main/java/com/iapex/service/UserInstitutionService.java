@@ -1,4 +1,4 @@
-package com.iapex.service.institution;
+package com.iapex.service;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -21,16 +21,14 @@ import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.institution.DTO.UserInstitutionAuthenticationDTO;
 import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.AuthenticationResponse;
+import com.iapex.model.Institution;
 import com.iapex.model.Response;
 import com.iapex.model.Role;
-import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.TokenInstitution;
-import com.iapex.model.institution.UserInstitution;
+import com.iapex.model.TokenInstitution;
+import com.iapex.model.UserInstitution;
 import com.iapex.repository.InstitutionRepository;
 import com.iapex.repository.TokenInstitutionRepository;
 import com.iapex.repository.UserInstitutionRepository;
-import com.iapex.service.JwtService;
-import com.iapex.service.mail.InstitutionEmailService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

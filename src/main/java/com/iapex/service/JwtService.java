@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
 
 import com.iapex.model.User;
-import com.iapex.model.institution.UserInstitution;
+import com.iapex.model.UserInstitution;
 import com.iapex.repository.TokenInstitutionRepository;
 import com.iapex.repository.TokenRepository;
 

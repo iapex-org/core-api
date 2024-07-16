@@ -1,4 +1,4 @@
-package com.iapex.service.institution;
+package com.iapex.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.institution.DTO.ImageDTO;
 import com.iapex.institution.DTO.PatientDTO;
+import com.iapex.model.Image;
+import com.iapex.model.Institution;
+import com.iapex.model.Patient;
 import com.iapex.model.Response;
-import com.iapex.model.institution.Patient;
-import com.iapex.model.institution.Image;
-import com.iapex.model.institution.Institution;
 import com.iapex.repository.PatientRepository;
 import com.iapex.repository.InstitutionRepository;
 

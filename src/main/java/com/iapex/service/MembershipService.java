@@ -1,4 +1,4 @@
-package com.iapex.service.institution;
+package com.iapex.service;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.institution.DTO.MembershipDTO;
+import com.iapex.model.Institution;
+import com.iapex.model.Membership;
 import com.iapex.model.Response;
-import com.iapex.model.institution.Institution;
-import com.iapex.model.institution.Membership;
 import com.iapex.repository.InstitutionRepository;
 import com.iapex.repository.MembershipRepository;
 

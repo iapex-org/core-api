@@ -17,7 +17,7 @@ import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.institution.DTO.MembershipDTO;
 import com.iapex.model.Response;
-import com.iapex.service.institution.MembershipService;
+import com.iapex.service.MembershipService;
 
 @RestController
 @RequestMapping("/memberships")
