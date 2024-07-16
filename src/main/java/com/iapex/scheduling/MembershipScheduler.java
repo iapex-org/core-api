@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.repository.MembershipRepository;
-import com.iapex.repository.InstitutionRepository;
+import com.iapex.repository.institution.InstitutionRepository;
+import com.iapex.repository.institution.MembershipRepository;
 
 @Component
 public class MembershipScheduler {

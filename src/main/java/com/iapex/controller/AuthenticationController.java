@@ -11,15 +11,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import com.iapex.DTO.PasswordResetRequestDTO;
-import com.iapex.DTO.UserAuthenticationDTO;
-import com.iapex.DTO.UserDTO;
+import com.iapex.dto.user.PasswordResetRequestDTO;
+import com.iapex.dto.user.UserAuthenticationDTO;
+import com.iapex.dto.user.UserDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.model.AuthenticationResponse;
-import com.iapex.model.Response;
-import com.iapex.model.User;
-import com.iapex.service.EmailService;
-import com.iapex.service.UserService;
+import com.iapex.model.response.AuthenticationResponse;
+import com.iapex.model.response.Response;
+import com.iapex.model.user.User;
+import com.iapex.service.email.EmailService;
+import com.iapex.service.user.UserService;
 
 import jakarta.validation.Valid;
 

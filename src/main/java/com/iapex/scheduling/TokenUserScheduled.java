@@ -5,8 +5,8 @@ import java.util.Date;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.iapex.repository.TokenInstitutionRepository;
-import com.iapex.repository.TokenRepository;
+import com.iapex.repository.token.TokenInstitutionRepository;
+import com.iapex.repository.token.TokenRepository;
 
 
 @Component

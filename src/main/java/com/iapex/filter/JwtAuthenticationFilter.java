@@ -13,8 +13,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.iapex.service.JwtService;
-import com.iapex.service.UserDetailsServiceImp;
+
+import com.iapex.service.user.JwtService;
+import com.iapex.service.user.UserDetailsServiceImp;
+
 import java.io.IOException;
 
 @Service
