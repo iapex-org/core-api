@@ -12,8 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.iapex.institution.DTO.ImageDTO;
-import com.iapex.institution.DTO.PatientDTO;
+import com.iapex.DTO.ImageDTO;
+import com.iapex.DTO.PatientDTO;
 import com.iapex.model.Image;
 import com.iapex.model.Response;
 import com.iapex.service.PatientService;

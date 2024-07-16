@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.institution.DTO.ImageDTO;
-import com.iapex.institution.DTO.PatientDTO;
+import com.iapex.DTO.ImageDTO;
+import com.iapex.DTO.PatientDTO;
 import com.iapex.model.Image;
 import com.iapex.model.Institution;
 import com.iapex.model.Patient;

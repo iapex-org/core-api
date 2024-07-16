@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.iapex.DTO.InstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
-import com.iapex.institution.DTO.InstitutionDTO;
 import com.iapex.model.Contact;
 import com.iapex.model.Direction;
 import com.iapex.model.Institution;

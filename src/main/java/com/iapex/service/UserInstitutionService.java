@@ -16,10 +16,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.iapex.DTO.UserInstitutionAuthenticationDTO;
+import com.iapex.DTO.UserInstitutionDTO;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.institution.DTO.UserInstitutionAuthenticationDTO;
-import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.AuthenticationResponse;
 import com.iapex.model.Institution;
 import com.iapex.model.Response;

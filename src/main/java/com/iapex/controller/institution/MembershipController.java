@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.iapex.DTO.MembershipDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
-import com.iapex.institution.DTO.MembershipDTO;
 import com.iapex.model.Response;
 import com.iapex.service.MembershipService;
 

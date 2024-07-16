@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.iapex.institution.DTO.ConversationDTO;
+import com.iapex.DTO.ConversationDTO;
 import com.iapex.model.Response;
 import com.iapex.service.ConversationService;
 

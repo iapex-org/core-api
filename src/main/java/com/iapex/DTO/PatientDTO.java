@@ -1,4 +1,4 @@
-package com.iapex.institution.DTO;
+package com.iapex.DTO;
 
 import java.util.List;
 

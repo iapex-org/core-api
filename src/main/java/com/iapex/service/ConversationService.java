@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.institution.DTO.ConversationDTO;
+import com.iapex.DTO.ConversationDTO;
 import com.iapex.model.Conversation;
 import com.iapex.model.Response;
 import com.iapex.repository.ConversationRepository;

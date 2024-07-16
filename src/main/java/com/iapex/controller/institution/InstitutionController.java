@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.iapex.DTO.InstitutionDTO;
+import com.iapex.DTO.UserInstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.institution.DTO.InstitutionDTO;
-import com.iapex.institution.DTO.UserInstitutionDTO;
 import com.iapex.model.Institution;
 import com.iapex.model.Response;
 import com.iapex.service.InstitutionService;
