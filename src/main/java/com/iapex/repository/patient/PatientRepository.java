@@ -17,4 +17,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // ESTE MÉTODO BUSCA LOS PACIENTES CON STATUS TRUE.
     List<Patient> findByStatusFalse();
     
+    Optional<Patient> findByName(String name);
+
 }

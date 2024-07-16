@@ -249,7 +249,6 @@ public class InstitutionController {
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UN USUARIO ESPECÍFICO POR SU ID
     //ADMIN-WEB
     // http://localhost:8080/institutions/getUserInstitutionById/12
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getUserInstitutionById/{id}")
     public ResponseEntity<?> getUserInstitutionById(@PathVariable Long id) {
         try {
