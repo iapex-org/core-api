@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User implements AppUserDetails  {
+public class UserMovil implements AppUserDetails  {
    
 	private static final long serialVersionUID = 1L;
 	
@@ -46,7 +46,7 @@ public class User implements AppUserDetails  {
     private Role role;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "userMovil")
     private List<Token> tokens;
     
     public Long getIdUser() { return idUser; }
@@ -88,8 +88,4 @@ public class User implements AppUserDetails  {
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-
-
-
 }

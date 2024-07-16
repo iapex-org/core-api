@@ -28,17 +28,17 @@ import com.iapex.model.token.TokenInstitution;
 import com.iapex.model.user.Role;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.token.TokenInstitutionRepository;
-import com.iapex.repository.user.UserInstitutionRepository;
-import com.iapex.service.email.InstitutionEmailService;
+import com.iapex.repository.user.UserWebRepository;
+import com.iapex.service.email.WebEmailService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UserInstitutionService {
+public class UsersWebService {
 
     @Autowired
-    private UserInstitutionRepository userInstitutionRepository;
+    private UserWebRepository userWebRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -47,7 +47,7 @@ public class UserInstitutionService {
     private JwtService jwtService;
 
     @Autowired
-    private InstitutionEmailService institutionEmailService;
+    private WebEmailService webEmailService;
 
     @Autowired
     private TokenInstitutionRepository tokenInstitutionRepository;
@@ -58,21 +58,21 @@ public class UserInstitutionService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public UserInstitutionService(
-            UserInstitutionRepository userInstitutionRepository,
+    public UsersWebService(
+            UserWebRepository userWebRepository,
             InstitutionRepository institutionRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             TokenInstitutionRepository tokenInstitutionRepository,
             AuthenticationManager authenticationManager,
-            InstitutionEmailService institutionEmailService) {
-        this.userInstitutionRepository = userInstitutionRepository;
+            WebEmailService webEmailService) {
+        this.userWebRepository = userWebRepository;
         this.institutionRepository = institutionRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenInstitutionRepository = tokenInstitutionRepository;
         this.authenticationManager = authenticationManager;
-        this.institutionEmailService = institutionEmailService;
+        this.webEmailService = webEmailService;
     }
 
     // 1. MÉTODOS PRINCIPALES DE AUTENTICACIÓN
@@ -93,7 +93,7 @@ public class UserInstitutionService {
             throw new IllegalArgumentException("Por favor ingresa un correo electrónico.");
         }
     	
-    	if (userInstitutionRepository.findByEmail(request.getEmail()).isPresent()) {
+    	if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         }
 
@@ -112,9 +112,9 @@ public class UserInstitutionService {
         	    .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
         	userInstitution.setInstitution(institution);
 
-        userInstitutionRepository.save(userInstitution);
+        	userWebRepository.save(userInstitution);
 
-        String verificationCode = institutionEmailService.sendVerificationUserInstitutionEmail(userInstitution);
+        String verificationCode = webEmailService.sendVerificationUserInstitutionEmail(userInstitution);
 
         return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
     }
@@ -132,7 +132,7 @@ public class UserInstitutionService {
     public AuthenticationResponse authenticateInstitution(UserInstitutionAuthenticationDTO request) {
     	UserInstitution userInstitution;
         if (request.getEmail() != null) {
-        	userInstitution = userInstitutionRepository.findByEmail(request.getEmail())
+        	userInstitution = userWebRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
         } else {
             throw new RuntimeException("Debe proporcionar correo electrónico");
@@ -168,7 +168,7 @@ public class UserInstitutionService {
      * @return UNA LISTA DE TODOS LOS USUARIOS INSTITUCIONALES.
      */
     public List<UserInstitutionDTO> getAllUserDTOs() {
-        List<UserInstitution> users = userInstitutionRepository.findAll();
+        List<UserInstitution> users = userWebRepository.findAll();
         return users.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
@@ -177,10 +177,10 @@ public class UserInstitutionService {
     
     //OBTIENE TODOS LOS USUARIOS DE LA INSTITUCIÓN DEL USUARIO AUTENTICADO.
     public List<UserInstitutionDTO> getUsersFromSameInstitution(String authenticatedEmail) {
-        UserInstitution authenticatedUser = userInstitutionRepository.findByEmail(authenticatedEmail)
+        UserInstitution authenticatedUser = userWebRepository.findByEmail(authenticatedEmail)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        List<UserInstitution> users = userInstitutionRepository.findByInstitution(authenticatedUser.getInstitution());
+        List<UserInstitution> users = userWebRepository.findByInstitution(authenticatedUser.getInstitution());
         
         return users.stream()
                     .map(this::convertToDTO)
@@ -273,26 +273,26 @@ public class UserInstitutionService {
      * @THROWS RUNTIMEEXCEPTION SI EL USUARIO NO SE ENCUENTRA.
      */
     public UserInstitution findByEmail(String email) {
-        return userInstitutionRepository.findByEmail(email)
+        return userWebRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("El correo no está registrado en la aplicación"));
     }
     
     public boolean verifyCodeAndResetPassword(String verificationCode, String newPassword) {
         // BUSCAR EL EMAIL ASOCIADO CON EL CÓDIGO DE VERIFICACIÓN
-        String email = institutionEmailService.getEmailForVerificationCode(verificationCode);
+        String email = webEmailService.getEmailForVerificationCode(verificationCode);
         if (email == null) {
             return false;
         }
 
-        UserInstitution userInstitution = userInstitutionRepository.findByEmail(email).orElse(null);
+        UserInstitution userInstitution = userWebRepository.findByEmail(email).orElse(null);
         if (userInstitution == null) {
             return false;
         }
 
         // VERIFICAR EL CÓDIGO
-        if (institutionEmailService.verifyCode(verificationCode)) {
+        if (webEmailService.verifyCode(verificationCode)) {
             userInstitution.setPassword(passwordEncoder.encode(newPassword));
-            userInstitutionRepository.save(userInstitution);
+            userWebRepository.save(userInstitution);
             return true;
         }
         return false;
@@ -308,7 +308,7 @@ public class UserInstitutionService {
     @Transactional
     public void deleteById(Long id) {
         // BUSCA EL USUARIO INSTITUCIÓN POR SU ID O LANZA UNA EXCEPCIÓN SI NO SE ENCUENTRA
-        UserInstitution userInstitution = userInstitutionRepository.findById(id)
+        UserInstitution userInstitution = userWebRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
         // BUSCA Y ELIMINA TODOS LOS TOKENS ASOCIADOS AL USUARIO INSTITUCIÓN
         List<TokenInstitution> tokens = tokenInstitutionRepository.findByUserInstitution_IdUserInstitution(id);
@@ -316,16 +316,16 @@ public class UserInstitutionService {
         // ELIMINA LA REFERENCIA A LA INSTITUCIÓN PARA EVITAR LA VIOLACIÓN DE CLAVE FORÁNEA
         userInstitution.setInstitution(null);
         // GUARDA EL USUARIO INSTITUCIÓN ACTUALIZADO PARA APLICAR EL CAMBIO
-        userInstitutionRepository.save(userInstitution);
+        userWebRepository.save(userInstitution);
         // ELIMINA FÍSICAMENTE EL USUARIO INSTITUCIÓN DE LA BASE DE DATOS
-        userInstitutionRepository.delete(userInstitution);
+        userWebRepository.delete(userInstitution);
     }
 
 
     
     //OBTENER POR ID
     public UserInstitution getUserInstitutionById(Long id) throws Exception {
-        return userInstitutionRepository.findById(id)
+        return userWebRepository.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado"));
     }
     
@@ -334,7 +334,7 @@ public class UserInstitutionService {
         UserInstitution userInstitution = getUserInstitutionById(id);
         boolean emailChanged = false; // Verificar si el email está cambiando
         if (!Objects.equals(userInstitution.getEmail(), request.getEmail())) { 
-        if (userInstitutionRepository.findByEmail(request.getEmail()).isPresent()) { throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
+        if (userWebRepository.findByEmail(request.getEmail()).isPresent()) { throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         } emailChanged = true; }
 
         // Actualizar campos
@@ -353,10 +353,10 @@ public class UserInstitutionService {
             userInstitution.setInstitution(institution);
         }
         if (emailChanged) {userInstitution.setStatus(false); }
-        userInstitutionRepository.save(userInstitution);
+        userWebRepository.save(userInstitution);
         
         if (emailChanged) {
-            String verificationCode = institutionEmailService.sendVerificationUserInstitutionEmail(userInstitution);
+            String verificationCode = webEmailService.sendVerificationUserInstitutionEmail(userInstitution);
             return new Response("El usuario ha sido actualizado exitosamente. Se ha enviado un correo de verificación al nuevo email.");
         }
         return new Response("El usuario ha sido actualizado exitosamente.");

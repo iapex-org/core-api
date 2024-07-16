@@ -11,41 +11,40 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.iapex.dto.user.UserAuthenticationDTO;
-import com.iapex.dto.user.UserDTO;
+import com.iapex.dto.user.UserMovilDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.model.*;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.token.Token;
 import com.iapex.model.user.Role;
-import com.iapex.model.user.User;
-import com.iapex.repository.token.TokenRepository;
-import com.iapex.repository.user.UserRepository;
-import com.iapex.service.email.EmailService;
+import com.iapex.model.user.UserMovil;
+import com.iapex.repository.token.TokenMovilRepository;
+import com.iapex.repository.user.UserMovilRepository;
+import com.iapex.service.email.MovilEmailService;
 
 @Service
-public class UserService {
+public class UserMovilService {
 
     @Autowired
-    private final UserRepository userRepository;
+    private final UserMovilRepository userMovilRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final EmailService emailService;
-    private final TokenRepository tokenRepository;
+    private final MovilEmailService movilEmailService;
+    private final TokenMovilRepository tokenMovilRepository;
     private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository,
+    public UserMovilService(UserMovilRepository userMovilRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       TokenRepository tokenRepository,
+                       TokenMovilRepository tokenMovilRepository,
                        AuthenticationManager authenticationManager,
-                       EmailService emailService) {
-        this.userRepository = userRepository;
+                       MovilEmailService movilEmailService) {
+        this.userMovilRepository = userMovilRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-        this.tokenRepository = tokenRepository;
+        this.tokenMovilRepository = tokenMovilRepository;
         this.authenticationManager = authenticationManager;
-        this.emailService = emailService;
+        this.movilEmailService = movilEmailService;
     }
 
  // 1. MÉTODOS PRINCIPALES DE AUTENTICACIÓN
@@ -61,21 +60,21 @@ public class UserService {
      * @return UNA RESPUESTA INDICANDO QUE EL REGISTRO FUE EXITOSO Y QUE SE DEBE VERIFICAR EL CORREO ELECTRÓNICO.
      * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO PROPORCIONADO.
      */
-    public Response register(UserDTO request) throws Exception {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+    public Response register(UserMovilDTO request) throws Exception {
+        if (userMovilRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPhone(request.getPhone());
-        user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
-        user.setStatus(false); // Usuario no verificado inicialmente
+        UserMovil userMovil = new UserMovil();
+        userMovil.setEmail(request.getEmail());
+        userMovil.setPassword(passwordEncoder.encode(request.getPassword()));
+        userMovil.setPhone(request.getPhone());
+        userMovil.setRole(request.getRole() != null ? request.getRole() : Role.USER);
+        userMovil.setStatus(false); // Usuario no verificado inicialmente
 
-        userRepository.save(user);
+        userMovilRepository.save(userMovil);
 
-        String verificationCode = emailService.sendVerificationEmail(user);
+        String verificationCode = movilEmailService.sendVerificationEmail(userMovil);
 
         return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
     }
@@ -91,14 +90,14 @@ public class UserService {
      * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
      */
     public AuthenticationResponse authenticate(UserAuthenticationDTO request) {
-        User user;
+    	UserMovil userMovil;
         if (request.getEmail() != null) {
-            user = userRepository.findByEmail(request.getEmail())
+        	userMovil = userMovilRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
         } else {
             throw new RuntimeException("Debe proporcionar correo electrónico");
         }
-        if (!user.isConfirmed()) {
+        if (!userMovil.isConfirmed()) {
             throw new RuntimeException("El usuario no está confirmado. Por favor, revise su correo electrónico para confirmar su cuenta.");
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
@@ -107,44 +106,44 @@ public class UserService {
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    user.getEmail(),
+                		userMovil.getEmail(),
                     request.getPassword()
                 )
             );
         } catch (BadCredentialsException e) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-        String token = jwtService.generateToken(user);
-        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-        revokeAllTokenByUser(user);
-        saveUserToken(token, user);
+        String token = jwtService.generateToken(userMovil);
+        Collection<? extends GrantedAuthority> authorities = userMovil.getAuthorities();
+        revokeAllTokenByUser(userMovil);
+        saveUserToken(token, userMovil);
         return new AuthenticationResponse(token, "Inicio de sesión exitoso", authorities);
     }
 
     // 2. MÉTODOS DE GESTIÓN DE CONTRASEÑAS
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public UserMovil findByEmail(String email) {
+        return userMovilRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("El correo electrónico no está registrado, asegúrate de estar registrado en la aplicación"));
     }
 
     
     public boolean verifyCodeAndResetPassword(String verificationCode, String newPassword) {
         // BUSCAR EL EMAIL ASOCIADO CON EL CÓDIGO DE VERIFICACIÓN
-        String email = emailService.getEmailForVerificationCode(verificationCode);
+        String email = movilEmailService.getEmailForVerificationCode(verificationCode);
         if (email == null) {
             return false;
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) {
+        UserMovil userMovil = userMovilRepository.findByEmail(email).orElse(null);
+        if (userMovil == null) {
             return false;
         }
 
         // VERIFICAR EL CÓDIGO
-        if (emailService.verifyCode(verificationCode)) {
-        	user.setPassword(passwordEncoder.encode(newPassword));
-        	userRepository.save(user);
+        if (movilEmailService.verifyCode(verificationCode)) {
+        	userMovil.setPassword(passwordEncoder.encode(newPassword));
+        	userMovilRepository.save(userMovil);
             return true;
         }
         return false;
@@ -153,39 +152,39 @@ public class UserService {
     // 3. MÉTODOS DE GESTIÓN DE USUARIOS
 
     // OBTIENE TODOS LOS USUARIOS.
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserMovil> getAllUsers() {
+        return userMovilRepository.findAll();
     }
 
     //OBTIENE UN USUARIO POR SU ID.
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserMovil> getUserById(Long id) {
+        return userMovilRepository.findById(id);
     }
     
     //ACTUALIZA UN USUARIO POR SU ID.
 
-    public User updateUserById(Long id, UserDTO userDto) {
-        User user = userRepository.findById(id)
+    public UserMovil updateUserById(Long id, UserMovilDTO userMovilDTO) {
+    	UserMovil userMovil = userMovilRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (userDto.getEmail() != null && !user.getEmail().equals(userDto.getEmail())) {
-            if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+        if (userMovilDTO.getEmail() != null && !userMovil.getEmail().equals(userMovilDTO.getEmail())) {
+            if (userMovilRepository.findByEmail(userMovilDTO.getEmail()).isPresent()) {
                 throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
             }
-            user.setEmail(userDto.getEmail());
+            userMovil.setEmail(userMovilDTO.getEmail());
         }
 
-        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        if (userDto.getPhone() != null && !user.getPhone().equals(userDto.getPhone())) user.setPhone(userDto.getPhone());
-        if (userDto.getRole() != null && !user.getRole().equals(userDto.getRole())) user.setRole(userDto.getRole());
+        if (userMovilDTO.getPassword() != null && !userMovilDTO.getPassword().isEmpty()) userMovil.setPassword(passwordEncoder.encode(userMovilDTO.getPassword()));
+        if (userMovilDTO.getPhone() != null && !userMovil.getPhone().equals(userMovilDTO.getPhone())) userMovil.setPhone(userMovilDTO.getPhone());
+        if (userMovilDTO.getRole() != null && !userMovil.getRole().equals(userMovilDTO.getRole())) userMovil.setRole(userMovilDTO.getRole());
 
-        return userRepository.save(user);
+        return userMovilRepository.save(userMovil);
     }
     
     
     //ELIMINA UN USUARIO POR SU ID.
     public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    	userMovilRepository.deleteById(id);
     }
 
 
@@ -202,7 +201,7 @@ public class UserService {
      * @return TRUE SI EL USUARIO AUTENTICADO PUEDE ACCEDER, FALSE EN CASO CONTRARIO.
      */
     public boolean canUserAccess(String authenticatedEmail, Long userId) {
-        User userToAccess = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    	UserMovil userToAccess = userMovilRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userToAccess.getEmail().equals(authenticatedEmail) || userHasRole(authenticatedEmail, "ADMIN");
     }
 
@@ -217,7 +216,7 @@ public class UserService {
      * @return TRUE SI EL USUARIO AUTENTICADO PUEDE ACTUALIZAR, FALSE EN CASO CONTRARIO.
      */
     public boolean canUserUpdate(String authenticatedEmail, Long userId) {
-        User userToUpdate = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    	UserMovil userToUpdate = userMovilRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userToUpdate.getEmail().equals(authenticatedEmail) || userHasRole(authenticatedEmail, "ADMIN");
     }
 
@@ -232,8 +231,8 @@ public class UserService {
      * @return TRUE SI EL USUARIO TIENE EL ROL, FALSE EN CASO CONTRARIO.
      */
     private boolean userHasRole(String email, String role) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return user.getAuthorities().stream()
+    	UserMovil userMovil = userMovilRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userMovil.getAuthorities().stream()
                    .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 
@@ -246,8 +245,8 @@ public class UserService {
      * 
      * @param user EL USUARIO CUYOS TOKENS SE DESEAN REVOCAR.
      */
-    private void revokeAllTokenByUser(User user) {
-        List<Token> validTokens = tokenRepository.findAllTokensByUser(user.getIdUser());
+    private void revokeAllTokenByUser(UserMovil userMovil) {
+        List<Token> validTokens = tokenMovilRepository.findAllTokensByUser(userMovil.getIdUser());
         if (validTokens.isEmpty()) {
             return;
         }
@@ -256,7 +255,7 @@ public class UserService {
             token.setLoggedOut(true);
         });
 
-        tokenRepository.saveAll(validTokens);
+        tokenMovilRepository.saveAll(validTokens);
     }
 
 
@@ -272,17 +271,17 @@ public class UserService {
      * @param JWT EL TOKEN JWT QUE SE VA A GUARDAR.
      * @param user EL USUARIO AL QUE PERTENECE EL TOKEN.
      */
-    private void saveUserToken(String jwt, User user) {
-        List<Token> loggedOutTokens = tokenRepository.findAllByUserAndLoggedOut(user, true);
-        tokenRepository.deleteAll(loggedOutTokens);
+    private void saveUserToken(String jwt, UserMovil userMovil) {
+        List<Token> loggedOutTokens = tokenMovilRepository.findAllByUserMovilAndLoggedOut(userMovil, true);
+        tokenMovilRepository.deleteAll(loggedOutTokens);
 
         Token token = new Token();
         token.setToken(jwt);
-        token.setUser(user);
+        token.setUserMovil(userMovil);
         token.setExpirationDate(calculateExpireDate());
         token.setLoggedOut(false);
 
-        tokenRepository.save(token);
+        tokenMovilRepository.save(token);
     }
 
     /**

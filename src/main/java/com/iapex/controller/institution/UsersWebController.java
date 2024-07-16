@@ -14,8 +14,8 @@ import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
-import com.iapex.service.email.InstitutionEmailService;
-import com.iapex.service.user.UserInstitutionService;
+import com.iapex.service.email.WebEmailService;
+import com.iapex.service.user.UsersWebService;
 
 import jakarta.validation.Valid;
 
@@ -25,14 +25,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userInstitution")
-public class AuthInstitutionController {
+public class UsersWebController {
 
-    private final UserInstitutionService userInstitutionService;
-    private final InstitutionEmailService institutionEmailService;
+    private final UsersWebService usersWebService;
+    private final WebEmailService webEmailService;
 
-    public AuthInstitutionController(UserInstitutionService userInstitutionService, InstitutionEmailService institutionEmailService) {
-        this.userInstitutionService = userInstitutionService;
-        this.institutionEmailService = institutionEmailService;
+    public UsersWebController(UsersWebService usersWebService, WebEmailService webEmailService) {
+        this.usersWebService = usersWebService;
+        this.webEmailService = webEmailService;
     }
 
     //CREAR UN USUARIO PARA REGISTRO
@@ -47,7 +47,7 @@ public class AuthInstitutionController {
         }
 
         try {
-            Response response = userInstitutionService.registerUser(request);
+            Response response = usersWebService.registerUser(request);
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new Response(e.getMessage()));
@@ -66,7 +66,7 @@ public class AuthInstitutionController {
     @GetMapping("/confirm")
     public ResponseEntity<?> confirmUserInstitution(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
-            institutionEmailService.verifyUserInstitutionWithCode(email, code);
+        	webEmailService.verifyUserInstitutionWithCode(email, code);
             return ResponseEntity.ok(new Response("Usuario verificado correctamente"));
         } catch (Exception e) {
             //logger.error("Error verifying user", e);
@@ -81,7 +81,7 @@ public class AuthInstitutionController {
     @GetMapping("/resend-verification-confirm")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
-            institutionEmailService.resendVerificationCode(email);
+        	webEmailService.resendVerificationCode(email);
             return ResponseEntity.ok(new Response("Nuevo código de verificación enviado"));
         } catch (Exception e) {
             //logger.error("Error resending verification code", e);
@@ -101,7 +101,7 @@ public class AuthInstitutionController {
             return ResponseEntity.badRequest().body(errors);
         }
         try {
-            AuthenticationResponse authResponse = userInstitutionService.authenticateInstitution(request);
+            AuthenticationResponse authResponse = usersWebService.authenticateInstitution(request);
             return ResponseEntity.ok(authResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(e.getMessage()));
@@ -118,9 +118,9 @@ public class AuthInstitutionController {
     @PostMapping("/request-password-reset")
     public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
         try {
-            UserInstitution userInstitution = userInstitutionService.findByEmail(email);
+            UserInstitution userInstitution = usersWebService.findByEmail(email);
             if (userInstitution != null) {
-                institutionEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
+            	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
                 return ResponseEntity.ok(new Response("Se ha enviado un correo con instrucciones para restablecer la contraseña"));
             }
         } catch (Exception e) {
@@ -137,7 +137,7 @@ public class AuthInstitutionController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDTO request) {
         try {
-            boolean isVerified = userInstitutionService.verifyCodeAndResetPassword(
+            boolean isVerified = usersWebService.verifyCodeAndResetPassword(
                 request.getVerificationCode(), 
                 request.getNewPassword()
             );
@@ -159,9 +159,9 @@ public class AuthInstitutionController {
     @PostMapping("/resend-reset-password")
     public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
         try {
-            UserInstitution userInstitution = userInstitutionService.findByEmail(email);
+            UserInstitution userInstitution = usersWebService.findByEmail(email);
             if (userInstitution != null) {
-                institutionEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
+            	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
                 return ResponseEntity.ok(new Response("Se ha enviado un nuevo correo con instrucciones para restablecer la contraseña."));
             }
         } catch (Exception e) {

@@ -11,26 +11,26 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.config.AppUserDetails;
 import com.iapex.model.institution.UserInstitution;
-import com.iapex.model.user.User;
-import com.iapex.repository.user.UserInstitutionRepository;
-import com.iapex.repository.user.UserRepository;
+import com.iapex.model.user.UserMovil;
+import com.iapex.repository.user.UserMovilRepository;
+import com.iapex.repository.user.UserWebRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 
 @Service
 public class UserDetailsServiceImp implements UserDetailsService {
 
-    private final UserRepository userRepository;
-    private final UserInstitutionRepository userInstitutionRepository;
+    private final UserMovilRepository userMovilRepository;
+    private final UserWebRepository userWebRepository;
     private final JwtService jwtService;
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+    //private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
-    public UserDetailsServiceImp(UserRepository userRepository, UserInstitutionRepository userInstitutionRepository, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.userInstitutionRepository = userInstitutionRepository;
+    public UserDetailsServiceImp(UserMovilRepository userMovilRepository, UserWebRepository userWebRepository, JwtService jwtService) {
+        this.userMovilRepository = userMovilRepository;
+        this.userWebRepository = userWebRepository;
         this.jwtService = jwtService;
     }
 
@@ -43,13 +43,13 @@ public class UserDetailsServiceImp implements UserDetailsService {
     public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
         //logger.debug("Loading user details for email: {}", email);
         
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<UserMovil> userOptional = userMovilRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             //logger.debug("User found in users table: {}", email);
             return userOptional.get();
         }
 
-        Optional<UserInstitution> userInstitutionOptional = userInstitutionRepository.findByEmail(email);
+        Optional<UserInstitution> userInstitutionOptional = userWebRepository.findByEmail(email);
         if (userInstitutionOptional.isPresent()) {
             //logger.debug("User found in user_institution table: {}", email);
             return userInstitutionOptional.get();

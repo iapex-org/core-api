@@ -15,9 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
 
 import com.iapex.model.institution.UserInstitution;
-import com.iapex.model.user.User;
+import com.iapex.model.user.UserMovil;
 import com.iapex.repository.token.TokenInstitutionRepository;
-import com.iapex.repository.token.TokenRepository;
+import com.iapex.repository.token.TokenMovilRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -36,10 +36,10 @@ public class JwtService {
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     private final String SECRET_KEY = "d37662fcfcdde9c0d8515abd9f3054d82feecb7d9ead975c0b3b10ef79c7f6eb";
-    private final TokenRepository tokenRepository;
+    private final TokenMovilRepository tokenMovilRepository;
 
-    public JwtService(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public JwtService(TokenMovilRepository tokenMovilRepository) {
+        this.tokenMovilRepository = tokenMovilRepository;
     }
 
     public String extractEmail(String token) {
@@ -52,11 +52,9 @@ public class JwtService {
         String email = extractEmail(token);
         //logger.debug("Validating token for email: {}", email);
         //logger.debug("For user: {}", email);
-
-
         boolean validToken;
-        if (user instanceof User) {
-            validToken = tokenRepository.findByToken(token)
+        if (user instanceof UserMovil) {
+            validToken = tokenMovilRepository.findByToken(token)
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
         } else if (user instanceof UserInstitution) {
@@ -106,7 +104,7 @@ public class JwtService {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(UserMovil user) {
         //logger.debug("Generating token for user: {}", user.getEmail());
         String token = Jwts
             .builder()
@@ -141,7 +139,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isTokenValid(String token, User user) {
+    public boolean isTokenValid(String token, UserMovil user) {
         String email = extractEmail(token);
         boolean isValid = (email.equals(user.getEmail())) && !isTokenExpired(token);
         //logger.debug("Token validation for user. Email: {}, Is valid: {}", email, isValid);

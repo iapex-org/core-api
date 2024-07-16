@@ -7,13 +7,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.model.token.Token;
-import com.iapex.model.user.User;
+import com.iapex.model.user.UserMovil;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface TokenRepository extends JpaRepository<Token, Long> {
+public interface TokenMovilRepository extends JpaRepository<Token, Long> {
 
     // Consulta para encontrar tokens expirados antes de la fecha actual
     @Query("select t from Token t where t.expirationDate <= :currentDate")
@@ -26,15 +26,15 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     void deleteExpiredTokens(@Param("currentDate") Date currentDate);
 
     // Consulta para encontrar todos los tokens de un usuario que no han sido marcados como 'loggedOut'
-    @Query("select t from Token t inner join User u on t.user.idUser = u.idUser where u.idUser = :userId and t.loggedOut = false")
+    @Query("select t from Token t inner join UserMovil u on t.userMovil.idUser = u.idUser where u.idUser = :userId and t.loggedOut = false")
     List<Token> findAllTokensByUser(@Param("userId") Long userId);
 
     // Consulta para encontrar un token por su valor
     Optional<Token> findByToken(String token);
 
     // Consulta para encontrar todos los tokens de un usuario que han sido marcados como 'loggedOut' o no
-    List<Token> findAllByUserAndLoggedOut(User user, boolean loggedOut);
+    List<Token> findAllByUserMovilAndLoggedOut(UserMovil userMovil, boolean loggedOut);
 
     // Consulta para encontrar todos los tokens de un usuario por su ID
-    List<Token> findByUser_IdUser(Long idUser);
+    List<Token> findByUserMovil_IdUser(Long idUser);
 }

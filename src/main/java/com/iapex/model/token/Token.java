@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.iapex.model.user.User;
+import com.iapex.model.user.UserMovil;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,7 +43,7 @@ public class Token {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserMovil userMovil;
 
     
     @Column(name = "expiration_date")
@@ -59,7 +59,8 @@ public class Token {
     public boolean isLoggedOut() { return loggedOut; }
     public void setLoggedOut(boolean loggedOut) { this.loggedOut = loggedOut; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public UserMovil getUserMovil() { return userMovil; }
+    public void setUserMovil(UserMovil userMovil) { this.userMovil = userMovil; }
 
 }
+

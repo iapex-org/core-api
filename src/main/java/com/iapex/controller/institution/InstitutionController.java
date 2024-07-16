@@ -24,7 +24,7 @@ import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.Response;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.institution.InstitutionService;
-import com.iapex.service.user.UserInstitutionService;
+import com.iapex.service.user.UsersWebService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -47,7 +47,7 @@ public class InstitutionController {
     private HttpServletRequest request;
     
     @Autowired
-    private UserInstitutionService userInstitutionService;
+    private UsersWebService usersWebService;
     
     
     // AL HACER UNA SOLICITUD POST A ESTA RUTA, SE CREA UNA NUEVA INSTITUCIÓN CON DATOS MULTIPART
@@ -279,7 +279,7 @@ public class InstitutionController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllUsersInstitutions")
     public ResponseEntity<List<UserInstitutionDTO>> getAllUsers() {
-        List<UserInstitutionDTO> userDTOs = userInstitutionService.getAllUserDTOs();
+        List<UserInstitutionDTO> userDTOs = usersWebService.getAllUserDTOs();
         return ResponseEntity.ok(userDTOs);
     }
 
@@ -290,7 +290,7 @@ public class InstitutionController {
     @GetMapping("/getUserInstitutionById/{id}")
     public ResponseEntity<?> getUserInstitutionById(@PathVariable Long id) {
         try {
-            UserInstitutionDTO dto = userInstitutionService.getUserInstitutionDTOById(id);
+            UserInstitutionDTO dto = usersWebService.getUserInstitutionDTOById(id);
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -306,7 +306,7 @@ public class InstitutionController {
     @GetMapping("/getAllSameInstitution")
     public ResponseEntity<List<UserInstitutionDTO>> getUsersFromSameInstitution(Authentication authentication) {
         String email = authentication.getName();
-        List<UserInstitutionDTO> users = userInstitutionService.getUsersFromSameInstitution(email);
+        List<UserInstitutionDTO> users = usersWebService.getUsersFromSameInstitution(email);
         return ResponseEntity.ok(users);
     }
     
@@ -327,7 +327,7 @@ public class InstitutionController {
             return ResponseEntity.badRequest().body(errors);
         } 
         try {
-            Response response = userInstitutionService.updateUserInstitution(id, request);
+            Response response = usersWebService.updateUserInstitution(id, request);
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -349,7 +349,7 @@ public class InstitutionController {
     @DeleteMapping("/deleteUserInstitutionById/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         try {
-            userInstitutionService.deleteById(id);
+        	usersWebService.deleteById(id);
             return ResponseEntity.ok(new Response("Usuario eliminado exitosamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

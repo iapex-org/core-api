@@ -10,15 +10,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.iapex.model.user.User;
-import com.iapex.repository.user.UserRepository;
+import com.iapex.model.user.UserMovil;
+import com.iapex.repository.user.UserMovilRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class EmailService {
+public class MovilEmailService {
 
     @Autowired
     private JavaMailSender mailSender;
@@ -27,11 +27,11 @@ public class EmailService {
     private CacheManager cacheManager;
     
     @Autowired
-    private UserRepository userRepository;
+    private UserMovilRepository userMovilRepository;
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
-    public String sendPasswordResetEmail(User user) throws MessagingException {
+    public String sendPasswordResetEmail(UserMovil userMovil) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -73,14 +73,14 @@ public class EmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(user.getEmail());
+            helper.setTo(userMovil.getEmail());
             helper.setSubject("Restablecimiento de Contraseña en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(user.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, user.getEmail());
+            cacheManager.getCache("verificationCodes").put(userMovil.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMovil.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -88,7 +88,7 @@ public class EmailService {
         }
     }
     
-    public String sendVerificationEmail(User user) throws MessagingException {
+    public String sendVerificationEmail(UserMovil userMovil) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -129,14 +129,14 @@ public class EmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(user.getEmail());
+            helper.setTo(userMovil.getEmail());
             helper.setSubject("Confirmación de Registro en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(user.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, user.getEmail());
+            cacheManager.getCache("verificationCodes").put(userMovil.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMovil.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -168,7 +168,7 @@ public class EmailService {
     }
     
     public void verifyUserWithCode(String email, String verificationCode) throws Exception {
-        User user = userRepository.findByEmail(email)
+    	UserMovil userMovil = userMovilRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -181,27 +181,27 @@ public class EmailService {
             throw new Exception("Código de verificación no válido.");
         }
 
-        user.setStatus(true);
-        userRepository.save(user);
+        userMovil.setStatus(true);
+        userMovilRepository.save(userMovil);
 
         verificationCache.evict(email);
         cacheManager.getCache("codeToEmailCache").evict(verificationCode);
     }
     
     public String resendVerificationCode(String email) throws MessagingException {
-        User user = userRepository.findByEmail(email)
+    	UserMovil userMovil = userMovilRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
-        if (user.isStatus()) {
+        if (userMovil.isStatus()) {
             throw new IllegalStateException("La cuenta ya está verificada");
         }
 
-        return sendVerificationEmail(user);
+        return sendVerificationEmail(userMovil);
     }
     
     public void sendEmail(String from, String body) throws MessagingException {
         try {
-            User user = userRepository.findByEmail(from)
+        	UserMovil userMovil = userMovilRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
             MimeMessage message = mailSender.createMimeMessage();

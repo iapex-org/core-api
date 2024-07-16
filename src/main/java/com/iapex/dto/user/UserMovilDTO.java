@@ -5,7 +5,7 @@ import com.iapex.model.user.Role;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class UserDTO {
+public class UserMovilDTO {
 	   
     @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
     @NotNull(message = "El correo es obligatorio")
@@ -23,7 +23,7 @@ public class UserDTO {
     
     private Role role;
 
-    public UserDTO() {}
+    public UserMovilDTO() {}
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

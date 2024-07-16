@@ -11,14 +11,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.iapex.model.institution.UserInstitution;
-import com.iapex.repository.user.UserInstitutionRepository;
+import com.iapex.repository.user.UserWebRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class InstitutionEmailService {
+public class WebEmailService {
 
     @Autowired
     private JavaMailSender mailSender;
@@ -27,7 +27,7 @@ public class InstitutionEmailService {
     private CacheManager cacheManager;
     
     @Autowired
-    private UserInstitutionRepository userInstitutionRepository;
+    private UserWebRepository userWebRepository;
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
@@ -172,7 +172,7 @@ public class InstitutionEmailService {
     
     // VERIFICAR LA INSTITUCIÓN DEL USUARIO CON EL CÓDIGO
     public void verifyUserInstitutionWithCode(String email, String verificationCode) throws Exception {
-        UserInstitution userInstitution = userInstitutionRepository.findByEmail(email)
+        UserInstitution userInstitution = userWebRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -186,7 +186,7 @@ public class InstitutionEmailService {
         }
 
         userInstitution.setStatus(true);
-        userInstitutionRepository.save(userInstitution);
+        userWebRepository.save(userInstitution);
 
         verificationCache.evict(email);
         cacheManager.getCache("codeToEmailCache").evict(verificationCode);
@@ -195,7 +195,7 @@ public class InstitutionEmailService {
     
     // REENVIAR EL CÓDIGO DE VERIFICACIÓN
     public String resendVerificationCode(String email) throws MessagingException {
-        UserInstitution userInstitution = userInstitutionRepository.findByEmail(email)
+        UserInstitution userInstitution = userWebRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         if (userInstitution.isStatus()) {
@@ -210,7 +210,7 @@ public class InstitutionEmailService {
     public void sendEmailInstitution(String from, String body) throws MessagingException {
         try {
             // BUSCAR AL USUARIO POR CORREO ELECTRÓNICO
-            UserInstitution userInstitution = userInstitutionRepository.findByEmail(from)
+            UserInstitution userInstitution = userWebRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
             // CREAR EL MENSAJE MIME

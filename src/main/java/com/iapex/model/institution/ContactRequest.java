@@ -34,7 +34,7 @@ public class ContactRequest {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @Column(length = 10)
+    @Column(length = 20)
     private String phoneNumber;
 
     @Column(length = 100)

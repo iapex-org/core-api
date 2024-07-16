@@ -17,7 +17,7 @@ import com.iapex.model.institution.Institution;
 import com.iapex.model.institution.UserInstitution;
 import com.iapex.model.response.Response;
 import com.iapex.repository.institution.InstitutionRepository;
-import com.iapex.service.email.EmailService;
+import com.iapex.service.email.WebEmailService;
 
 @Service
 public class InstitutionService {
@@ -29,7 +29,7 @@ public class InstitutionService {
     public InstitutionService(
             InstitutionRepository institutionRepository,
             PasswordEncoder passwordEncoder,
-            EmailService emailService) {
+            WebEmailService webEmailService) {
         this.institutionRepository = institutionRepository;
     }
     

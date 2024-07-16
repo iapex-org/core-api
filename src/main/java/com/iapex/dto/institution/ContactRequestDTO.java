@@ -20,7 +20,7 @@ public class ContactRequestDTO {
 
     private String patientName;
 
-    @Size(max = 10, message = "El número de teléfono no puede tener más de 10 caracteres")
+    @Size(max = 20, message = "El número de teléfono no puede tener más de 10 caracteres")
     private String phoneNumber;
 
     @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")

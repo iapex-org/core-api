@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import com.iapex.model.token.Token;
-import com.iapex.repository.token.TokenRepository;
+import com.iapex.repository.token.TokenMovilRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,10 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 public class CustomLogoutHandler implements LogoutHandler {
 
-    private final TokenRepository tokenRepository;
+    private final TokenMovilRepository tokenMovilRepository;
 
-    public CustomLogoutHandler(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public CustomLogoutHandler(TokenMovilRepository tokenMovilRepository) {
+        this.tokenMovilRepository = tokenMovilRepository;
     }
 
     @Override
@@ -30,11 +30,11 @@ public class CustomLogoutHandler implements LogoutHandler {
         }
 
         String token = authHeader.substring(7);
-        Token storedToken = tokenRepository.findByToken(token).orElse(null);
+        Token storedToken = tokenMovilRepository.findByToken(token).orElse(null);
 
         if(storedToken != null) {
             storedToken.setLoggedOut(true);
-            tokenRepository.save(storedToken);
+            tokenMovilRepository.save(storedToken);
         }
     }
 }
