@@ -1,7 +1,6 @@
 package com.iapex.dto.contactRequest;
 
 import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.Size;
 
 public class ContactRequestDTO {
@@ -35,13 +34,14 @@ public class ContactRequestDTO {
 
     private String status;
 
-    // Default constructor
-    public ContactRequestDTO() {}
+    // Constructor vacío
+    public ContactRequestDTO() {
+    }
 
-    // Constructor with all fields
+    // Constructor con parámetros
     public ContactRequestDTO(Long idContactRequest, String interestedName, String attendedBy, String missingPersonName,
-                             Long idPatient, String patientName, String phoneNumber, String email, String relationship,
-                             LocalDateTime requestDate, String message, String status) {
+            Long idPatient, String patientName, String phoneNumber, String email, String relationship,
+            LocalDateTime requestDate, String message, String status) {
         this.idContactRequest = idContactRequest;
         this.interestedName = interestedName;
         this.attendedBy = attendedBy;
@@ -57,39 +57,99 @@ public class ContactRequestDTO {
     }
 
     // Getters and setters
-    public Long getIdContactRequest() { return idContactRequest; }
-    public void setIdContactRequest(Long idContactRequest) { this.idContactRequest = idContactRequest; }
+    public Long getIdContactRequest() {
+        return idContactRequest;
+    }
 
-    public String getInterestedName() { return interestedName; }
-    public void setInterestedName(String interestedName) { this.interestedName = interestedName; }
+    public void setIdContactRequest(Long idContactRequest) {
+        this.idContactRequest = idContactRequest;
+    }
 
-    public String getAttendedBy() { return attendedBy; }
-    public void setAttendedBy(String attendedBy) { this.attendedBy = attendedBy; }
+    public String getInterestedName() {
+        return interestedName;
+    }
 
-    public String getmissingPersonName() { return missingPersonName; }
-    public void setMissingPersonName(String missingPersonName) { this.missingPersonName = missingPersonName; }
+    public void setInterestedName(String interestedName) {
+        this.interestedName = interestedName;
+    }
 
-    public Long getIdPatient() { return idPatient; }
-    public void setIdPatient(Long idPatient) { this.idPatient = idPatient; }
+    public String getAttendedBy() {
+        return attendedBy;
+    }
 
-    public String getPatientName() { return patientName; }
-    public void setPatientName(String patientName) { this.patientName = patientName; }
+    public void setAttendedBy(String attendedBy) {
+        this.attendedBy = attendedBy;
+    }
 
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getmissingPersonName() {
+        return missingPersonName;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setMissingPersonName(String missingPersonName) {
+        this.missingPersonName = missingPersonName;
+    }
 
-    public String getRelationship() { return relationship; }
-    public void setRelationship(String relationship) { this.relationship = relationship; }
+    public Long getIdPatient() {
+        return idPatient;
+    }
 
-    public LocalDateTime getRequestDate() { return requestDate; }
-    public void setRequestDate(LocalDateTime requestDate) { this.requestDate = requestDate; }
+    public void setIdPatient(Long idPatient) {
+        this.idPatient = idPatient;
+    }
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public String getPatientName() {
+        return patientName;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
+
+    public LocalDateTime getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(LocalDateTime requestDate) {
+        this.requestDate = requestDate;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

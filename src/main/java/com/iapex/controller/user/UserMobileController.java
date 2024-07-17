@@ -1,10 +1,9 @@
-package com.iapex.controller.userMovil;
+package com.iapex.controller.user;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,28 +11,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import com.iapex.dto.userMovil.UserAuthenticationDTO;
-import com.iapex.dto.userMovil.UserMovilDTO;
-import com.iapex.dto.userWeb.PasswordResetRequestDTO;
+import com.iapex.dto.user.PasswordResetRequestDTO;
+import com.iapex.dto.user.UserMobileAuthenticationDTO;
+import com.iapex.dto.user.UserMobileDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
-import com.iapex.model.userMovil.UserMovil;
-import com.iapex.service.emailMovil.MovilEmailService;
-import com.iapex.service.userMovil.UserMovilService;
-
+import com.iapex.model.user.UserMovil;
+import com.iapex.service.email.MobileEmailService;
+import com.iapex.service.user.UserMobileService;
 import jakarta.validation.Valid;
 
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8100", "http://localhost:8101"})
 @RequestMapping("/users")
 @RestController
-public class UsersMovilController {
+public class UserMobileController {
 
-    private final UserMovilService userMovilService;
-    private final MovilEmailService movilEmailService;
+    private final UserMobileService userMovilService;
+    private final MobileEmailService movilEmailService;
 
-    public UsersMovilController(UserMovilService userMovilService, MovilEmailService movilEmailService) {
+    public UserMobileController(UserMobileService userMovilService, MobileEmailService movilEmailService) {
         this.userMovilService = userMovilService;
         this.movilEmailService = movilEmailService;
     }
@@ -41,8 +38,7 @@ public class UsersMovilController {
     
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @PutMapping("/updateUser/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserMovilDTO request, BindingResult result, Authentication authentication) {
-        String authenticatedEmail = authentication.getName();
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserMobileDTO request, BindingResult result, Authentication authentication) {
         // Verificar si el usuario tiene permiso para actualizar el usuario con el ID especificado
         try {
         	UserMovil updatedUser = userMovilService.updateUserById(id, request);
@@ -107,7 +103,7 @@ public class UsersMovilController {
     //REGISTRO DE USUARIO EN APP MOVIL
     //http://localhost:8080/users/createUser
     @PostMapping("/createUser")
-    public ResponseEntity<?> register(@Valid @RequestBody UserMovilDTO request, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserMobileDTO request, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -141,7 +137,7 @@ public class UsersMovilController {
    //INICIO DE SESIÓN DE USUARIO EN MOVIL
    ///http://localhost:8080/users/login
    @PostMapping("/login")
-   public ResponseEntity<?> login(@Valid @RequestBody UserAuthenticationDTO request, BindingResult result) {
+   public ResponseEntity<?> login(@Valid @RequestBody UserMobileAuthenticationDTO request, BindingResult result) {
        if (result.hasErrors()) {
            Map<String, String> errors = result.getFieldErrors().stream()
                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));

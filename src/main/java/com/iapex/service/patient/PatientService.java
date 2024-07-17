@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.iapex.dto.patient.ImageDTO;
 import com.iapex.dto.patient.PatientDTO;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.patient.Image;
 import com.iapex.model.patient.Patient;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.patient.PatientRepository;
 
@@ -165,7 +163,7 @@ public class PatientService {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
             // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             Institution institution = userInstitution.getInstitution();
 

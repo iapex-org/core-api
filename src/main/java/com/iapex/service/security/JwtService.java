@@ -5,20 +5,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
-
-import com.iapex.model.userMovil.UserMovil;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserWeb;
 import com.iapex.repository.token.TokenInstitutionRepository;
-import com.iapex.repository.token.TokenMovilRepository;
-
+import com.iapex.repository.token.TokenMobileRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -36,9 +32,9 @@ public class JwtService {
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     private final String SECRET_KEY = "d37662fcfcdde9c0d8515abd9f3054d82feecb7d9ead975c0b3b10ef79c7f6eb";
-    private final TokenMovilRepository tokenMovilRepository;
+    private final TokenMobileRepository tokenMovilRepository;
 
-    public JwtService(TokenMovilRepository tokenMovilRepository) {
+    public JwtService(TokenMobileRepository tokenMovilRepository) {
         this.tokenMovilRepository = tokenMovilRepository;
     }
 
@@ -57,7 +53,7 @@ public class JwtService {
             validToken = tokenMovilRepository.findByToken(token)
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
-        } else if (user instanceof UserInstitution) {
+        } else if (user instanceof UserWeb) {
             validToken = tokenInstitutionRepository.findByToken(token)
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
@@ -119,7 +115,7 @@ public class JwtService {
         return token;
     }
 
-    public String generateTokenUserInstitution(UserInstitution userInstitution) {
+    public String generateTokenUserInstitution(UserWeb userInstitution) {
         //logger.debug("Generating token for user institution: {}", userInstitution.getEmail());
         String token = Jwts
             .builder()

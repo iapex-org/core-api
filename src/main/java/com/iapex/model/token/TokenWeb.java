@@ -1,11 +1,10 @@
-package com.iapex.model.tokenWeb;
+package com.iapex.model.token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.iapex.model.userWeb.UserInstitution;
-
+import com.iapex.model.user.UserWeb;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +16,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "token_institution")
-public class TokenInstitution {
+public class TokenWeb {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,29 +32,51 @@ public class TokenInstitution {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_institution_id")
-    private UserInstitution userInstitution; 
+    private UserWeb userInstitution;
 
     @Column(name = "expiration_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expirationDate;
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public boolean isLoggedOut() { return loggedOut; }
-    public void setLoggedOut(boolean loggedOut) { this.loggedOut = loggedOut; }
+    public String getToken() {
+        return token;
+    }
 
-    public UserInstitution getUserInstitution() { return userInstitution; }
-    public void setUserInstitution(UserInstitution userInstitution) { this.userInstitution = userInstitution; }
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-    public Date getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(Date expirationDate) { this.expirationDate = expirationDate; }
+    public boolean isLoggedOut() {
+        return loggedOut;
+    }
+
+    public void setLoggedOut(boolean loggedOut) {
+        this.loggedOut = loggedOut;
+    }
+
+    public UserWeb getUserInstitution() {
+        return userInstitution;
+    }
+
+    public void setUserInstitution(UserWeb userInstitution) {
+        this.userInstitution = userInstitution;
+    }
+
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 
 }
-
-
-

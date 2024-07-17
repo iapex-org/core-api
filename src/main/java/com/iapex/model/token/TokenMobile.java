@@ -1,13 +1,10 @@
-package com.iapex.model.tokenMovil;
+package com.iapex.model.token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.iapex.model.userMovil.UserMovil;
-
+import com.iapex.model.user.UserMovil;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,22 +16,14 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "token")
-public class Token {
+public class TokenMobile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Column(name = "token")
+    @Column(name = "token")
     private String token;
 
     @Column(name = "is_logged_out")
@@ -45,22 +34,49 @@ public class Token {
     @JoinColumn(name = "user_id")
     private UserMovil userMovil;
 
-    
     @Column(name = "expiration_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expirationDate;
 
-    public Date getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(Date expirationDate) { this.expirationDate = expirationDate; }
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public boolean isLoggedOut() { return loggedOut; }
-    public void setLoggedOut(boolean loggedOut) { this.loggedOut = loggedOut; }
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
 
-    public UserMovil getUserMovil() { return userMovil; }
-    public void setUserMovil(UserMovil userMovil) { this.userMovil = userMovil; }
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public boolean isLoggedOut() {
+        return loggedOut;
+    }
+
+    public void setLoggedOut(boolean loggedOut) {
+        this.loggedOut = loggedOut;
+    }
+
+    public UserMovil getUserMovil() {
+        return userMovil;
+    }
+
+    public void setUserMovil(UserMovil userMovil) {
+        this.userMovil = userMovil;
+    }
 
 }
-

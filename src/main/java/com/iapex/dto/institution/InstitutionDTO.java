@@ -1,11 +1,10 @@
 package com.iapex.dto.institution;
 
 import java.util.Date;
-
 import jakarta.validation.constraints.Size;
 
 public class InstitutionDTO {
-	
+
     private Long idInstitution;
 
     @Size(max = 50, message = "El nombre de la institución no puede tener más de 50 caracteres")
@@ -28,7 +27,7 @@ public class InstitutionDTO {
     private String imageUrl;
 
     private boolean status;
-    
+
     @Size(max = 100, message = "El numero maximo de caracteres para el campo telefono es de 100 caracteres")
     private String contactPhone;
 
@@ -58,64 +57,160 @@ public class InstitutionDTO {
     private Date registrationDate;
 
     // Constructor vacío
-    public InstitutionDTO() {}
-
-    public Long getIdInstitution() { return idInstitution; }
-    public void setIdInstitution(Long idInstitution) { this.idInstitution = idInstitution; }
+    public InstitutionDTO() {
+    }
 
     // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public Long getIdInstitution() {
+        return idInstitution;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setIdInstitution(Long idInstitution) {
+        this.idInstitution = idInstitution;
+    }
 
-    public String getOpeningHours() { return openingHours; }
-    public void setOpeningHours(String openingHours) { this.openingHours = openingHours; }
+    public String getName() {
+        return name;
+    }
 
-    public String getHistory() { return history; }
-    public void setHistory(String history) { this.history = history; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
+    public String getOpeningHours() {
+        return openingHours;
+    }
 
-    public String getContactPhone() { return contactPhone; }
-    public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
+    }
 
-    public String getContactWebsite() { return contactWebsite; }
-    public void setContactWebsite(String contactWebsite) { this.contactWebsite = contactWebsite; }
+    public String getHistory() {
+        return history;
+    }
 
-    public String getTypeInstitution() { return typeInstitution; }
-    public void setTypeInstitution(String typeInstitution) { this.typeInstitution = typeInstitution; }
-    
-    public String getDirectionUrlMapsInstitution() { return directionUrlMapsInstitution; }
-    public void setDirectionUrlMapsInstitution(String directionUrlMapsInstitution) { this.directionUrlMapsInstitution = directionUrlMapsInstitution; }
-    
-    public String getDirectionState() { return directionState; }
-    public void setDirectionState(String directionState) { this.directionState = directionState; }
-    
-    public String getDirectionMunicipality() { return directionMunicipality; }
-    public void setDirectionMunicipality(String directionMunicipality) { this.directionMunicipality = directionMunicipality; }
-    
-    public String getDirectionPostalCode() { return directionPostalCode; }
-    public void setDirectionPostalCode(String directionPostalCode) { this.directionPostalCode = directionPostalCode; }
-    
-    public String getDirectionColony() { return directionColony; }
-    public void setDirectionColony(String directionColony) { this.directionColony = directionColony; }
-    
-    public String getDirectionStreet() { return directionStreet; }
-    public void setDirectionStreet(String directionStreet) { this.directionStreet = directionStreet; }
-    
-    public String getDirectionNumber() { return directionNumber; }
-    public void setDirectionNumber(String directionNumber) { this.directionNumber = directionNumber; }
-    
-    public Date getRegistrationDate() { return registrationDate; }
-    public void setRegistrationDate(Date registrationDate) { this.registrationDate = registrationDate; }
+    public void setHistory(String history) {
+        this.history = history;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public String getContactWebsite() {
+        return contactWebsite;
+    }
+
+    public void setContactWebsite(String contactWebsite) {
+        this.contactWebsite = contactWebsite;
+    }
+
+    public String getTypeInstitution() {
+        return typeInstitution;
+    }
+
+    public void setTypeInstitution(String typeInstitution) {
+        this.typeInstitution = typeInstitution;
+    }
+
+    public String getDirectionUrlMapsInstitution() {
+        return directionUrlMapsInstitution;
+    }
+
+    public void setDirectionUrlMapsInstitution(String directionUrlMapsInstitution) {
+        this.directionUrlMapsInstitution = directionUrlMapsInstitution;
+    }
+
+    public String getDirectionState() {
+        return directionState;
+    }
+
+    public void setDirectionState(String directionState) {
+        this.directionState = directionState;
+    }
+
+    public String getDirectionMunicipality() {
+        return directionMunicipality;
+    }
+
+    public void setDirectionMunicipality(String directionMunicipality) {
+        this.directionMunicipality = directionMunicipality;
+    }
+
+    public String getDirectionPostalCode() {
+        return directionPostalCode;
+    }
+
+    public void setDirectionPostalCode(String directionPostalCode) {
+        this.directionPostalCode = directionPostalCode;
+    }
+
+    public String getDirectionColony() {
+        return directionColony;
+    }
+
+    public void setDirectionColony(String directionColony) {
+        this.directionColony = directionColony;
+    }
+
+    public String getDirectionStreet() {
+        return directionStreet;
+    }
+
+    public void setDirectionStreet(String directionStreet) {
+        this.directionStreet = directionStreet;
+    }
+
+    public String getDirectionNumber() {
+        return directionNumber;
+    }
+
+    public void setDirectionNumber(String directionNumber) {
+        this.directionNumber = directionNumber;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
 
 }

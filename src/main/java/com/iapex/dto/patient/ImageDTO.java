@@ -1,10 +1,9 @@
 package com.iapex.dto.patient;
 
-
 public class ImageDTO {
 
-    private String image; // Nombre del archivo de imagen (si es relevante)
-    private String imageUrl; // URL de la imagen para acceder a ella
+    private String image; // (Verificar si es relevante)
+    private String imageUrl; 
 
     // Constructor vacío
     public ImageDTO() {

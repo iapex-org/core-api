@@ -5,16 +5,17 @@ import java.time.LocalDateTime;
 public class MembershipDTO {
     private Long idMembership;
     private LocalDateTime startDate;
-    private LocalDateTime  endDate;
+    private LocalDateTime endDate;
     private boolean status;
     private String institutionName;
-    
+
     // Constructor
     public MembershipDTO() {
     }
-    
+
     // Constructor
-    public MembershipDTO(Long idMembership, LocalDateTime startDate, LocalDateTime endDate, boolean status, String institutionName) {
+    public MembershipDTO(Long idMembership, LocalDateTime startDate, LocalDateTime endDate, boolean status,
+            String institutionName) {
         this.idMembership = idMembership;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -22,19 +23,44 @@ public class MembershipDTO {
         this.institutionName = institutionName;
     }
 
+    // Getters and setters
+    public Long getIdMembership() {
+        return idMembership;
+    }
 
-    public Long getIdMembership() { return idMembership; }
-    public void setIdMembership(Long idMembership) { this.idMembership = idMembership; }
-    
-    public LocalDateTime getStartDate() { return startDate; }
-    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
-    
-    public LocalDateTime getEndDate() { return endDate; }
-    public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
-    
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
-    
-    public String getInstitutionName() { return institutionName; }
-    public void setInstitutionName(String institutionName) { this.institutionName = institutionName; }
+    public void setIdMembership(Long idMembership) {
+        this.idMembership = idMembership;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getInstitutionName() {
+        return institutionName;
+    }
+
+    public void setInstitutionName(String institutionName) {
+        this.institutionName = institutionName;
+    }
 }

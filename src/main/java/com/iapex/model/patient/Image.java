@@ -13,31 +13,49 @@ import jakarta.persistence.Table;
 @Table(name = "images")
 public class Image {
 
-
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idImage;
-	
+
     @Column(length = 100)
     private String image;
-    
+
     private String imageUrl;
-    
-	@ManyToOne
+
+    @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    
-	public Long getIdImage() {		return idImage; }
-	public void setIdImage(Long idImage) { this.idImage = idImage;}
-    
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    // Getters and Setters
+    public Long getIdImage() {
+        return idImage;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    
-    public Patient getPatient() { return patient; }
-	public void setPatient(Patient patient) { this.patient = patient; }
+    public void setIdImage(Long idImage) {
+        this.idImage = idImage;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
 }
-

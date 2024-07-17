@@ -3,17 +3,15 @@ package com.iapex.repository.token;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import com.iapex.model.token.TokenWeb;
+import com.iapex.model.user.UserWeb;
 
-import com.iapex.model.tokenWeb.TokenInstitution;
-import com.iapex.model.userWeb.UserInstitution;
-
-public interface TokenInstitutionRepository extends JpaRepository<TokenInstitution, Long> {
+public interface TokenInstitutionRepository extends JpaRepository<TokenWeb, Long> {
 
     /**
      * Encuentra todos los tokens que han expirado antes de la fecha actual.
@@ -22,7 +20,7 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenInstituti
      * @return Una lista de tokens expirados
      */
     @Query("select t from TokenInstitution t where t.expirationDate <= :currentDate")
-    List<TokenInstitution> findExpiredTokens(@Param("currentDate") Date currentDate);
+    List<TokenWeb> findExpiredTokens(@Param("currentDate") Date currentDate);
 
     /**
      * Elimina todos los tokens que han expirado antes de la fecha actual.
@@ -41,7 +39,7 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenInstituti
      * @return Una lista de tokens activos del usuario
      */
     @Query("select t from TokenInstitution t inner join UserInstitution u on t.userInstitution.idUserInstitution = u.idUserInstitution where u.idUserInstitution = :userId and t.loggedOut = false")
-    List<TokenInstitution> findAllTokensByUser(@Param("userId") Long userId);
+    List<TokenWeb> findAllTokensByUser(@Param("userId") Long userId);
 
     /**
      * Busca un token por su valor.
@@ -49,7 +47,7 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenInstituti
      * @param token El valor del token
      * @return Un Optional que contiene el token si se encuentra
      */
-    Optional<TokenInstitution> findByToken(String token);
+    Optional<TokenWeb> findByToken(String token);
 
     /**
      * Encuentra todos los tokens de un usuario institución específico, 
@@ -59,7 +57,7 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenInstituti
      * @param loggedOut El estado de cierre de sesión
      * @return Una lista de tokens que coinciden con los criterios
      */
-    List<TokenInstitution> findAllByUserInstitutionAndLoggedOut(UserInstitution userInstitution, boolean loggedOut);
+    List<TokenWeb> findAllByUserInstitutionAndLoggedOut(UserWeb userInstitution, boolean loggedOut);
 
     /**
      * Encuentra todos los tokens asociados a un usuario institución específico.
@@ -67,5 +65,5 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenInstituti
      * @param idUserInstitution El ID del usuario institución
      * @return Una lista de todos los tokens del usuario institución
      */
-    List<TokenInstitution> findByUserInstitution_IdUserInstitution(Long idUserInstitution);
+    List<TokenWeb> findByUserInstitution_IdUserInstitution(Long idUserInstitution);
 }

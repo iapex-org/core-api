@@ -1,8 +1,7 @@
-package com.iapex.repository.direction;
+package com.iapex.repository.institution;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.iapex.model.institution.Direction;
 
 @Repository

@@ -1,4 +1,4 @@
-package com.iapex.service.userMovil;
+package com.iapex.service.user;
 
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,37 +9,36 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.iapex.dto.userMovil.UserAuthenticationDTO;
-import com.iapex.dto.userMovil.UserMovilDTO;
+import com.iapex.dto.user.UserMobileAuthenticationDTO;
+import com.iapex.dto.user.UserMobileDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.role.Role;
-import com.iapex.model.tokenMovil.Token;
-import com.iapex.model.userMovil.UserMovil;
-import com.iapex.repository.token.TokenMovilRepository;
-import com.iapex.repository.userMovil.UserMovilRepository;
-import com.iapex.service.emailMovil.MovilEmailService;
+import com.iapex.model.token.TokenMobile;
+import com.iapex.model.user.UserMovil;
+import com.iapex.repository.token.TokenMobileRepository;
+import com.iapex.repository.user.UserMobileRepository;
+import com.iapex.service.email.MobileEmailService;
 import com.iapex.service.security.JwtService;
 
 @Service
-public class UserMovilService {
+public class UserMobileService {
 
     @Autowired
-    private final UserMovilRepository userMovilRepository;
+    private final UserMobileRepository userMovilRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final MovilEmailService movilEmailService;
-    private final TokenMovilRepository tokenMovilRepository;
+    private final MobileEmailService movilEmailService;
+    private final TokenMobileRepository tokenMovilRepository;
     private final AuthenticationManager authenticationManager;
 
-    public UserMovilService(UserMovilRepository userMovilRepository,
+    public UserMobileService(UserMobileRepository userMovilRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       TokenMovilRepository tokenMovilRepository,
+                       TokenMobileRepository tokenMovilRepository,
                        AuthenticationManager authenticationManager,
-                       MovilEmailService movilEmailService) {
+                       MobileEmailService movilEmailService) {
         this.userMovilRepository = userMovilRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -61,7 +60,7 @@ public class UserMovilService {
      * @return UNA RESPUESTA INDICANDO QUE EL REGISTRO FUE EXITOSO Y QUE SE DEBE VERIFICAR EL CORREO ELECTRÓNICO.
      * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO PROPORCIONADO.
      */
-    public Response register(UserMovilDTO request) throws Exception {
+    public Response register(UserMobileDTO request) throws Exception {
         if (userMovilRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         }
@@ -90,7 +89,7 @@ public class UserMovilService {
      * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE ÉXITO.
      * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
      */
-    public AuthenticationResponse authenticate(UserAuthenticationDTO request) {
+    public AuthenticationResponse authenticate(UserMobileAuthenticationDTO request) {
     	UserMovil userMovil;
         if (request.getEmail() != null) {
         	userMovil = userMovilRepository.findByEmail(request.getEmail())
@@ -164,7 +163,7 @@ public class UserMovilService {
     
     //ACTUALIZA UN USUARIO POR SU ID.
 
-    public UserMovil updateUserById(Long id, UserMovilDTO userMovilDTO) {
+    public UserMovil updateUserById(Long id, UserMobileDTO userMovilDTO) {
     	UserMovil userMovil = userMovilRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -247,7 +246,7 @@ public class UserMovilService {
      * @param user EL USUARIO CUYOS TOKENS SE DESEAN REVOCAR.
      */
     private void revokeAllTokenByUser(UserMovil userMovil) {
-        List<Token> validTokens = tokenMovilRepository.findAllTokensByUser(userMovil.getIdUser());
+        List<TokenMobile> validTokens = tokenMovilRepository.findAllTokensByUser(userMovil.getIdUser());
         if (validTokens.isEmpty()) {
             return;
         }
@@ -273,10 +272,10 @@ public class UserMovilService {
      * @param user EL USUARIO AL QUE PERTENECE EL TOKEN.
      */
     private void saveUserToken(String jwt, UserMovil userMovil) {
-        List<Token> loggedOutTokens = tokenMovilRepository.findAllByUserMovilAndLoggedOut(userMovil, true);
+        List<TokenMobile> loggedOutTokens = tokenMovilRepository.findAllByUserMovilAndLoggedOut(userMovil, true);
         tokenMovilRepository.deleteAll(loggedOutTokens);
 
-        Token token = new Token();
+        TokenMobile token = new TokenMobile();
         token.setToken(jwt);
         token.setUserMovil(userMovil);
         token.setExpirationDate(calculateExpireDate());

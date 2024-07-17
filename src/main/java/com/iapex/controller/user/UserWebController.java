@@ -1,36 +1,32 @@
-package com.iapex.controller.userWeb;
+package com.iapex.controller.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import com.iapex.dto.userWeb.PasswordResetRequestDTO;
-import com.iapex.dto.userWeb.UserInstitutionAuthenticationDTO;
-import com.iapex.dto.userWeb.UserInstitutionDTO;
+import com.iapex.dto.user.PasswordResetRequestDTO;
+import com.iapex.dto.user.UserWebAuthenticationDTO;
+import com.iapex.dto.user.UserWebDTO;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
-import com.iapex.service.emailWeb.WebEmailService;
-import com.iapex.service.userWeb.UsersWebService;
-
+import com.iapex.model.user.UserWeb;
+import com.iapex.service.email.WebEmailService;
+import com.iapex.service.user.UserWebService;
 import jakarta.validation.Valid;
-
-
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userInstitution")
-public class UsersWebController {
+public class UserWebController {
 
-    private final UsersWebService usersWebService;
+    private final UserWebService usersWebService;
     private final WebEmailService webEmailService;
 
-    public UsersWebController(UsersWebService usersWebService, WebEmailService webEmailService) {
+    public UserWebController(UserWebService usersWebService, WebEmailService webEmailService) {
         this.usersWebService = usersWebService;
         this.webEmailService = webEmailService;
     }
@@ -39,7 +35,7 @@ public class UsersWebController {
     //WEB
     //http://localhost:8080/userInstitution/createUserInstitution
     @PostMapping("/createUserInstitution")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserInstitutionDTO request, BindingResult result) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserWebDTO request, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -94,7 +90,7 @@ public class UsersWebController {
     //WEB
     //http://localhost:8080/userInstitution/login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserInstitutionAuthenticationDTO request, BindingResult result) {
+    public ResponseEntity<?> login(@Valid @RequestBody UserWebAuthenticationDTO request, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -118,7 +114,7 @@ public class UsersWebController {
     @PostMapping("/request-password-reset")
     public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
         try {
-            UserInstitution userInstitution = usersWebService.findByEmail(email);
+            UserWeb userInstitution = usersWebService.findByEmail(email);
             if (userInstitution != null) {
             	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
                 return ResponseEntity.ok(new Response("Se ha enviado un correo con instrucciones para restablecer la contraseña"));
@@ -159,7 +155,7 @@ public class UsersWebController {
     @PostMapping("/resend-reset-password")
     public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
         try {
-            UserInstitution userInstitution = usersWebService.findByEmail(email);
+            UserWeb userInstitution = usersWebService.findByEmail(email);
             if (userInstitution != null) {
             	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
                 return ResponseEntity.ok(new Response("Se ha enviado un nuevo correo con instrucciones para restablecer la contraseña."));

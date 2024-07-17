@@ -4,20 +4,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.iapex.dto.institution.InstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.model.institution.Contact;
 import com.iapex.model.institution.Direction;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.repository.institution.InstitutionRepository;
-import com.iapex.service.emailWeb.WebEmailService;
+import com.iapex.service.email.WebEmailService;
 
 @Service
 public class InstitutionService {
@@ -156,7 +154,7 @@ public class InstitutionService {
     }
     
     // MÉTODO PARA OBTENER LA INSTITUCIÓN DTO POR USUARIO
-    public InstitutionDTO getInstitutionDTOByUser(UserInstitution userInstitution) throws Exception {
+    public InstitutionDTO getInstitutionDTOByUser(UserWeb userInstitution) throws Exception {
         Institution institution = userInstitution.getInstitution();
         if (institution == null) {
             throw new Exception("Institución no encontrada para el usuario autenticado");

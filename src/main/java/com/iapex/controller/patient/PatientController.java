@@ -14,18 +14,15 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.iapex.dto.patient.ImageDTO;
 import com.iapex.dto.patient.PatientDTO;
 import com.iapex.model.patient.Image;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.patient.PatientService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -116,7 +113,7 @@ public class PatientController {
             if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
                 return ResponseEntity.status(401).body(new Response("Necesita iniciar sesión, como personal de la institucion para usar este recurso"));
             }
-            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
             String name = userInstitution.getName(); 
             String fatherName = userInstitution.getFathername(); 
             String motherName = userInstitution.getMothername(); 

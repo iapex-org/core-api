@@ -2,10 +2,8 @@ package com.iapex.repository.patient;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.iapex.model.institution.Institution;
 import com.iapex.model.patient.Patient;
 

@@ -1,7 +1,6 @@
-package com.iapex.service.emailMovil;
+package com.iapex.service.email;
 
 import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -9,16 +8,14 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import com.iapex.model.userMovil.UserMovil;
-import com.iapex.repository.userMovil.UserMovilRepository;
-
+import com.iapex.model.user.UserMovil;
+import com.iapex.repository.user.UserMobileRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class MovilEmailService {
+public class MobileEmailService {
 
     @Autowired
     private JavaMailSender mailSender;
@@ -27,7 +24,7 @@ public class MovilEmailService {
     private CacheManager cacheManager;
     
     @Autowired
-    private UserMovilRepository userMovilRepository;
+    private UserMobileRepository userMovilRepository;
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 

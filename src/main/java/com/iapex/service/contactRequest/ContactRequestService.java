@@ -10,13 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.iapex.dto.contactRequest.ContactRequestDTO;
 import com.iapex.model.contactRequest.ContactRequest;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.patient.Patient;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.repository.contactRequest.ContactRequestRepository;
 import com.iapex.repository.patient.PatientRepository;
 
@@ -107,7 +106,7 @@ public class ContactRequestService  {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
             // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             Institution institution = userInstitution.getInstitution();
             // OBTENER LAS CONVERSACIONES ASOCIADAS A LA INSTITUCIÓN DEL USUARIO AUTENTICADO

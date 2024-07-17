@@ -1,11 +1,9 @@
 package com.iapex.scheduling;
 
 import java.time.LocalDateTime;
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.membership.MembershipRepository;
 

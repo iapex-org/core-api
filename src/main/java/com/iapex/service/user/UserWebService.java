@@ -1,4 +1,4 @@
-package com.iapex.service.userWeb;
+package com.iapex.service.user;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,28 +14,26 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.iapex.dto.userWeb.UserInstitutionAuthenticationDTO;
-import com.iapex.dto.userWeb.UserInstitutionDTO;
+import com.iapex.dto.user.UserWebAuthenticationDTO;
+import com.iapex.dto.user.UserWebDTO;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
 import com.iapex.model.role.Role;
-import com.iapex.model.tokenWeb.TokenInstitution;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.token.TokenWeb;
+import com.iapex.model.user.UserWeb;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.token.TokenInstitutionRepository;
-import com.iapex.repository.userWeb.UserWebRepository;
-import com.iapex.service.emailWeb.WebEmailService;
+import com.iapex.repository.user.UserWebRepository;
+import com.iapex.service.email.WebEmailService;
 import com.iapex.service.security.JwtService;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsersWebService {
+public class UserWebService {
 
     @Autowired
     private UserWebRepository userWebRepository;
@@ -59,7 +56,7 @@ public class UsersWebService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public UsersWebService(
+    public UserWebService(
             UserWebRepository userWebRepository,
             InstitutionRepository institutionRepository,
             PasswordEncoder passwordEncoder,
@@ -89,7 +86,7 @@ public class UsersWebService {
      * @return UNA RESPUESTA INDICANDO QUE EL REGISTRO FUE EXITOSO Y QUE SE DEBE VERIFICAR EL CORREO ELECTRÓNICO.
      * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO PROPORCIONADO.
      */
-    public Response registerUser(UserInstitutionDTO request) throws Exception {
+    public Response registerUser(UserWebDTO request) throws Exception {
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             throw new IllegalArgumentException("Por favor ingresa un correo electrónico.");
         }
@@ -98,7 +95,7 @@ public class UsersWebService {
             throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         }
 
-        UserInstitution userInstitution = new UserInstitution();
+        UserWeb userInstitution = new UserWeb();
         userInstitution.setName(request.getName());
         userInstitution.setEmail(request.getEmail());
         userInstitution.setFathername(request.getFathername());
@@ -130,8 +127,8 @@ public class UsersWebService {
      * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE ÉXITO.
      * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
      */
-    public AuthenticationResponse authenticateInstitution(UserInstitutionAuthenticationDTO request) {
-    	UserInstitution userInstitution;
+    public AuthenticationResponse authenticateInstitution(UserWebAuthenticationDTO request) {
+    	UserWeb userInstitution;
         if (request.getEmail() != null) {
         	userInstitution = userWebRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
@@ -168,8 +165,8 @@ public class UsersWebService {
      *
      * @return UNA LISTA DE TODOS LOS USUARIOS INSTITUCIONALES.
      */
-    public List<UserInstitutionDTO> getAllUserDTOs() {
-        List<UserInstitution> users = userWebRepository.findAll();
+    public List<UserWebDTO> getAllUserDTOs() {
+        List<UserWeb> users = userWebRepository.findAll();
         return users.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
@@ -177,19 +174,19 @@ public class UsersWebService {
 
     
     //OBTIENE TODOS LOS USUARIOS DE LA INSTITUCIÓN DEL USUARIO AUTENTICADO.
-    public List<UserInstitutionDTO> getUsersFromSameInstitution(String authenticatedEmail) {
-        UserInstitution authenticatedUser = userWebRepository.findByEmail(authenticatedEmail)
+    public List<UserWebDTO> getUsersFromSameInstitution(String authenticatedEmail) {
+        UserWeb authenticatedUser = userWebRepository.findByEmail(authenticatedEmail)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        List<UserInstitution> users = userWebRepository.findByInstitution(authenticatedUser.getInstitution());
+        List<UserWeb> users = userWebRepository.findByInstitution(authenticatedUser.getInstitution());
         
         return users.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
     }
 
-    private UserInstitutionDTO convertToDTO(UserInstitution userInstitution) {
-        UserInstitutionDTO dto = new UserInstitutionDTO();
+    private UserWebDTO convertToDTO(UserWeb userInstitution) {
+        UserWebDTO dto = new UserWebDTO();
         dto.setIdUserInstitution(userInstitution.getIdUserInstitution());
         dto.setName(userInstitution.getName());
         dto.setFathername(userInstitution.getFathername());
@@ -213,8 +210,8 @@ public class UsersWebService {
      *
      * @param userInstitution EL USUARIO CUYOS TOKENS SE DESEAN REVOCAR.
      */
-    private void revokeAllTokenByUserInstitution(UserInstitution userInstitution) {
-        List<TokenInstitution> validTokens = tokenInstitutionRepository.findAllTokensByUser(userInstitution.getIdUserInstitution());
+    private void revokeAllTokenByUserInstitution(UserWeb userInstitution) {
+        List<TokenWeb> validTokens = tokenInstitutionRepository.findAllTokensByUser(userInstitution.getIdUserInstitution());
         if (validTokens.isEmpty()) {
             return;
         }
@@ -238,11 +235,11 @@ public class UsersWebService {
      * @param jwt EL TOKEN JWT QUE SE VA A GUARDAR.
      * @param userInstitution EL USUARIO AL QUE PERTENECE EL TOKEN.
      */
-    private void saveUserTokenInstitution(String jwt, UserInstitution userInstitution) {
-        List<TokenInstitution> loggedOutTokens = tokenInstitutionRepository.findAllByUserInstitutionAndLoggedOut(userInstitution, true);
+    private void saveUserTokenInstitution(String jwt, UserWeb userInstitution) {
+        List<TokenWeb> loggedOutTokens = tokenInstitutionRepository.findAllByUserInstitutionAndLoggedOut(userInstitution, true);
         tokenInstitutionRepository.deleteAll(loggedOutTokens);
 
-        TokenInstitution tokenInstitution = new TokenInstitution();
+        TokenWeb tokenInstitution = new TokenWeb();
         tokenInstitution.setToken(jwt);
         tokenInstitution.setUserInstitution(userInstitution);
         tokenInstitution.setExpirationDate(calculateExpireDate());
@@ -273,7 +270,7 @@ public class UsersWebService {
      * @RETURN EL USUARIO INSTITUCIONAL SI SE ENCUENTRA.
      * @THROWS RUNTIMEEXCEPTION SI EL USUARIO NO SE ENCUENTRA.
      */
-    public UserInstitution findByEmail(String email) {
+    public UserWeb findByEmail(String email) {
         return userWebRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("El correo no está registrado en la aplicación"));
     }
@@ -285,7 +282,7 @@ public class UsersWebService {
             return false;
         }
 
-        UserInstitution userInstitution = userWebRepository.findByEmail(email).orElse(null);
+        UserWeb userInstitution = userWebRepository.findByEmail(email).orElse(null);
         if (userInstitution == null) {
             return false;
         }
@@ -300,8 +297,8 @@ public class UsersWebService {
     }    
      
     //OBTENER POR ID PARA DTO TRANSFER
-    public UserInstitutionDTO getUserInstitutionDTOById(Long id) throws Exception {
-        UserInstitution userInstitution = getUserInstitutionById(id);
+    public UserWebDTO getUserInstitutionDTOById(Long id) throws Exception {
+        UserWeb userInstitution = getUserInstitutionById(id);
         return convertToDTO(userInstitution);
     }
     
@@ -309,10 +306,10 @@ public class UsersWebService {
     @Transactional
     public void deleteById(Long id) {
         // BUSCA EL USUARIO INSTITUCIÓN POR SU ID O LANZA UNA EXCEPCIÓN SI NO SE ENCUENTRA
-        UserInstitution userInstitution = userWebRepository.findById(id)
+        UserWeb userInstitution = userWebRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
         // BUSCA Y ELIMINA TODOS LOS TOKENS ASOCIADOS AL USUARIO INSTITUCIÓN
-        List<TokenInstitution> tokens = tokenInstitutionRepository.findByUserInstitution_IdUserInstitution(id);
+        List<TokenWeb> tokens = tokenInstitutionRepository.findByUserInstitution_IdUserInstitution(id);
         tokenInstitutionRepository.deleteAll(tokens);
         // ELIMINA LA REFERENCIA A LA INSTITUCIÓN PARA EVITAR LA VIOLACIÓN DE CLAVE FORÁNEA
         userInstitution.setInstitution(null);
@@ -325,14 +322,14 @@ public class UsersWebService {
 
     
     //OBTENER POR ID
-    public UserInstitution getUserInstitutionById(Long id) throws Exception {
+    public UserWeb getUserInstitutionById(Long id) throws Exception {
         return userWebRepository.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado"));
     }
     
     //ACTUALIZAR UN USUARIO POR SU ID.
-    public Response updateUserInstitution(Long id, UserInstitutionDTO request) throws Exception {
-        UserInstitution userInstitution = getUserInstitutionById(id);
+    public Response updateUserInstitution(Long id, UserWebDTO request) throws Exception {
+        UserWeb userInstitution = getUserInstitutionById(id);
         boolean emailChanged = false; // Verificar si el email está cambiando
         if (!Objects.equals(userInstitution.getEmail(), request.getEmail())) { 
         if (userWebRepository.findByEmail(request.getEmail()).isPresent()) { throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");

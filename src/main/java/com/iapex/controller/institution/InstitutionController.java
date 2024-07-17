@@ -1,6 +1,5 @@
 package com.iapex.controller.institution;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,22 +12,19 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.iapex.dto.institution.InstitutionDTO;
-import com.iapex.dto.userWeb.UserInstitutionDTO;
+import com.iapex.dto.user.UserWebDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.institution.InstitutionService;
-import com.iapex.service.userWeb.UsersWebService;
-
+import com.iapex.service.user.UserWebService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,7 +43,7 @@ public class InstitutionController {
     private HttpServletRequest request;
     
     @Autowired
-    private UsersWebService usersWebService;
+    private UserWebService usersWebService;
     
     
     // AL HACER UNA SOLICITUD POST A ESTA RUTA, SE CREA UNA NUEVA INSTITUCIÓN CON DATOS MULTIPART
@@ -233,7 +229,7 @@ public class InstitutionController {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
             
             // OBTENER LA INSTITUCIÓN Y CONVERTIR A DTO USANDO EL SERVICIO
             InstitutionDTO institutionDTO = institutionService.getInstitutionDTOByUser(userInstitution);
@@ -278,8 +274,8 @@ public class InstitutionController {
     //http://localhost:8080/institutions/getAllUsersInstitutions
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllUsersInstitutions")
-    public ResponseEntity<List<UserInstitutionDTO>> getAllUsers() {
-        List<UserInstitutionDTO> userDTOs = usersWebService.getAllUserDTOs();
+    public ResponseEntity<List<UserWebDTO>> getAllUsers() {
+        List<UserWebDTO> userDTOs = usersWebService.getAllUserDTOs();
         return ResponseEntity.ok(userDTOs);
     }
 
@@ -290,7 +286,7 @@ public class InstitutionController {
     @GetMapping("/getUserInstitutionById/{id}")
     public ResponseEntity<?> getUserInstitutionById(@PathVariable Long id) {
         try {
-            UserInstitutionDTO dto = usersWebService.getUserInstitutionDTOById(id);
+            UserWebDTO dto = usersWebService.getUserInstitutionDTOById(id);
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -304,9 +300,9 @@ public class InstitutionController {
     // http://localhost:8080/institutions/getAllSameInstitution
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllSameInstitution")
-    public ResponseEntity<List<UserInstitutionDTO>> getUsersFromSameInstitution(Authentication authentication) {
+    public ResponseEntity<List<UserWebDTO>> getUsersFromSameInstitution(Authentication authentication) {
         String email = authentication.getName();
-        List<UserInstitutionDTO> users = usersWebService.getUsersFromSameInstitution(email);
+        List<UserWebDTO> users = usersWebService.getUsersFromSameInstitution(email);
         return ResponseEntity.ok(users);
     }
     
@@ -319,7 +315,7 @@ public class InstitutionController {
     @PutMapping("/updateUserInstitution/{id}")
     public ResponseEntity<?> updateUserInstitution(
             @PathVariable Long id,
-            @Valid @RequestBody UserInstitutionDTO request,
+            @Valid @RequestBody UserWebDTO request,
             BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()

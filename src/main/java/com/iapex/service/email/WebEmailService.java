@@ -1,7 +1,6 @@
-package com.iapex.service.emailWeb;
+package com.iapex.service.email;
 
 import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -9,10 +8,8 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import com.iapex.model.userWeb.UserInstitution;
-import com.iapex.repository.userWeb.UserWebRepository;
-
+import com.iapex.model.user.UserWeb;
+import com.iapex.repository.user.UserWebRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,7 +28,7 @@ public class WebEmailService {
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
-    public String sendPasswordResetUserInstitutionEmail(UserInstitution userInstitution) throws MessagingException {
+    public String sendPasswordResetUserInstitutionEmail(UserWeb userInstitution) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -89,7 +86,7 @@ public class WebEmailService {
         }
     }
     
-    public String sendVerificationUserInstitutionEmail(UserInstitution userInstitution) throws MessagingException {
+    public String sendVerificationUserInstitutionEmail(UserWeb userInstitution) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -172,7 +169,7 @@ public class WebEmailService {
     
     // VERIFICAR LA INSTITUCIÓN DEL USUARIO CON EL CÓDIGO
     public void verifyUserInstitutionWithCode(String email, String verificationCode) throws Exception {
-        UserInstitution userInstitution = userWebRepository.findByEmail(email)
+        UserWeb userInstitution = userWebRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -195,7 +192,7 @@ public class WebEmailService {
     
     // REENVIAR EL CÓDIGO DE VERIFICACIÓN
     public String resendVerificationCode(String email) throws MessagingException {
-        UserInstitution userInstitution = userWebRepository.findByEmail(email)
+        UserWeb userInstitution = userWebRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         if (userInstitution.isStatus()) {
@@ -210,7 +207,7 @@ public class WebEmailService {
     public void sendEmailInstitution(String from, String body) throws MessagingException {
         try {
             // BUSCAR AL USUARIO POR CORREO ELECTRÓNICO
-            UserInstitution userInstitution = userWebRepository.findByEmail(from)
+            UserWeb userInstitution = userWebRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
             // CREAR EL MENSAJE MIME

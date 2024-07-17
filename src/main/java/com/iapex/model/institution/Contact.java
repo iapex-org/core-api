@@ -14,27 +14,39 @@ public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idContact;
-    
+
     @Column(length = 100)
     private String phone;
-    
+
     @Column(length = 100)
     private String website;
-    
+
     // Constructores
     public Contact() {
     }
 
     // Getters and Setters
-    public Long getIdContact() { return idContact; }
-    public void setIdContact(Long idContact) { this.idContact = idContact; }
+    public Long getIdContact() {
+        return idContact;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setIdContact(Long idContact) {
+        this.idContact = idContact;
+    }
 
-    public String getWebsite() { return website; }
-    public void setWebsite(String website) { this.website = website; }
+    public String getPhone() {
+        return phone;
+    }
 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
 }
-
-

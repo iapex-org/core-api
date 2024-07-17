@@ -5,18 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import com.iapex.dto.contactRequest.ContactRequestDTO;
 import com.iapex.model.response.Response;
-import com.iapex.model.userWeb.UserInstitution;
+import com.iapex.model.user.UserWeb;
 import com.iapex.service.contactRequest.ContactRequestService;
-
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -80,7 +76,7 @@ public class ContactRequestController  {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             @SuppressWarnings("unused")
-			UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+			UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
             // LLAMAR AL SERVICIO PARA OBTENER LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN
             List<ContactRequestDTO> conversations = contactRequestService.getConversationsForAuthenticatedUser();
             return new ResponseEntity<>(conversations, HttpStatus.OK);
@@ -98,7 +94,7 @@ public class ContactRequestController  {
     public ResponseEntity<Response> updateConversationStatus(@PathVariable Long id, @RequestBody ContactRequestDTO request) {
         // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserInstitution userInstitution = (UserInstitution) authentication.getPrincipal();
+        UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
         // LLAMAR AL SERVICIO CON LA INFORMACIÓN DEL USUARIO
         Response response = contactRequestService.updateById(id, request, 
             userInstitution.getName(), 

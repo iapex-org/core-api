@@ -2,10 +2,8 @@ package com.iapex.model.institution;
 
 import java.util.Date;
 import java.util.List;
-
 import com.iapex.model.membership.Membership;
 import com.iapex.model.patient.Patient;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,87 +25,146 @@ public class Institution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInstitution;
-    
+
     @Column(length = 50, unique = true, nullable = false)
     private String name;
-    
-    //Lunes a Viernes: 9:00-18:00, Sábado: 10:00-14:00, Domingo: Cerrado
+
     @Column(length = 100)
     private String openingHours;
-    
+
     @Column(length = 100)
-	private String email;
-    
-    @Column(columnDefinition="TEXT")
+    private String email;
+
+    @Column(columnDefinition = "TEXT")
     private String history;
-    
+
     @Column(length = 100)
     private String image;
-    
+
     private String imageUrl;
-    
+
     @Column(length = 50)
     private String typeInstitution;
-	
+
     @Temporal(TemporalType.DATE)
-	@Column(name = "registration_date")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_contact", referencedColumnName = "idContact")
     private Contact contact;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_direction", referencedColumnName = "idDirection")
     private Direction direction;
-	
+
     @OneToOne(mappedBy = "institution", cascade = CascadeType.ALL)
     private Membership membership;
 
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
-    private List<Patient> patients;  
-    
+    private List<Patient> patients;
+
     @Column(name = "status", nullable = false)
     private boolean status;
 
     // Constructor vacío
     public Institution() {
     }
-    
+
     // Getters y Setters
-    public Long getIdInstitution() { return idInstitution; }
-    public void setIdInstitution(Long idInstitution) { this.idInstitution = idInstitution; }
+    public Long getIdInstitution() {
+        return idInstitution;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setIdInstitution(Long idInstitution) {
+        this.idInstitution = idInstitution;
+    }
 
-    public String getOpeningHours() { return openingHours; }
-    public void setOpeningHours(String openingHours) { this.openingHours = openingHours; }
+    public String getName() {
+        return name;
+    }
 
-    public String getHistory() { return history; }
-    public void setHistory(String history) { this.history = history; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    public String getOpeningHours() {
+        return openingHours;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
+    }
 
-    public String getTypeInstitution() { return typeInstitution; }
-    public void setTypeInstitution(String typeInstitution) { this.typeInstitution = typeInstitution; }
-    
-    public Date getRegistrationDate() { return registrationDate; }
-	public void setRegistrationDate(Date registrationDate) { this.registrationDate = registrationDate; }
+    public String getHistory() {
+        return history;
+    }
 
-    public Contact getContact() { return contact; }
-    public void setContact(Contact contact) { this.contact = contact; }
+    public void setHistory(String history) {
+        this.history = history;
+    }
 
-    public Direction getDirection() { return direction; }
-	public void setDirection(Direction direction) {	this.direction = direction; }
+    public String getImage() {
+        return image;
+    }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
-    
-    public String getEmail() {	return email; }
-	public void setEmail(String email) {this.email = email; }
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getTypeInstitution() {
+        return typeInstitution;
+    }
+
+    public void setTypeInstitution(String typeInstitution) {
+        this.typeInstitution = typeInstitution;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
