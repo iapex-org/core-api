@@ -1,16 +1,19 @@
+
 package com.iapex.service.contactRequest;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.iapex.dto.contactRequest.ContactRequestDTO;
+import com.iapex.dto.contactRequest.ContactRequestStatus;
 import com.iapex.model.contactRequest.ContactRequest;
 import com.iapex.model.institution.Institution;
 import com.iapex.model.patient.Patient;
@@ -33,7 +36,7 @@ public class ContactRequestService  {
     public Response registerConversation(ContactRequestDTO request) {
         try {
         	ContactRequest contactRequest = new ContactRequest();
-        	contactRequest.setInterestedName(request.getInterestedName());
+        	contactRequest.setInterestedPersonName(request.getInterestedPersonName());
             contactRequest.setMissingPersonName(request.getmissingPersonName());
             
             if (request.getIdPatient() != null) {
@@ -49,7 +52,7 @@ public class ContactRequestService  {
             contactRequest.setRelationship(request.getRelationship());
             contactRequest.setRequestDate(LocalDateTime.now());
             contactRequest.setMessage(request.getMessage());
-            contactRequest.setStatus("Nueva");
+            contactRequest.setStatus("NUEVA");
 
             contactRequestRepository.save(contactRequest);
             return new Response("Solicitud de contacto enviada exitosamente");
@@ -75,30 +78,50 @@ public class ContactRequestService  {
             .collect(Collectors.toList());
     }
     
-    
     @Transactional
     public Response updateById(Long id, ContactRequestDTO request, String name, String fatherName, String motherName) {
         try {
             // VERIFICAR SI SE PROPORCIONÓ UN NUEVO ESTADO
             if (request.getStatus() == null || request.getStatus().trim().isEmpty()) {
-                return new Response("Error: Se debe proporcionar un nuevo estado para la conversación");}
+                return new Response("Error: Se debe proporcionar un nuevo estado para la conversación");
+            }
+
+            // VERIFICAR SI EL ESTADO PROPORCIONADO ES VÁLIDO
+            ContactRequestStatus newStatus;
+            try {
+                newStatus = ContactRequestStatus.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
+            } catch (IllegalArgumentException e) {
+                return new Response("Error: El estado proporcionado no es válido");
+            }
+
             // BUSCAR LA CONVERSACIÓN POR SU ID O LANZAR UNA EXCEPCIÓN SI NO SE ENCUENTRA
             ContactRequest contactRequest = contactRequestRepository.findById(id)
-                .orElseThrow(() -> new Exception("Conversación no encontrada"));
+                    .orElseThrow(() -> new Exception("Conversación no encontrada"));
+
             // ACTUALIZAR EL ESTADO DE LA CONVERSACIÓN SI ES DIFERENTE
-            if (!Objects.equals(contactRequest.getStatus(), request.getStatus())) {
-            	contactRequest.setStatus(request.getStatus());
+            if (!contactRequest.getStatus().equals(newStatus.name())) {
+                contactRequest.setStatus(newStatus.name());
+
                 // CREAR EL NOMBRE COMPLETO DE LA PERSONA QUE ATIENDE
                 String fullName = String.format("%s %s %s", name, fatherName, motherName).trim();
                 contactRequest.setAttendedBy(fullName);
+
                 // GUARDAR LOS CAMBIOS
                 contactRequestRepository.save(contactRequest);
                 return new Response("Estado de la conversación actualizado exitosamente");
             } else {
-                return new Response("El estado proporcionado es igual al estado actual. No se realizaron cambios.");            }
+                return new Response("El estado proporcionado es igual al estado actual. No se realizaron cambios.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Response("Error al actualizar el estado de la conversación: " + e.getMessage()); } }
+            if (e instanceof AccessDeniedException || e.getCause() instanceof AccessDeniedException) {
+                return new Response("Debes estar logueado para acceder a este recurso");
+            }
+            return new Response("Error al actualizar el estado de la conversación: " + e.getMessage());
+        }
+    }
+
+        
     
     
     // OBTIENE LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
@@ -106,9 +129,9 @@ public class ContactRequestService  {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
-            Institution institution = userInstitution.getInstitution();
+            Institution institution = userWeb.getInstitution();
             // OBTENER LAS CONVERSACIONES ASOCIADAS A LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             List<ContactRequest> conversations = contactRequestRepository.findByPatientInstitution(institution);
             // CONVERTIR LAS CONVERSACIONES A DTOS
@@ -138,7 +161,7 @@ public class ContactRequestService  {
         
         return new ContactRequestDTO(
         		contactRequest.getIdContactRequest(),
-        		contactRequest.getInterestedName(),
+        		contactRequest.getInterestedPersonName(),
         		contactRequest.getAttendedBy(),
         		contactRequest.getMissingPersonName(),
             patient != null ? patient.getIdPatient() : null,
@@ -152,4 +175,8 @@ public class ContactRequestService  {
         );
     }
 }
+
+
+
+
 
