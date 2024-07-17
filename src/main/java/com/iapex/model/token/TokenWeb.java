@@ -15,7 +15,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "token_institution")
+@Table(name = "tokens_web")
 public class TokenWeb {
 
     @Id
@@ -31,8 +31,8 @@ public class TokenWeb {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "user_institution_id")
-    private UserWeb userInstitution;
+    @JoinColumn(name = "user_web_id")
+    private UserWeb userWeb;
 
     @Column(name = "expiration_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,12 +63,12 @@ public class TokenWeb {
         this.loggedOut = loggedOut;
     }
 
-    public UserWeb getUserInstitution() {
-        return userInstitution;
+    public UserWeb getUserWeb() {
+        return userWeb;
     }
 
-    public void setUserInstitution(UserWeb userInstitution) {
-        this.userInstitution = userInstitution;
+    public void setUserWeb(UserWeb setUserWeb) {
+        this.userWeb = setUserWeb;
     }
 
     public Date getExpirationDate() {

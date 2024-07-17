@@ -1,13 +1,13 @@
 package com.iapex.repository.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserMobile;
 import java.util.Optional;
 
-public interface UserMobileRepository extends JpaRepository<UserMovil, Long> {
+public interface UserMobileRepository extends JpaRepository<UserMobile, Long> {
 
 	// MÉTODO QUE BUSCA UN USUARIO POR SU CORREO ELECTRÓNICO (EMAIL) Y DEVUELVE UN OPTIONAL<USER>.
 	// EL USO DE OPTIONAL<USER> INDICA QUE EL RESULTADO PUEDE SER UN USUARIO (SI SE ENCUENTRA) O VACÍO (SI NO SE ENCUENTRA).
-	Optional<UserMovil> findByEmail(String email);
+	Optional<UserMobile> findByEmail(String email);
 
 }

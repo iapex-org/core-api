@@ -6,8 +6,17 @@ import jakarta.validation.constraints.Size;
 
 public class UserWebDTO {
 
-	private Long idUserInstitution;
+	private Long id;
 
+	@Size(min = 4, max = 24, message = "El nombre debe tener entre 4 y 24 caracteres")
+	private String name;
+	
+	@Size(min = 5, max = 50, message = "El apellido paterno debe tener entre 5 y 50 caracteres")
+	private String lastName;
+	
+	@Size(min = 5, max = 50, message = "El apellido materno debe tener entre 5 y 50 caracteres")
+	private String secondLastName;
+	
 	@Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
 	@NotBlank(message = "El correo es obligatorio")
 	private String email;
@@ -15,40 +24,31 @@ public class UserWebDTO {
 	@Size(min = 8, max = 24, message = "La contraseña debe tener entre 8 y 24 caracteres")
 	private String password;
 
-	@Size(min = 4, max = 24, message = "El nombre debe tener entre 4 y 24 caracteres")
-	private String name;
-
-	@Size(min = 5, max = 50, message = "El apellido paterno debe tener entre 5 y 50 caracteres")
-	private String fathername;
-
-	@Size(min = 5, max = 50, message = "El apellido materno debe tener entre 5 y 50 caracteres")
-	private String mothername;
-
 	@NotBlank(message = "El nombre de la institución es obligatorio")
-	private String institutionName;
-
+	private String institution;
+	
 	@NotBlank(message = "El cargo es obligatorio")
-	private String charge;
+	private String position;
+
+	private boolean accountVerified;
 
 	private Role role;
 
-	private boolean status;
-
 	// Getters y setters
-	public boolean isStatus() {
-		return status;
+	public boolean isAccountVerified() {
+		return accountVerified;
 	}
 
-	public void setStatus(boolean status) {
-		this.status = status;
+	public void setAccountVerified(boolean accountVerified) {
+		this.accountVerified = accountVerified;
 	}
 
-	public Long getIdUserInstitution() {
-		return idUserInstitution;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdUserInstitution(Long idUserInstitution) {
-		this.idUserInstitution = idUserInstitution;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -75,28 +75,28 @@ public class UserWebDTO {
 		this.password = password;
 	}
 
-	public String getFathername() {
-		return fathername;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setFathername(String fathername) {
-		this.fathername = fathername;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
-	public String getMothername() {
-		return mothername;
+	public String getSecondLastName() {
+		return secondLastName;
 	}
 
-	public void setMothername(String mothername) {
-		this.mothername = mothername;
+	public void setSecondLastName(String secondLastName) {
+		this.secondLastName = secondLastName;
 	}
 
-	public String getCharge() {
-		return charge;
+	public String getPosition() {
+		return position;
 	}
 
-	public void setCharge(String charge) {
-		this.charge = charge;
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 	public Role getRole() {
@@ -107,11 +107,11 @@ public class UserWebDTO {
 		this.role = role;
 	}
 
-	public String getInstitutionName() {
-		return institutionName;
+	public String getInstitution() {
+		return institution;
 	}
 
-	public void setInstitutionName(String institutionName) {
-		this.institutionName = institutionName;
+	public void setInstitution(String institution) {
+		this.institution = institution;
 	}
 }

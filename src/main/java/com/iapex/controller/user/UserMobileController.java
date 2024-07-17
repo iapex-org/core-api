@@ -17,21 +17,21 @@ import com.iapex.dto.user.UserMobileDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
 import com.iapex.model.response.AuthenticationResponse;
 import com.iapex.model.response.Response;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserMobile;
 import com.iapex.service.email.MobileEmailService;
 import com.iapex.service.user.UserMobileService;
 import jakarta.validation.Valid;
 
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8100", "http://localhost:8101"})
-@RequestMapping("/users")
+@RequestMapping("/userMobile")
 @RestController
 public class UserMobileController {
 
-    private final UserMobileService userMovilService;
+    private final UserMobileService userMobileService;
     private final MobileEmailService movilEmailService;
 
-    public UserMobileController(UserMobileService userMovilService, MobileEmailService movilEmailService) {
-        this.userMovilService = userMovilService;
+    public UserMobileController(UserMobileService userMobileService, MobileEmailService movilEmailService) {
+        this.userMobileService = userMobileService;
         this.movilEmailService = movilEmailService;
     }
     
@@ -41,7 +41,7 @@ public class UserMobileController {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserMobileDTO request, BindingResult result, Authentication authentication) {
         // Verificar si el usuario tiene permiso para actualizar el usuario con el ID especificado
         try {
-        	UserMovil updatedUser = userMovilService.updateUserById(id, request);
+        	UserMobile updatedUser = userMobileService.updateUserById(id, request);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(e.getMessage()));
@@ -55,10 +55,10 @@ public class UserMobileController {
     public ResponseEntity<?> getUserById(@PathVariable Long id, Authentication authentication) {
         // Verificar si el usuario tiene permiso para acceder al usuario con el ID especificado
         try {
-            Optional<UserMovil> userOptional = userMovilService.getUserById(id);
+            Optional<UserMobile> userOptional = userMobileService.getUserById(id);
             if (userOptional.isPresent()) {
-            	UserMovil userMovil = userOptional.get();
-                return ResponseEntity.ok(userMovil);
+            	UserMobile userMobile = userOptional.get();
+                return ResponseEntity.ok(userMobile);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -72,8 +72,8 @@ public class UserMobileController {
     //SOLO DASHBOARD
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAllUsers")
-    public ResponseEntity<List<UserMovil>> getAllUsers() {
-        List<UserMovil> users = userMovilService.getAllUsers();
+    public ResponseEntity<List<UserMobile>> getAllUsers() {
+        List<UserMobile> users = userMobileService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -101,7 +101,7 @@ public class UserMobileController {
     
 
     //REGISTRO DE USUARIO EN APP MOVIL
-    //http://localhost:8080/users/createUser
+    //http://localhost:8080/userMobile/createUser
     @PostMapping("/createUser")
     public ResponseEntity<?> register(@Valid @RequestBody UserMobileDTO request, BindingResult result) {
         if (result.hasErrors()) {
@@ -109,7 +109,7 @@ public class UserMobileController {
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
             return ResponseEntity.badRequest().body(errors);
         } try {
-            Response response = userMovilService.register(request); 
+            Response response = userMobileService.register(request); 
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new Response(e.getMessage()));
@@ -122,7 +122,7 @@ public class UserMobileController {
     
     /// 
    //CONFIRMAR CUENTA DE USUARIO EN MOVIL
-   //http://localhost:8080/users/confirm?email=20223l001010@utcv.edu.mx&code=666737 
+   //http://localhost:8080/userMobile/confirm?email=20223l001010@utcv.edu.mx&code=666737 
    @GetMapping("/confirm")
    public ResponseEntity<Response> confirmUser(@RequestParam("email") String email, @RequestParam("code") String code) {
        try {
@@ -135,7 +135,7 @@ public class UserMobileController {
 
    
    //INICIO DE SESIÓN DE USUARIO EN MOVIL
-   ///http://localhost:8080/users/login
+   ///http://localhost:8080/userMobile/login
    @PostMapping("/login")
    public ResponseEntity<?> login(@Valid @RequestBody UserMobileAuthenticationDTO request, BindingResult result) {
        if (result.hasErrors()) {
@@ -144,7 +144,7 @@ public class UserMobileController {
            return ResponseEntity.badRequest().body(errors);
        }
        try {
-           AuthenticationResponse authResponse = userMovilService.authenticate(request);
+           AuthenticationResponse authResponse = userMobileService.authenticate(request);
            return ResponseEntity.ok(authResponse);
        } catch (RuntimeException e) {
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(e.getMessage()));
@@ -157,12 +157,12 @@ public class UserMobileController {
 
 ///
     //SOLICITAR RESTABLECIMIENTO DE CONTRASEÑA
-    //http://localhost:8080/users/request-password-reset?email=20223l001010@utcv.edu.mx
+    //http://localhost:8080/userMobile/request-password-reset?email=20223l001010@utcv.edu.mx
    @PostMapping("/request-password-reset")
    public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
        try {
-    	   UserMovil userMovil = userMovilService.findByEmail(email);
-           movilEmailService.sendPasswordResetEmail(userMovil); // Esto puede lanzar excepciones propias de emailService
+    	   UserMobile userMobile = userMobileService.findByEmail(email);
+           movilEmailService.sendPasswordResetEmail(userMobile); // Esto puede lanzar excepciones propias de emailService
 
            return ResponseEntity.ok(new Response("Se ha enviado un correo con instrucciones para restablecer la contraseña"));
        } catch (RuntimeException e) {
@@ -174,11 +174,11 @@ public class UserMobileController {
    
 ///
     //RESTABLECER CONTRASEÑA
-    //http://localhost:8080/users/reset-password
+    //http://localhost:8080/userMobile/reset-password
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDTO request) {
         try {
-            boolean isVerified = userMovilService.verifyCodeAndResetPassword(
+            boolean isVerified = userMobileService.verifyCodeAndResetPassword(
                 request.getVerificationCode(), 
                 request.getNewPassword()
             );
@@ -194,13 +194,13 @@ public class UserMobileController {
     }
 
     //REENVIAR CORREO DE RESTABLECIMIENTO DE CONTRASEÑA
-    //http://localhost:8080/users/resend-reset-password?email=20223l001010@utcv.edu.mx
+    //http://localhost:8080/userMobile/resend-reset-password?email=20223l001010@utcv.edu.mx
     @PostMapping("/resend-reset-password")
     public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
         try {
-        	UserMovil userMovil = userMovilService.findByEmail(email);
-            if (userMovil != null) {
-            	movilEmailService.sendPasswordResetEmail(userMovil);
+        	UserMobile userMobile = userMobileService.findByEmail(email);
+            if (userMobile != null) {
+            	movilEmailService.sendPasswordResetEmail(userMobile);
             }
             return ResponseEntity.ok(new Response("Se ha enviado un nuevo correo con instrucciones para restablecer la contraseña"));
         } catch (Exception e) {

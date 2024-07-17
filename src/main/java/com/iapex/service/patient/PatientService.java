@@ -163,9 +163,9 @@ public class PatientService {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
-            Institution institution = userInstitution.getInstitution();
+            Institution institution = userWeb.getInstitution();
 
             // OBTENER LOS PACIENTES DE LA MISMA INSTITUCIÓN
             List<Patient> patients = patientRepository.findByInstitution(institution);

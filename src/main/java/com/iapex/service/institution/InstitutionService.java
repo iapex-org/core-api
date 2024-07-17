@@ -154,8 +154,8 @@ public class InstitutionService {
     }
     
     // MÉTODO PARA OBTENER LA INSTITUCIÓN DTO POR USUARIO
-    public InstitutionDTO getInstitutionDTOByUser(UserWeb userInstitution) throws Exception {
-        Institution institution = userInstitution.getInstitution();
+    public InstitutionDTO getInstitutionDTOByUser(UserWeb userWeb) throws Exception {
+        Institution institution = userWeb.getInstitution();
         if (institution == null) {
             throw new Exception("Institución no encontrada para el usuario autenticado");
         }

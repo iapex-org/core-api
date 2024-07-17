@@ -51,7 +51,7 @@ public class SecurityConfig {
                         						"/users/**",
                         						"/institutions/**",
                         						"/employeeInstitution/**",
-                        						"/userInstitution/**",
+                        						"/userWeb/**",
                         						"/adminInstitution/**",
                         						"/v3/api-docs/**", 
                         						"/swagger-ui/**",

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iapex.model.token.TokenWeb;
 import com.iapex.model.user.UserWeb;
 
-public interface TokenInstitutionRepository extends JpaRepository<TokenWeb, Long> {
+public interface TokenWebRepository extends JpaRepository<TokenWeb, Long> {
 
     /**
      * Encuentra todos los tokens que han expirado antes de la fecha actual.
@@ -19,7 +19,7 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenWeb, Long
      * @param currentDate La fecha actual
      * @return Una lista de tokens expirados
      */
-    @Query("select t from TokenInstitution t where t.expirationDate <= :currentDate")
+    @Query("select t from TokenWeb t where t.expirationDate <= :currentDate")
     List<TokenWeb> findExpiredTokens(@Param("currentDate") Date currentDate);
 
     /**
@@ -29,17 +29,17 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenWeb, Long
      */
     @Transactional
     @Modifying
-    @Query("delete from TokenInstitution t where t.expirationDate <= :currentDate")
+    @Query("delete from TokenWeb t where t.expirationDate <= :currentDate")
     void deleteExpiredTokens(@Param("currentDate") Date currentDate);
 
     /**
      * Encuentra todos los tokens activos (no cerrados) de un usuario específico.
      * 
-     * @param userId El ID del usuario institución
+     * @param id El ID del usuario institución
      * @return Una lista de tokens activos del usuario
      */
-    @Query("select t from TokenInstitution t inner join UserInstitution u on t.userInstitution.idUserInstitution = u.idUserInstitution where u.idUserInstitution = :userId and t.loggedOut = false")
-    List<TokenWeb> findAllTokensByUser(@Param("userId") Long userId);
+    @Query("select t from TokenWeb t inner join UserWeb u on t.userWeb.id = u.id where u.id = :id and t.loggedOut = false")
+    List<TokenWeb> findAllTokensByUser(@Param("id") Long id);
 
     /**
      * Busca un token por su valor.
@@ -53,17 +53,17 @@ public interface TokenInstitutionRepository extends JpaRepository<TokenWeb, Long
      * Encuentra todos los tokens de un usuario institución específico, 
      * filtrados por su estado de cierre de sesión.
      * 
-     * @param userInstitution El usuario institución
+     * @param userWeb El usuario institución
      * @param loggedOut El estado de cierre de sesión
      * @return Una lista de tokens que coinciden con los criterios
      */
-    List<TokenWeb> findAllByUserInstitutionAndLoggedOut(UserWeb userInstitution, boolean loggedOut);
+    List<TokenWeb> findAllByUserWebAndLoggedOut(UserWeb userWeb, boolean loggedOut);
 
     /**
      * Encuentra todos los tokens asociados a un usuario institución específico.
      * 
-     * @param idUserInstitution El ID del usuario institución
+     * @param id El ID del usuario institución
      * @return Una lista de todos los tokens del usuario institución
      */
-    List<TokenWeb> findByUserInstitution_IdUserInstitution(Long idUserInstitution);
+    List<TokenWeb> findByUserWeb_id(Long id);
 }

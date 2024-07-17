@@ -113,10 +113,10 @@ public class PatientController {
             if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
                 return ResponseEntity.status(401).body(new Response("Necesita iniciar sesión, como personal de la institucion para usar este recurso"));
             }
-            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
-            String name = userInstitution.getName(); 
-            String fatherName = userInstitution.getFathername(); 
-            String motherName = userInstitution.getMothername(); 
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
+            String name = userWeb.getName(); 
+            String fatherName = userWeb.getLastName(); 
+            String motherName = userWeb.getSecondLastName(); 
 
             // LLAMAR AL SERVICIO PARA REGISTRAR EL PACIENTE
             Response response = patientService.registerPatient(patientDTO, name, fatherName, motherName);

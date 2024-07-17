@@ -8,7 +8,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserMobile;
 import com.iapex.repository.user.UserMobileRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -28,7 +28,7 @@ public class MobileEmailService {
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
-    public String sendPasswordResetEmail(UserMovil userMovil) throws MessagingException {
+    public String sendPasswordResetEmail(UserMobile userMovil) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -85,7 +85,7 @@ public class MobileEmailService {
         }
     }
     
-    public String sendVerificationEmail(UserMovil userMovil) throws MessagingException {
+    public String sendVerificationEmail(UserMobile userMovil) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -165,7 +165,7 @@ public class MobileEmailService {
     }
     
     public void verifyUserWithCode(String email, String verificationCode) throws Exception {
-    	UserMovil userMovil = userMovilRepository.findByEmail(email)
+    	UserMobile userMovil = userMovilRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -186,7 +186,7 @@ public class MobileEmailService {
     }
     
     public String resendVerificationCode(String email) throws MessagingException {
-    	UserMovil userMovil = userMovilRepository.findByEmail(email)
+    	UserMobile userMovil = userMovilRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         if (userMovil.isStatus()) {
@@ -198,7 +198,7 @@ public class MobileEmailService {
     
     public void sendEmail(String from, String body) throws MessagingException {
         try {
-        	UserMovil userMovil = userMovilRepository.findByEmail(from)
+        	UserMobile userMovil = userMovilRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
             MimeMessage message = mailSender.createMimeMessage();

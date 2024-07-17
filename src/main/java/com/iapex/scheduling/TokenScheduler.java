@@ -3,20 +3,20 @@ package com.iapex.scheduling;
 import java.util.Date;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import com.iapex.repository.token.TokenInstitutionRepository;
+import com.iapex.repository.token.TokenWebRepository;
 import com.iapex.repository.token.TokenMobileRepository;
 
 @Component
 public class TokenScheduler {
 
-    private final TokenMobileRepository tokenMovilRepository;
-    private final TokenInstitutionRepository tokenInstitutionRepository;
+    private final TokenMobileRepository tokenMobileRepository;
+    private final TokenWebRepository tokenWebRepository;
 
     // Constructor de la clase TokenScheduled
-    public TokenScheduler(TokenMobileRepository tokenMovilRepository,
-            TokenInstitutionRepository tokenInstitutionRepository) {
-        this.tokenMovilRepository = tokenMovilRepository;
-        this.tokenInstitutionRepository = tokenInstitutionRepository;
+    public TokenScheduler(TokenMobileRepository tokenMobileRepository,
+            TokenWebRepository tokenWebRepository) {
+        this.tokenMobileRepository = tokenMobileRepository;
+        this.tokenWebRepository = tokenWebRepository;
     }
 
     // Método programado para ejecutarse periódicamente según la expresión Cron
@@ -28,8 +28,8 @@ public class TokenScheduler {
         System.out.println("Ejecutando tarea programada para eliminar tokens expirados: " + new Date());
 
         // Llamada al repositorio para eliminar tokens expirados hasta la fecha actual
-        tokenMovilRepository.deleteExpiredTokens(new Date());
-        tokenInstitutionRepository.deleteExpiredTokens(new Date());
+        tokenMobileRepository.deleteExpiredTokens(new Date());
+        tokenWebRepository.deleteExpiredTokens(new Date());
 
         // Registro de fin de la tarea programada
         System.out.println("Tokens expirados eliminados de la base de datos.");

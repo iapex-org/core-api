@@ -11,9 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserMobile;
 import com.iapex.model.user.UserWeb;
-import com.iapex.repository.token.TokenInstitutionRepository;
+import com.iapex.repository.token.TokenWebRepository;
 import com.iapex.repository.token.TokenMobileRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -26,16 +26,15 @@ import org.slf4j.LoggerFactory;
 public class JwtService {
 	
     @Autowired
-    private TokenInstitutionRepository tokenInstitutionRepository;
-
+    private TokenWebRepository tokenWebRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     private final String SECRET_KEY = "d37662fcfcdde9c0d8515abd9f3054d82feecb7d9ead975c0b3b10ef79c7f6eb";
-    private final TokenMobileRepository tokenMovilRepository;
+    private final TokenMobileRepository tokenMobileRepository;
 
-    public JwtService(TokenMobileRepository tokenMovilRepository) {
-        this.tokenMovilRepository = tokenMovilRepository;
+    public JwtService(TokenMobileRepository tokenMobileRepository) {
+        this.tokenMobileRepository = tokenMobileRepository;
     }
 
     public String extractEmail(String token) {
@@ -49,12 +48,12 @@ public class JwtService {
         //logger.debug("Validating token for email: {}", email);
         //logger.debug("For user: {}", email);
         boolean validToken;
-        if (user instanceof UserMovil) {
-            validToken = tokenMovilRepository.findByToken(token)
+        if (user instanceof UserMobile) {
+            validToken = tokenMobileRepository.findByToken(token)
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
         } else if (user instanceof UserWeb) {
-            validToken = tokenInstitutionRepository.findByToken(token)
+            validToken = tokenWebRepository.findByToken(token)
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
         } else {
@@ -100,7 +99,7 @@ public class JwtService {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    public String generateToken(UserMovil user) {
+    public String generateToken(UserMobile user) {
         //logger.debug("Generating token for user: {}", user.getEmail());
         String token = Jwts
             .builder()
@@ -115,12 +114,12 @@ public class JwtService {
         return token;
     }
 
-    public String generateTokenUserInstitution(UserWeb userInstitution) {
-        //logger.debug("Generating token for user institution: {}", userInstitution.getEmail());
+    public String generateTokenUserWeb(UserWeb userWeb) {
+        //logger.debug("Generating token for user web: {}", userWeb.getEmail());
         String token = Jwts
             .builder()
-            .subject(userInstitution.getEmail())
-            .claim("authorities", userInstitution.getRole().getAuthorities())
+            .subject(userWeb.getEmail())
+            .claim("authorities", userWeb.getRole().getAuthorities())
             .issuedAt(new Date(System.currentTimeMillis()))
             //.expiration(new Date(System.currentTimeMillis() + 60*1000 )) //1 MINUTO
             .expiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) //10 MINUTOS
@@ -135,7 +134,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isTokenValid(String token, UserMovil user) {
+    public boolean isTokenValid(String token, UserMobile user) {
         String email = extractEmail(token);
         boolean isValid = (email.equals(user.getEmail())) && !isTokenExpired(token);
         //logger.debug("Token validation for user. Email: {}, Is valid: {}", email, isValid);

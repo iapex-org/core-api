@@ -22,44 +22,43 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users_institution")
+@Table(name = "users_web")
 public class UserWeb implements AppUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_user_institution")
-    private Long idUserInstitution;
+    private Long id;
 
     @Column(length = 50)
     private String name;
 
     @Column(length = 50)
-    private String fathername;
+    private String lastName;
 
     @Column(length = 50)
-    private String mothername;
+    private String secondLastName;
 
     @Column(length = 100)
     private String email;
-    
-    private String password;
 
-    @Column(length = 50)
-    private String charge;
+    private String password;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_institution", referencedColumnName = "idInstitution")
     private Institution institution;
 
-    @Column(name = "status", nullable = false)
-    private boolean status;
+    @Column(length = 50)
+    private String position;
+
+    @Column(nullable = false)
+    private boolean accountVerified;
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "userInstitution", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userWeb", cascade = CascadeType.ALL)
     private List<TokenWeb> tokens;
 
     // Constructor
@@ -73,12 +72,12 @@ public class UserWeb implements AppUserDetails {
     }
 
     // Getters and Setters
-    public Long getIdUserInstitution() {
-        return idUserInstitution;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdUserInstitution(Long idUserInstitution) {
-        this.idUserInstitution = idUserInstitution;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -89,20 +88,20 @@ public class UserWeb implements AppUserDetails {
         this.name = name;
     }
 
-    public String getFathername() {
-        return fathername;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setFathername(String fathername) {
-        this.fathername = fathername;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getMothername() {
-        return mothername;
+    public String getSecondLastName() {
+        return secondLastName;
     }
 
-    public void setMothername(String mothername) {
-        this.mothername = mothername;
+    public void setSecondLastName(String secondLastName) {
+        this.secondLastName = secondLastName;
     }
 
     public String getEmail() {
@@ -121,12 +120,12 @@ public class UserWeb implements AppUserDetails {
         this.password = password;
     }
 
-    public String getCharge() {
-        return charge;
+    public String getPosition() {
+        return position;
     }
 
-    public void setCharge(String charge) {
-        this.charge = charge;
+    public void setPosition(String position) {
+        this.position = position;
     }
 
     public Institution getInstitution() {
@@ -137,12 +136,12 @@ public class UserWeb implements AppUserDetails {
         this.institution = institution;
     }
 
-    public boolean isStatus() {
-        return status;
+    public boolean isAccountVerified() {
+        return accountVerified;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setAccountVerified(boolean accountVerified) {
+        this.accountVerified = accountVerified;
     }
 
     public Role getRole() {
@@ -170,7 +169,7 @@ public class UserWeb implements AppUserDetails {
     }
 
     public boolean isConfirmed() {
-        return status;
+        return accountVerified;
     }
 
     public boolean isAccountNonLocked() {

@@ -229,10 +229,10 @@ public class InstitutionController {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             
             // OBTENER LA INSTITUCIÓN Y CONVERTIR A DTO USANDO EL SERVICIO
-            InstitutionDTO institutionDTO = institutionService.getInstitutionDTOByUser(userInstitution);
+            InstitutionDTO institutionDTO = institutionService.getInstitutionDTOByUser(userWeb);
             
             return ResponseEntity.ok(institutionDTO);
         } catch (Exception e) {
@@ -282,11 +282,11 @@ public class InstitutionController {
     
     // AL HACER UNA SOLICITUD GET A ESTA RUTA, SE ACCEDE A UN USUARIO ESPECÍFICO POR SU ID, SE ACCEDE A TODO EL OBJETO RELACIONADO AL USUARIO
     //ADMIN-WEB
-    // http://localhost:8080/institutions/getUserInstitutionById/12
-    @GetMapping("/getUserInstitutionById/{id}")
-    public ResponseEntity<?> getUserInstitutionById(@PathVariable Long id) {
+    // http://localhost:8080/institutions/getUserWebById/12
+    @GetMapping("/getUserWebById/{id}")
+    public ResponseEntity<?> getUserWebById(@PathVariable Long id) {
         try {
-            UserWebDTO dto = usersWebService.getUserInstitutionDTOById(id);
+            UserWebDTO dto = usersWebService.getUserWebDTOById(id);
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -310,10 +310,10 @@ public class InstitutionController {
     
     // ENDPOINT PARA ACTUALIZAR UN USUARIO DENTRO DEL DASHBOARD
     //ADMIN-WEB
-    // http://localhost:8080/institutions/updateUserInstitution/12
+    // http://localhost:8080/institutions/updateUserWeb/12
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/updateUserInstitution/{id}")
-    public ResponseEntity<?> updateUserInstitution(
+    @PutMapping("/updateUserWeb/{id}")
+    public ResponseEntity<?> updateUserWeb(
             @PathVariable Long id,
             @Valid @RequestBody UserWebDTO request,
             BindingResult result) {
@@ -323,7 +323,7 @@ public class InstitutionController {
             return ResponseEntity.badRequest().body(errors);
         } 
         try {
-            Response response = usersWebService.updateUserInstitution(id, request);
+            Response response = usersWebService.updateUserWeb(id, request);
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -340,9 +340,9 @@ public class InstitutionController {
     
     // ENDPOINT PARA ELIMINAR UN USUARIO DENTRO DEL DASHBOARD
     //ADMIN-WEB
-    //http://localhost:8080/institutions/deleteUserInstitutionById/12
+    //http://localhost:8080/institutions/deleteUserWebById/12
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/deleteUserInstitutionById/{id}")
+    @DeleteMapping("/deleteUserWebById/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         try {
         	usersWebService.deleteById(id);

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/userInstitution")
+@RequestMapping("/userWeb")
 public class UserWebController {
 
     private final UserWebService usersWebService;
@@ -33,8 +33,8 @@ public class UserWebController {
 
     //CREAR UN USUARIO PARA REGISTRO
     //WEB
-    //http://localhost:8080/userInstitution/createUserInstitution
-    @PostMapping("/createUserInstitution")
+    //http://localhost:8080/userWeb/createUserWeb
+    @PostMapping("/createUserWeb")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserWebDTO request, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
@@ -58,11 +58,11 @@ public class UserWebController {
 
     //EL USUARIO CONFIRMA QUE LA CUENTA ES REAL
     //WEB
-    //http://localhost:8080/userInstitution/confirm?email=misraelaltamirano@gmail.com&code=350231
+    //http://localhost:8080/userWeb/confirm?email=misraelaltamirano@gmail.com&code=350231
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirmUserInstitution(@RequestParam("email") String email, @RequestParam("code") String code) {
+    public ResponseEntity<?> confirmUserWeb(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
-        	webEmailService.verifyUserInstitutionWithCode(email, code);
+        	webEmailService.verifyUserWebWithCode(email, code);
             return ResponseEntity.ok(new Response("Usuario verificado correctamente"));
         } catch (Exception e) {
             //logger.error("Error verifying user", e);
@@ -73,7 +73,7 @@ public class UserWebController {
     
     //EL USUARIO SOLICITA REENVIAR EL CODIGO DE CONFIRMACION
     //WEB
-    //http://localhost:8080/userInstitution/resend-verification-confirm?email=misraelaltamirano@gmail.com
+    //http://localhost:8080/userWeb/resend-verification-confirm?email=misraelaltamirano@gmail.com
     @GetMapping("/resend-verification-confirm")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
@@ -88,7 +88,7 @@ public class UserWebController {
 
     //EL USUARIO ENTRA A LA APLICACION Y SE LOGUEA
     //WEB
-    //http://localhost:8080/userInstitution/login
+    //http://localhost:8080/userWeb/login
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserWebAuthenticationDTO request, BindingResult result) {
         if (result.hasErrors()) {
@@ -97,7 +97,7 @@ public class UserWebController {
             return ResponseEntity.badRequest().body(errors);
         }
         try {
-            AuthenticationResponse authResponse = usersWebService.authenticateInstitution(request);
+            AuthenticationResponse authResponse = usersWebService.authenticateWeb(request);
             return ResponseEntity.ok(authResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(e.getMessage()));
@@ -110,13 +110,13 @@ public class UserWebController {
     
     //EL USUARIO SOLICITA EL CORREO CON EL CODIGO PARA RESTABLECER LA CONTRASEÑA
     //WEB
-    //http://localhost:8080/userInstitution/request-password-reset?email=misraelaltamirano@gmail.com
+    //http://localhost:8080/userWeb/request-password-reset?email=misraelaltamirano@gmail.com
     @PostMapping("/request-password-reset")
     public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
         try {
-            UserWeb userInstitution = usersWebService.findByEmail(email);
-            if (userInstitution != null) {
-            	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
+            UserWeb userWeb = usersWebService.findByEmail(email);
+            if (userWeb != null) {
+            	webEmailService.sendPasswordResetUserWebEmail(userWeb);
                 return ResponseEntity.ok(new Response("Se ha enviado un correo con instrucciones para restablecer la contraseña"));
             }
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class UserWebController {
 
     //EL USUARIO RESTABLECE SU CONTRASEÑA
     //WEB
-    //http://localhost:8080/userInstitution/reset-password
+    //http://localhost:8080/userWeb/reset-password
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDTO request) {
         try {
@@ -151,13 +151,13 @@ public class UserWebController {
     
     //ENVIAR DE NUEVO EL CORREO CON EL CODIGO PARA RESTABLECER LA CONTRASEÑA
     //WEB
-    //http://localhost:8080/userInstitution/resend-reset-password?email=misraelaltamirano@gmail.com
+    //http://localhost:8080/userWeb/resend-reset-password?email=misraelaltamirano@gmail.com
     @PostMapping("/resend-reset-password")
     public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
         try {
-            UserWeb userInstitution = usersWebService.findByEmail(email);
-            if (userInstitution != null) {
-            	webEmailService.sendPasswordResetUserInstitutionEmail(userInstitution);
+            UserWeb userWeb = usersWebService.findByEmail(email);
+            if (userWeb != null) {
+            	webEmailService.sendPasswordResetUserWebEmail(userWeb);
                 return ResponseEntity.ok(new Response("Se ha enviado un nuevo correo con instrucciones para restablecer la contraseña."));
             }
         } catch (Exception e) {

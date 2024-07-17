@@ -18,15 +18,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users")
-public class UserMovil implements AppUserDetails {
+@Table(name = "users_mobile")
+public class UserMobile implements AppUserDetails {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_user")
-    private Long idUser;
+    @Column(name = "id")
+    private Long id;
 
     @Column(length = 100, unique = true, nullable = false)
     private String email;
@@ -44,16 +44,16 @@ public class UserMovil implements AppUserDetails {
     private Role role;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "userMovil")
+    @OneToMany(mappedBy = "userMobile")
     private List<TokenMobile> tokens;
 
     // Getters and setters
-    public Long getIdUser() {
-        return idUser;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdUser(Long idUser) {
-        this.idUser = idUser;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPhone() {

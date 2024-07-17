@@ -76,7 +76,7 @@ public class ContactRequestController  {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             @SuppressWarnings("unused")
-			UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+			UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             // LLAMAR AL SERVICIO PARA OBTENER LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN
             List<ContactRequestDTO> conversations = contactRequestService.getConversationsForAuthenticatedUser();
             return new ResponseEntity<>(conversations, HttpStatus.OK);
@@ -94,12 +94,12 @@ public class ContactRequestController  {
     public ResponseEntity<Response> updateConversationStatus(@PathVariable Long id, @RequestBody ContactRequestDTO request) {
         // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+        UserWeb userWeb = (UserWeb) authentication.getPrincipal();
         // LLAMAR AL SERVICIO CON LA INFORMACIÓN DEL USUARIO
         Response response = contactRequestService.updateById(id, request, 
-            userInstitution.getName(), 
-            userInstitution.getFathername(), 
-            userInstitution.getMothername());
+            userWeb.getName(), 
+            userWeb.getLastName(), 
+            userWeb.getSecondLastName());
     
         return new ResponseEntity<>(response, HttpStatus.OK);
     }  

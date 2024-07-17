@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.iapex.model.user.UserMovil;
+import com.iapex.model.user.UserMobile;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,7 +15,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "token")
+@Table(name = "tokens_mobile")
 public class TokenMobile {
 
     @Id
@@ -31,8 +31,8 @@ public class TokenMobile {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "user_id")
-    private UserMovil userMovil;
+    @JoinColumn(name = "user_mobile_id")
+    private UserMobile userMobile;
 
     @Column(name = "expiration_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,12 +71,12 @@ public class TokenMobile {
         this.loggedOut = loggedOut;
     }
 
-    public UserMovil getUserMovil() {
-        return userMovil;
+    public UserMobile getUserMobile() {
+        return userMobile;
     }
 
-    public void setUserMovil(UserMovil userMovil) {
-        this.userMovil = userMovil;
+    public void setUserMobile(UserMobile userMobile) {
+        this.userMobile = userMobile;
     }
 
 }

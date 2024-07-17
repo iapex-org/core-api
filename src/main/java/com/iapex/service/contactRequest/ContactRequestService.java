@@ -106,9 +106,9 @@ public class ContactRequestService  {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserWeb userInstitution = (UserWeb) authentication.getPrincipal();
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
-            Institution institution = userInstitution.getInstitution();
+            Institution institution = userWeb.getInstitution();
             // OBTENER LAS CONVERSACIONES ASOCIADAS A LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             List<ContactRequest> conversations = contactRequestRepository.findByPatientInstitution(institution);
             // CONVERTIR LAS CONVERSACIONES A DTOS
