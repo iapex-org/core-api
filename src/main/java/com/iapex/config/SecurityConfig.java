@@ -16,7 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.iapex.filter.JwtAuthenticationFilter;
-import com.iapex.service.security.UserDetailsServiceImp;
+import com.iapex.services.security.UserDetailsServiceImp;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
