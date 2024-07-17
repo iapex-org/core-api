@@ -112,7 +112,7 @@ public class MembershipService {
 
     private MembershipDTO convertToDTO(Membership membership) {
         return new MembershipDTO(
-            membership.getIdMembership(),
+            membership.getId(),
             membership.getStartDate(),
             membership.getEndDate(),
             membership.isStatus(),

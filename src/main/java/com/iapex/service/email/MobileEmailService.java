@@ -24,11 +24,11 @@ public class MobileEmailService {
     private CacheManager cacheManager;
     
     @Autowired
-    private UserMobileRepository userMovilRepository;
+    private UserMobileRepository userMobileRepository;
 
     private static final String IMAGE_URL = "https://medexlaboratories.com/wp-content/uploads/2022/03/healthcare.png";
 
-    public String sendPasswordResetEmail(UserMobile userMovil) throws MessagingException {
+    public String sendPasswordResetEmail(UserMobile userMobile) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -70,14 +70,14 @@ public class MobileEmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(userMovil.getEmail());
+            helper.setTo(userMobile.getEmail());
             helper.setSubject("Restablecimiento de Contraseña en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(userMovil.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMovil.getEmail());
+            cacheManager.getCache("verificationCodes").put(userMobile.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMobile.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -85,7 +85,7 @@ public class MobileEmailService {
         }
     }
     
-    public String sendVerificationEmail(UserMobile userMovil) throws MessagingException {
+    public String sendVerificationEmail(UserMobile userMobile) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
         try {
@@ -126,14 +126,14 @@ public class MobileEmailService {
                     "</html>";
 
             helper.setFrom("iapex@gmail.com");
-            helper.setTo(userMovil.getEmail());
+            helper.setTo(userMobile.getEmail());
             helper.setSubject("Confirmación de Registro en IAPEX");
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
-            cacheManager.getCache("verificationCodes").put(userMovil.getEmail(), verificationCode);
-            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMovil.getEmail());
+            cacheManager.getCache("verificationCodes").put(userMobile.getEmail(), verificationCode);
+            cacheManager.getCache("codeToEmailCache").put(verificationCode, userMobile.getEmail());
 
             return verificationCode;
         } catch (MessagingException | MailSendException e) {
@@ -165,7 +165,7 @@ public class MobileEmailService {
     }
     
     public void verifyUserWithCode(String email, String verificationCode) throws Exception {
-    	UserMobile userMovil = userMovilRepository.findByEmail(email)
+    	UserMobile userMobile = userMobileRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
@@ -178,27 +178,27 @@ public class MobileEmailService {
             throw new Exception("Código de verificación no válido.");
         }
 
-        userMovil.setStatus(true);
-        userMovilRepository.save(userMovil);
+        userMobile.setStatus(true);
+        userMobileRepository.save(userMobile);
 
         verificationCache.evict(email);
         cacheManager.getCache("codeToEmailCache").evict(verificationCode);
     }
     
     public String resendVerificationCode(String email) throws MessagingException {
-    	UserMobile userMovil = userMovilRepository.findByEmail(email)
+    	UserMobile userMobile = userMobileRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
-        if (userMovil.isStatus()) {
+        if (userMobile.isStatus()) {
             throw new IllegalStateException("La cuenta ya está verificada");
         }
 
-        return sendVerificationEmail(userMovil);
+        return sendVerificationEmail(userMobile);
     }
     
     public void sendEmail(String from, String body) throws MessagingException {
         try {
-        	UserMobile userMovil = userMovilRepository.findByEmail(from)
+        	UserMobile userMobile = userMobileRepository.findByEmail(from)
                 .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
 
             MimeMessage message = mailSender.createMimeMessage();

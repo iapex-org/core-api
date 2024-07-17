@@ -1,229 +1,102 @@
 package com.iapex.dto.patient;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class PatientDTO {
 
     @JsonIgnore
-    private Long idPatient;
-    @Size(max = 30, message = "El color de cabello debe tener máximo 30 caracteres")
-    private String hairColor;
-
-    @Size(max = 30, message = "El color de piel debe tener máximo 30 caracteres")
-    private String skinColor;
-
-    @Size(max = 30, message = "El color de ojos debe tener máximo 30 caracteres")
-    private String eyeColor;
-
-    @Size(max = 10, message = "El sexo debe tener máximo 10 caracteres")
-    private String sex;
-
-    private double height;
-    private double weight;
-    private LocalDate birthDate;
-    private int age;
-
-    @Size(max = 30, message = "El tipo de cabello debe tener máximo 30 caracteres")
-    private String hairType;
-
-    private String traits;
-
-    @Size(max = 30, message = "El tipo de cuerpo debe tener máximo 30 caracteres")
-    private String build;
-
-    @Size(max = 30, message = "La postura debe tener máximo 30 caracteres")
-    private String posture;
-
-    private String physicalConditions;
+    private Long id;
 
     @Size(max = 50, message = "El nombre debe tener máximo 50 caracteres")
     private String name;
 
     @Size(max = 50, message = "El apellido paterno debe tener máximo 50 caracteres")
-    private String fathername;
+    private String lastName;
 
     @Size(max = 50, message = "El apellido materno debe tener máximo 50 caracteres")
-    private String mothername;
+    private String secondLastName;
 
-    @Size(max = 10, message = "El tipo de sangre debe tener máximo 10 caracteres")
-    private String bloodType;
+    @Size(max = 10, message = "El sexo debe tener máximo 10 caracteres")
+    private String gender;
 
-    @Size(max = 30, message = "La nacionalidad debe tener máximo 30 caracteres")
-    private String nationality;
+    @NotNull(message = "La edad aproximada es obligatoria")
+    private Integer approximateAge;
 
-    @Size(max = 11, message = "El número de seguro debe tener máximo 11 caracteres")
-    private String insuranceNumber;
+    @NotNull(message = "La fecha y hora de registro es obligatoria")
+    private LocalDateTime registrationDateTime;
 
-    private String institutionName;
+    private String registeringUser;
 
-    @Size(max = 75, message = "El nombre de registro debe tener máximo 75 caracteres")
-    private String nameRegister;
+    private boolean active = true;
 
-    private String additionalNotes;
+    @Size(max = 50, message = "El color de piel debe tener máximo 50 caracteres")
+    private String skinColor;
 
-    private boolean status;
+    @Size(max = 100, message = "El cabello debe tener máximo 100 caracteres")
+    private String hair;
+
+    @Size(max = 50, message = "El tipo de complexión debe tener máximo 50 caracteres")
+    private String complexion;
+
+    @Size(max = 50, message = "El color de ojos debe tener máximo 50 caracteres")
+    private String eyeColor;
+
+    @NotNull(message = "La altura aproximada es obligatoria")
+    private Integer approximateHeight;
+
+    @Size(max = 255, message = "Las condiciones médicas deben tener máximo 255 caracteres")
+    private String medicalConditions;
+
+    @Size(max = 255, message = "Las características distintivas deben tener máximo 255 caracteres")
+    private String distinctiveFeatures;
+
+    @NotNull(message = "La institución es obligatoria")
+    private String institution;
 
     private List<ImageDTO> images;
+
+    @Size(max = 255, message = "Las notas adicionales deben tener máximo 255 caracteres")
+    private String additionalNotes;
 
     // Constructor
     public PatientDTO() {
     }
 
     // Constructor con todos los atributos
-    public PatientDTO(String hairColor, String skinColor, String eyeColor, String sex, double height,
-            double weight, LocalDate birthDate, int age, String hairType, String traits, String build,
-            String posture, String physicalConditions, String name, String fathername, String mothername,
-            String bloodType, String nationality, String insuranceNumber, String institutionName, String nameRegister,
-            String additionalNotes,
-            boolean status, List<ImageDTO> images) {
-        this.hairColor = hairColor;
-        this.skinColor = skinColor;
-        this.eyeColor = eyeColor;
-        this.sex = sex;
-        this.height = height;
-        this.weight = weight;
-        this.birthDate = birthDate;
-        this.age = age;
-        this.hairType = hairType;
-        this.traits = traits;
-        this.build = build;
-        this.posture = posture;
-        this.physicalConditions = physicalConditions;
+    public PatientDTO(String name, String lastName, String secondLastName, String gender, Integer approximateAge,
+                      LocalDateTime registrationDateTime, String registeringUser, boolean active, String skinColor, 
+                      String hair, String complexion, String eyeColor, Integer approximateHeight, String medicalConditions,
+                      String distinctiveFeatures, String institution, List<ImageDTO> images, String additionalNotes) {
         this.name = name;
-        this.fathername = fathername;
-        this.mothername = mothername;
-        this.bloodType = bloodType;
-        this.nationality = nationality;
-        this.insuranceNumber = insuranceNumber;
-        this.institutionName = institutionName;
-        this.nameRegister = nameRegister;
-        this.additionalNotes = additionalNotes;
-        this.status = status;
-        this.images = images;
-    }
-
-    // Getters and Setters
-    public List<ImageDTO> getImages() {
-        return images;
-    }
-
-    public void setImages(List<ImageDTO> images) {
-        this.images = images;
-    }
-
-    public Long getIdPatient() {
-        return idPatient;
-    }
-
-    public void setIdPatient(Long idPatient) {
-        this.idPatient = idPatient;
-    }
-
-    public String getHairColor() {
-        return hairColor;
-    }
-
-    public void setHairColor(String hairColor) {
-        this.hairColor = hairColor;
-    }
-
-    public String getSkinColor() {
-        return skinColor;
-    }
-
-    public void setSkinColor(String skinColor) {
+        this.lastName = lastName;
+        this.secondLastName = secondLastName;
+        this.gender = gender;
+        this.approximateAge = approximateAge;
+        this.registrationDateTime = registrationDateTime;
+        this.registeringUser = registeringUser;
+        this.active = active;
         this.skinColor = skinColor;
-    }
-
-    public String getEyeColor() {
-        return eyeColor;
-    }
-
-    public void setEyeColor(String eyeColor) {
+        this.hair = hair;
+        this.complexion = complexion;
         this.eyeColor = eyeColor;
+        this.approximateHeight = approximateHeight;
+        this.medicalConditions = medicalConditions;
+        this.distinctiveFeatures = distinctiveFeatures;
+        this.institution = institution;
+        this.images = images;
+        this.additionalNotes = additionalNotes;
     }
 
-    public String getSex() {
-        return sex;
+    public Long getId() {
+        return id;
     }
 
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getHairType() {
-        return hairType;
-    }
-
-    public void setHairType(String hairType) {
-        this.hairType = hairType;
-    }
-
-    public String getTraits() {
-        return traits;
-    }
-
-    public void setTraits(String traits) {
-        this.traits = traits;
-    }
-
-    public String getBuild() {
-        return build;
-    }
-
-    public void setBuild(String build) {
-        this.build = build;
-    }
-
-    public String getPosture() {
-        return posture;
-    }
-
-    public void setPosture(String posture) {
-        this.posture = posture;
-    }
-
-    public String getPhysicalConditions() {
-        return physicalConditions;
-    }
-
-    public void setPhysicalConditions(String physicalConditions) {
-        this.physicalConditions = physicalConditions;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -234,68 +107,124 @@ public class PatientDTO {
         this.name = name;
     }
 
-    public String getFathername() {
-        return fathername;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setFathername(String fathername) {
-        this.fathername = fathername;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getMothername() {
-        return mothername;
+    public String getSecondLastName() {
+        return secondLastName;
     }
 
-    public void setMothername(String mothername) {
-        this.mothername = mothername;
+    public void setSecondLastName(String secondLastName) {
+        this.secondLastName = secondLastName;
     }
 
-    public String getBloodType() {
-        return bloodType;
+    public String getGender() {
+        return gender;
     }
 
-    public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getNationality() {
-        return nationality;
+    public Integer getApproximateAge() {
+        return approximateAge;
     }
 
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
+    public void setApproximateAge(Integer approximateAge) {
+        this.approximateAge = approximateAge;
     }
 
-    public String getInsuranceNumber() {
-        return insuranceNumber;
+    public LocalDateTime getRegistrationDateTime() {
+        return registrationDateTime;
     }
 
-    public void setInsuranceNumber(String insuranceNumber) {
-        this.insuranceNumber = insuranceNumber;
+    public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
     }
 
-    public String getInstitutionName() {
-        return institutionName;
+    public String getRegisteringUser() {
+        return registeringUser;
     }
 
-    public void setInstitutionName(String institutionName) {
-        this.institutionName = institutionName;
+    public void setRegisteringUser(String registeringUser) {
+        this.registeringUser = registeringUser;
     }
 
-    public boolean getStatus() {
-        return status;
+    public String getSkinColor() {
+        return skinColor;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setSkinColor(String skinColor) {
+        this.skinColor = skinColor;
     }
 
-    public String getNameRegister() {
-        return nameRegister;
+    public String getHair() {
+        return hair;
     }
 
-    public void setNameRegister(String nameRegister) {
-        this.nameRegister = nameRegister;
+    public void setHair(String hair) {
+        this.hair = hair;
+    }
+
+    public String getComplexion() {
+        return complexion;
+    }
+
+    public void setComplexion(String complexion) {
+        this.complexion = complexion;
+    }
+
+    public String getEyeColor() {
+        return eyeColor;
+    }
+
+    public void setEyeColor(String eyeColor) {
+        this.eyeColor = eyeColor;
+    }
+
+    public Integer getApproximateHeight() {
+        return approximateHeight;
+    }
+
+    public void setApproximateHeight(Integer approximateHeight) {
+        this.approximateHeight = approximateHeight;
+    }
+
+    public String getMedicalConditions() {
+        return medicalConditions;
+    }
+
+    public void setMedicalConditions(String medicalConditions) {
+        this.medicalConditions = medicalConditions;
+    }
+
+    public String getDistinctiveFeatures() {
+        return distinctiveFeatures;
+    }
+
+    public void setDistinctiveFeatures(String distinctiveFeatures) {
+        this.distinctiveFeatures = distinctiveFeatures;
+    }
+
+    public String getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(String institution) {
+        this.institution = institution;
+    }
+
+    public List<ImageDTO> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ImageDTO> images) {
+        this.images = images;
     }
 
     public String getAdditionalNotes() {
@@ -305,4 +234,12 @@ public class PatientDTO {
     public void setAdditionalNotes(String additionalNotes) {
         this.additionalNotes = additionalNotes;
     }
-}
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+}    

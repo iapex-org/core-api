@@ -119,7 +119,7 @@ public class InstitutionService {
     
     //OBTENER POR ID SOLO SI STATUS ES TRUE
     public Institution getInstitutionByIdTrue(Long id) throws Exception {
-        return institutionRepository.findByIdInstitutionAndStatusTrue(id)
+        return institutionRepository.findByIdAndStatusTrue(id)
             .orElseThrow(() -> new Exception("Institución no encontrada o no está activa"));
     }
 
@@ -165,7 +165,7 @@ public class InstitutionService {
     
     public InstitutionDTO convertToDto(Institution institution) {
         InstitutionDTO dto = new InstitutionDTO();
-        dto.setIdInstitution(institution.getIdInstitution());
+        dto.setId(institution.getId());
         dto.setName(institution.getName());
         dto.setEmail(institution.getEmail());
         dto.setTypeInstitution(institution.getTypeInstitution());

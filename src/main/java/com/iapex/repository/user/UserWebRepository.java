@@ -17,4 +17,6 @@ public interface UserWebRepository extends JpaRepository<UserWeb, Long> {
 	// MÉTODO QUE LISTA LOS USUARIOS CON EL NOMBRE DE LA INSTITUCION
     List<UserWeb> findByInstitution(Institution institution);
 
+	// MÉTODO QUE BUSCA UN USUARIO POR NOMBRE Y APELLIDOS
+    Optional<UserWeb> findByNameAndLastNameAndSecondLastName(String name, String lastName, String secondLastName);
 }

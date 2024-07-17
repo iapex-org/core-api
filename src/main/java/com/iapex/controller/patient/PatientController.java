@@ -18,7 +18,6 @@ import com.iapex.dto.patient.ImageDTO;
 import com.iapex.dto.patient.PatientDTO;
 import com.iapex.model.patient.Image;
 import com.iapex.model.response.Response;
-import com.iapex.model.user.UserWeb;
 import com.iapex.service.files.StorageService;
 import com.iapex.service.patient.PatientService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,7 +100,7 @@ public class PatientController {
 
             // CONVERTIR LA LISTA DE Image A ImageDTO
             List<ImageDTO> imageDTOs = images.stream()
-                    .map(image -> new ImageDTO(image.getIdImage(), image.getImage(), image.getImageUrl()))
+                    .map(image -> new ImageDTO(image.getId(), image.getImage(), image.getImageUrl()))
                     .collect(Collectors.toList());
 
             // ESTABLECER LAS IMÁGENES CONVERTIDAS EN EL DTO DEL PACIENTE
@@ -112,13 +111,9 @@ public class PatientController {
             if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
                 return ResponseEntity.status(401).body(new Response("Necesita iniciar sesión, como personal de la institucion para usar este recurso"));
             }
-            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
-            String name = userWeb.getName(); 
-            String lastName = userWeb.getLastName(); 
-            String secondLastName = userWeb.getSecondLastName(); 
 
             // LLAMAR AL SERVICIO PARA REGISTRAR EL PACIENTE
-            Response response = patientService.registerPatient(patientDTO, name, lastName, secondLastName);
+            Response response = patientService.registerPatient(patientDTO);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();

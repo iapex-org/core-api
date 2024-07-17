@@ -3,10 +3,15 @@ package com.iapex.dto.membership;
 import java.time.LocalDateTime;
 
 public class MembershipDTO {
-    private Long idMembership;
+
+    private Long id;
+
     private LocalDateTime startDate;
+
     private LocalDateTime endDate;
+
     private boolean status;
+    
     private String institutionName;
 
     // Constructor
@@ -14,9 +19,9 @@ public class MembershipDTO {
     }
 
     // Constructor
-    public MembershipDTO(Long idMembership, LocalDateTime startDate, LocalDateTime endDate, boolean status,
+    public MembershipDTO(Long id, LocalDateTime startDate, LocalDateTime endDate, boolean status,
             String institutionName) {
-        this.idMembership = idMembership;
+        this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
@@ -24,12 +29,12 @@ public class MembershipDTO {
     }
 
     // Getters and setters
-    public Long getIdMembership() {
-        return idMembership;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdMembership(Long idMembership) {
-        this.idMembership = idMembership;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getStartDate() {

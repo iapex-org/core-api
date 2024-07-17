@@ -24,7 +24,7 @@ public class Institution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idInstitution;
+    private Long id;
 
     @Column(length = 50, unique = true, nullable = false)
     private String name;
@@ -51,11 +51,11 @@ public class Institution {
     private Date registrationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_contact", referencedColumnName = "idContact")
+    @JoinColumn(name = "contact_id", referencedColumnName = "id")
     private Contact contact;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_direction", referencedColumnName = "idDirection")
+    @JoinColumn(name = "direction_id", referencedColumnName = "id")
     private Direction direction;
 
     @OneToOne(mappedBy = "institution", cascade = CascadeType.ALL)
@@ -72,12 +72,12 @@ public class Institution {
     }
 
     // Getters y Setters
-    public Long getIdInstitution() {
-        return idInstitution;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdInstitution(Long idInstitution) {
-        this.idInstitution = idInstitution;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

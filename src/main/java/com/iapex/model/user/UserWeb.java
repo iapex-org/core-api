@@ -44,7 +44,7 @@ public class UserWeb implements AppUserDetails {
     private String password;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_institution", referencedColumnName = "idInstitution")
+    @JoinColumn(name = "institution_id", referencedColumnName = "id")
     private Institution institution;
 
     @Column(length = 50)

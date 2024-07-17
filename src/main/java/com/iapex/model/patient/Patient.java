@@ -2,6 +2,8 @@ package com.iapex.model.patient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.iapex.model.institution.Institution;
 import com.iapex.model.user.UserWeb;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,7 +22,7 @@ public class Patient {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idPatient;
+	private Long id;
 
 	@Column(length = 50, nullable = false)
     private String name;
@@ -41,7 +43,7 @@ public class Patient {
     private LocalDateTime registrationDateTime;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_user_institution", referencedColumnName = "id_user_institution", nullable = false)
+    @JoinColumn(name = "registering_user_id", referencedColumnName = "id", nullable = false)
     private UserWeb registeringUser;
 
     @Column(nullable = false)
@@ -52,6 +54,9 @@ public class Patient {
 
     @Column(length = 100, nullable = false)
     private String hair;
+
+	@Column(length = 50, nullable = false)
+	private String complexion;
 
     @Column(length = 50, nullable = false)
     private String eyeColor;
@@ -65,151 +70,166 @@ public class Patient {
     @Column(length = 255)
     private String distinctiveFeatures;
 
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "institution_id", referencedColumnName = "id", nullable = false)
+	private Institution institution;
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 	
 	@Column(length = 255)
     private String additionalNotes;
-	
-	
-	
-	
+
 	// Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-	public Long getIdPatient() {
-		return idPatient;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setIdPatient(Long idPatient) {
-		this.idPatient = idPatient;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public String getSecondLastName() {
+        return secondLastName;
+    }
 
-	public String getSecondLastName() {
-		return secondLastName;
-	}
+    public void setSecondLastName(String secondLastName) {
+        this.secondLastName = secondLastName;
+    }
 
-	public void setSecondLastName(String secondLastName) {
-		this.secondLastName = secondLastName;
-	}
+    public String getGender() {
+        return gender;
+    }
 
-	public String getGender() {
-		return gender;
-	}
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public Integer getApproximateAge() {
+        return approximateAge;
+    }
 
-	public Integer getApproximateAge() {
-		return approximateAge;
-	}
+    public void setApproximateAge(Integer approximateAge) {
+        this.approximateAge = approximateAge;
+    }
 
-	public void setApproximateAge(Integer approximateAge) {
-		this.approximateAge = approximateAge;
-	}
+    public LocalDateTime getRegistrationDateTime() {
+        return registrationDateTime;
+    }
 
-	public LocalDateTime getRegistrationDateTime() {
-		return registrationDateTime;
-	}
+    public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
+    }
 
-	public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
-		this.registrationDateTime = registrationDateTime;
-	}
+    public UserWeb getRegisteringUser() {
+        return registeringUser;
+    }
 
-	public UserWeb getRegisteringUser() {
-		return registeringUser;
-	}
-
-	public void setRegisteringUser(UserWeb registeringUser) {
-		this.registeringUser = registeringUser;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public String getSkinColor() {
-		return skinColor;
-	}
-
-	public void setSkinColor(String skinColor) {
-		this.skinColor = skinColor;
-	}
-
-	public String getHair() {
-		return hair;
-	}
-
-	public void setHair(String hair) {
-		this.hair = hair;
-	}
-
-	public String getEyeColor() {
-		return eyeColor;
-	}
-
-	public void setEyeColor(String eyeColor) {
-		this.eyeColor = eyeColor;
-	}
-
-	public Integer getApproximateHeight() {
-		return approximateHeight;
-	}
-
-	public void setApproximateHeight(Integer approximateHeight) {
-		this.approximateHeight = approximateHeight;
-	}
-
-	public String getMedicalConditions() {
-		return medicalConditions;
-	}
-
-	public void setMedicalConditions(String medicalConditions) {
-		this.medicalConditions = medicalConditions;
-	}
-
-	public String getDistinctiveFeatures() {
-		return distinctiveFeatures;
-	}
-
-	public void setDistinctiveFeatures(String distinctiveFeatures) {
-		this.distinctiveFeatures = distinctiveFeatures;
-	}
-
-	public List<Image> getImages() {
-		return images;
-	}
-
-	public void setImages(List<Image> images) {
-		this.images = images;
-	}
-
-	public String getAdditionalNotes() {
-		return additionalNotes;
-	}
-
-	public void setAdditionalNotes(String additionalNotes) {
-		this.additionalNotes = additionalNotes;
-	}
+    public void setRegisteringUser(UserWeb registeringUser) {
+        this.registeringUser = registeringUser;
+    }
 	
+    public String getSkinColor() {
+        return skinColor;
+    }
+
+    public void setSkinColor(String skinColor) {
+        this.skinColor = skinColor;
+    }
+
+    public String getHair() {
+        return hair;
+    }
+
+    public void setHair(String hair) {
+        this.hair = hair;
+    }
+
+    public String getComplexion() {
+        return complexion;
+    }
+
+    public void setComplexion(String complexion) {
+        this.complexion = complexion;
+    }
+
+    public String getEyeColor() {
+        return eyeColor;
+    }
+
+    public void setEyeColor(String eyeColor) {
+        this.eyeColor = eyeColor;
+    }
+
+    public Integer getApproximateHeight() {
+        return approximateHeight;
+    }
+
+    public void setApproximateHeight(Integer approximateHeight) {
+        this.approximateHeight = approximateHeight;
+    }
+
+    public String getMedicalConditions() {
+        return medicalConditions;
+    }
+
+    public void setMedicalConditions(String medicalConditions) {
+        this.medicalConditions = medicalConditions;
+    }
+
+    public String getDistinctiveFeatures() {
+        return distinctiveFeatures;
+    }
+
+    public void setDistinctiveFeatures(String distinctiveFeatures) {
+        this.distinctiveFeatures = distinctiveFeatures;
+    }
+
+    public Institution getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
+    public String getAdditionalNotes() {
+        return additionalNotes;
+    }
+
+    public void setAdditionalNotes(String additionalNotes) {
+        this.additionalNotes = additionalNotes;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }	
 }

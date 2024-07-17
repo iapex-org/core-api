@@ -18,6 +18,7 @@ import com.iapex.model.response.Response;
 import com.iapex.model.user.UserWeb;
 import com.iapex.repository.institution.InstitutionRepository;
 import com.iapex.repository.patient.PatientRepository;
+import com.iapex.repository.user.UserWebRepository;
 
 @Service
 public class PatientService {
@@ -28,38 +29,42 @@ public class PatientService {
     @Autowired
     private InstitutionRepository institutionRepository;
 
+    @Autowired
+    private UserWebRepository userWebRepository;
+
     @Transactional
-    public Response registerPatient(PatientDTO request, String name, String fatherName, String motherName) throws Exception {
+    public Response registerPatient(PatientDTO request)
+            throws Exception {
         try {
-            // BUSCAR LA INSTITUCIÓN POR NOMBRE
-            Institution institution = institutionRepository.findByName(request.getInstitutionName())
-                .orElseThrow(() -> new Exception("Institución no encontrada"));
-            // CREAR NUEVO PACIENTE
+            // Buscar institución por nombre
+            Institution institution = institutionRepository.findByName(request.getInstitution())
+                    .orElseThrow(() -> new Exception("Institución no encontrada"));
+            // Buscar registering user por nombre completo
+            UserWeb registeringUser = userWebRepository.findByNameAndLastNameAndSecondLastName(
+                    request.getName(), request.getLastName(), request.getSecondLastName())
+                    .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+            // Crear un nuevo paciente
             Patient patient = new Patient();
-            patient.setHairColor(request.getHairColor());
-            patient.setSkinColor(request.getSkinColor());
-            patient.setEyeColor(request.getEyeColor());
-            patient.setSex(request.getSex());
-            patient.setHeight(request.getHeight());
-            patient.setWeight(request.getWeight());
-            patient.setBirthDate(request.getBirthDate());
-            patient.setAge(request.getAge());
-            patient.setHairType(request.getHairType());
-            patient.setTraits(request.getTraits());
-            patient.setBuild(request.getBuild());
-            patient.setPosture(request.getPosture());
-            patient.setPhysicalConditions(request.getPhysicalConditions());
             patient.setName(request.getName());
-            patient.setFathername(request.getFathername());
-            patient.setMothername(request.getMothername());
-            patient.setBloodType(request.getBloodType());
-            patient.setNationality(request.getNationality());
-            patient.setInsuranceNumber(request.getInsuranceNumber());
-            patient.setAdditionalNotes(request.getAdditionalNotes());
+            patient.setLastName(request.getLastName());
+            patient.setSecondLastName(request.getSecondLastName());
+            patient.setGender(request.getGender());
+            patient.setApproximateAge(request.getApproximateAge());
+            patient.setRegistrationDateTime(request.getRegistrationDateTime());
+            patient.setRegisteringUser(registeringUser);
+            patient.setSkinColor(request.getSkinColor());
+            patient.setHair(request.getHair());
+            patient.setComplexion(request.getComplexion());
+            patient.setEyeColor(request.getEyeColor());
+            patient.setApproximateHeight(request.getApproximateHeight());
+            patient.setMedicalConditions(request.getMedicalConditions());
+            patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
             patient.setInstitution(institution);
-            // ESTABLECER EL STATUS EN FALSE
-            patient.setStatus(false);
-            // ASOCIAR IMÁGENES AL PACIENTE
+            patient.setAdditionalNotes(request.getAdditionalNotes());
+            // Establecer el estado del paciente en false (no encontrado)
+            patient.setActive(false);
+            // Asociar las imágenes al paciente
             List<ImageDTO> imageDTOs = request.getImages();
             List<Image> images = new ArrayList<>();
             if (imageDTOs != null) {
@@ -73,12 +78,8 @@ public class PatientService {
                         })
                         .collect(Collectors.toList());
             }
-            // ASIGNAR LA LISTA DE IMÁGENES AL PACIENTE
+            // Asignar la lista de imágenes al paciente
             patient.setImages(images);
-            
-            // CREAR EL NOMBRE COMPLETO DE LA PERSONA QUE REGISTRA
-            String fullName = buildFullName(name, fatherName, motherName);
-            patient.setNameRegister(fullName);
 
             // GUARDAR EL PACIENTE
             patientRepository.save(patient);
@@ -88,33 +89,21 @@ public class PatientService {
         }
     }
 
-    private String buildFullName(String name, String fatherName, String motherName) {
-        return String.format("%s %s %s", 
-                name != null ? name : "",
-                fatherName != null ? fatherName : "",
-                motherName != null ? motherName : "")
-                .trim().replaceAll("\\s+", " ");
-    }
-
-    
     // OBTENER PACIENTE POR ID
     public PatientDTO getPatientById(Long id) throws Exception {
-    	Patient patient = patientRepository.findById(id)
-            .orElseThrow(() -> new Exception("Paciente no encontrada"));
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new Exception("Paciente no encontrada"));
         return convertToDTO(patient);
     }
-    
-    
-    
-    //OBTENER POR ID SOLO SI STATUS ES FALSE ES DECIR NO ENCONTRADO
+
+    // OBTENER POR ID SOLO SI STATUS ES FALSE ES DECIR NO ENCONTRADO
     public PatientDTO getPatientByIdFalse(Long id) throws Exception {
-        Patient patient = patientRepository.findByIdPatientAndStatusFalse(id)
-            .orElseThrow(() -> new Exception("Paciente no encontrado"));
-        
+        Patient patient = patientRepository.findByIdAndActiveFalse(id)
+                .orElseThrow(() -> new Exception("Paciente no encontrado"));
+
         return convertToDTO(patient);
     }
-    
-    
+
     // OBTENER TODOS LOS PACIENTES
     public List<PatientDTO> getAllPatients() {
         List<Patient> patients = patientRepository.findAll();
@@ -122,28 +111,26 @@ public class PatientService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
-    
-    
+
     // OBTENER TODAS LOS PACIENTES CON STATUS FALSE ES DECIR NO ENCONTRADOS
     public List<PatientDTO> getAllPatientsFalse() {
-        List<Patient> patients = patientRepository.findByStatusFalse();
+        List<Patient> patients = patientRepository.findByActiveFalse();
         return patients.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional
     public Response updateById(Long id, PatientDTO request) {
         try {
             // BUSCAR EL PACIENTE POR SU ID O LANZAR UNA EXCEPCIÓN SI NO SE ENCUENTRA
             Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new Exception("Paciente no encontrado"));
-            
+                    .orElseThrow(() -> new Exception("Paciente no encontrado"));
+
             // ACTUALIZAR EL ESTADO DEL PACIENTE SI ES DIFERENTE
-            if (patient.getStatus() != request.getStatus()) {
-                patient.setStatus(request.getStatus());
-                
+            if (patient.getActive() != request.isActive()) {
+                patient.setActive(request.isActive());
+
                 // GUARDAR LOS CAMBIOS
                 patientRepository.save(patient);
                 return new Response("Estado del paciente actualizado exitosamente");
@@ -155,10 +142,9 @@ public class PatientService {
             return new Response("Error al actualizar el estado del paciente: " + e.getMessage());
         }
     }
-    
-    
+
     // OBTIENE LAS pacientes DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
- // OBTENER PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
+    // OBTENER PACIENTES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
     public List<PatientDTO> getPatientsByAuthenticatedUser() {
         try {
             // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
@@ -181,40 +167,29 @@ public class PatientService {
         }
     }
 
-    
-    
-
     private PatientDTO convertToDTO(Patient patient) {
         List<ImageDTO> imageDTOs = patient.getImages().stream()
-                .map(image -> new ImageDTO(image.getIdImage(), image.getImage(), image.getImageUrl()))
+                .map(image -> new ImageDTO(image.getId(), image.getImage(), image.getImageUrl()))
                 .collect(Collectors.toList());
 
         return new PatientDTO(
-                patient.getHairColor(),
-                patient.getSkinColor(),
-                patient.getEyeColor(),
-                patient.getSex(),
-                patient.getHeight(),
-                patient.getWeight(),
-                patient.getBirthDate(),
-                patient.getAge(),
-                patient.getHairType(),
-                patient.getTraits(),
-                patient.getBuild(),
-                patient.getPosture(),
-                patient.getPhysicalConditions(),
                 patient.getName(),
-                patient.getFathername(),
-                patient.getMothername(),
-                patient.getBloodType(),
-                patient.getNationality(),
-                patient.getInsuranceNumber(),
+                patient.getLastName(),
+                patient.getSecondLastName(),
+                patient.getGender(),
+                patient.getApproximateAge(),
+                patient.getRegistrationDateTime(),
+                patient.getRegisteringUser().getName(),
+                patient.getActive(),
+                patient.getSkinColor(),
+                patient.getHair(),
+                patient.getComplexion(),
+                patient.getEyeColor(),
+                patient.getApproximateHeight(),
+                patient.getMedicalConditions(),
+                patient.getDistinctiveFeatures(),
                 patient.getInstitution().getName(),
-                patient.getNameRegister(),
-                patient.getAdditionalNotes(),
-                patient.getStatus(),
-                imageDTOs
-        );
+                imageDTOs,
+                patient.getAdditionalNotes());
     }
 }
-

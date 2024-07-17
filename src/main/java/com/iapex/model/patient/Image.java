@@ -15,7 +15,7 @@ public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idImage;
+    private Long id;
 
     @Column(length = 100)
     private String image;
@@ -27,12 +27,12 @@ public class Image {
     private Patient patient;
 
     // Getters and Setters
-    public Long getIdImage() {
-        return idImage;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdImage(Long idImage) {
-        this.idImage = idImage;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getImage() {

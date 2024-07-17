@@ -13,7 +13,7 @@ public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idContact;
+    private Long id;
 
     @Column(length = 100)
     private String phone;
@@ -26,12 +26,12 @@ public class Contact {
     }
 
     // Getters and Setters
-    public Long getIdContact() {
-        return idContact;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdContact(Long idContact) {
-        this.idContact = idContact;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPhone() {

@@ -26,7 +26,7 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
     Optional<Institution> findByNameAndStatusTrue(String name);
 
     // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON STATUS TRUE.
-    Optional<Institution> findByIdInstitutionAndStatusTrue(Long idInstitution);
+    Optional<Institution> findByIdAndStatusTrue(Long idInstitution);
 
     
     @Modifying

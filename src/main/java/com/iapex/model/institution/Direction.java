@@ -13,7 +13,7 @@ public class Direction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idDirection;
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
     private String urlMapsInstitution;
@@ -41,12 +41,12 @@ public class Direction {
     }
 
     // Getters and Setters
-    public Long getIdDirection() {
-        return idDirection;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdDirection(Long idDirection) {
-        this.idDirection = idDirection;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUrlMapsInstitution() {

@@ -160,11 +160,11 @@ public class ContactRequestService  {
         }
         
         return new ContactRequestDTO(
-        		contactRequest.getIdContactRequest(),
+        		contactRequest.getId(),
         		contactRequest.getInterestedPersonName(),
         		contactRequest.getAttendedBy(),
         		contactRequest.getMissingPersonName(),
-            patient != null ? patient.getIdPatient() : null,
+            patient != null ? patient.getId() : null,
             patientName.isEmpty() ? null : patientName,
             		contactRequest.getPhoneNumber(),
             		contactRequest.getEmail(),

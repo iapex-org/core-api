@@ -17,7 +17,7 @@ public class Membership {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idMembership;
+    private Long id;
 
     private LocalDateTime startDate;
 
@@ -26,16 +26,16 @@ public class Membership {
     private boolean status;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_institution", referencedColumnName = "idInstitution")
+    @JoinColumn(name = "institution_id", referencedColumnName = "id")
     private Institution institution;
 
     // Getters and Setters
-    public Long getIdMembership() {
-        return idMembership;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdMembership(Long idMembership) {
-        this.idMembership = idMembership;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getStartDate() {
