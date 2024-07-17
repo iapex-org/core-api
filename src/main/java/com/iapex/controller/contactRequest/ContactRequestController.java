@@ -1,3 +1,4 @@
+ 
 package com.iapex.controller.contactRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -5,19 +6,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import com.iapex.dto.contactRequest.ContactRequestDTO;
 import com.iapex.model.response.Response;
 import com.iapex.model.user.UserWeb;
 import com.iapex.service.contactRequest.ContactRequestService;
+
 import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8100", "http://localhost:8101"})
 @RestController
 @RequestMapping("/contact-requests")
 public class ContactRequestController  {
@@ -25,7 +31,7 @@ public class ContactRequestController  {
     @Autowired
     private ContactRequestService contactRequestService;
 
-    //http://localhost:8080/contact-requests/getConversationById/3
+    //http://localhost:8080/contact-requests/createConversation
     //CREAR CONVERSACION
     //MOVIL
     @PostMapping("/createConversation")
@@ -104,4 +110,3 @@ public class ContactRequestController  {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }  
 }
-
