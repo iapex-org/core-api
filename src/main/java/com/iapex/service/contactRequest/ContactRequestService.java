@@ -154,8 +154,8 @@ public class ContactRequestService  {
         if (patient != null) {
             patientName = String.format("%s %s %s", 
                 patient.getName() != null ? patient.getName() : "",
-                patient.getFathername() != null ? patient.getFathername() : "",
-                patient.getMothername() != null ? patient.getMothername() : "")
+                patient.getLastName() != null ? patient.getLastName() : "",
+                patient.getSecondLastName() != null ? patient.getSecondLastName() : "")
                 .trim().replaceAll("\\s+", " ");
         }
         

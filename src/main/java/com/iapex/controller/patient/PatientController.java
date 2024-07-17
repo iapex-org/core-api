@@ -114,8 +114,8 @@ public class PatientController {
             }
             UserWeb userWeb = (UserWeb) authentication.getPrincipal();
             String name = userWeb.getName(); 
-            String fatherName = userWeb.getLastName(); 
-            String motherName = userWeb.getSecondLastName(); 
+            String lastName = userWeb.getLastName(); 
+            String secondLastName = userWeb.getSecondLastName(); 
 
             // LLAMAR AL SERVICIO PARA REGISTRAR EL PACIENTE
             Response response = patientService.registerPatient(patientDTO, name, lastName, secondLastName);
