@@ -1,6 +1,6 @@
 package com.iapex.enums;
 
-public enum ContactRequestStatus {
+public enum ContactRequestStatusEnum {
     NUEVA("Nueva"),
     EN_REVISION("En revisión"),
     ENCONTRADA("Encontrada"),
@@ -8,7 +8,7 @@ public enum ContactRequestStatus {
 
     private final String displayName;
 
-    ContactRequestStatus(String displayName) {
+    ContactRequestStatusEnum(String displayName) {
         this.displayName = displayName;
     }
 

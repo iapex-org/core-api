@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.dtos.user.UserMobileAuthenticationDTO;
 import com.iapex.dtos.user.UserMobileDTO;
+import com.iapex.enums.RoleEnum;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.models.Role;
 import com.iapex.models.response.AuthenticationResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.token.TokenMobile;
@@ -70,7 +70,7 @@ public class UserMobileService {
         userMobile.setEmail(request.getEmail());
         userMobile.setPassword(passwordEncoder.encode(request.getPassword()));
         userMobile.setPhone(request.getPhone());
-        userMobile.setRole(request.getRole() != null ? request.getRole() : Role.USER);
+        userMobile.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER);
         userMobile.setStatus(false); // Usuario no verificado inicialmente
 
         userMobileRepository.save(userMobile);

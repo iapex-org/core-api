@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iapex.config.AppUserDetails;
-import com.iapex.models.Role;
+import com.iapex.enums.RoleEnum;
 import com.iapex.models.token.TokenMobile;
 
 import jakarta.persistence.Column;
@@ -42,7 +42,7 @@ public class UserMobile implements AppUserDetails {
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleEnum role;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "userMobile")
@@ -97,11 +97,11 @@ public class UserMobile implements AppUserDetails {
         return role.getAuthorities();
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 

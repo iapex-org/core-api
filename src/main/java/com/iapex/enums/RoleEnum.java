@@ -1,10 +1,10 @@
-package com.iapex.models;
+package com.iapex.enums;
 
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-public enum Role {
+public enum RoleEnum {
     // DEFINICIÓN DE LOS ROLES DISPONIBLES EN EL SISTEMA
     USER(List.of(new SimpleGrantedAuthority("USER"))),
     ADMIN(List.of(new SimpleGrantedAuthority("ADMIN"))),
@@ -14,7 +14,7 @@ public enum Role {
     private final List<GrantedAuthority> authorities;
 
     // CONSTRUCTOR DEL ENUM
-    Role(List<GrantedAuthority> authorities) {
+    RoleEnum(List<GrantedAuthority> authorities) {
         this.authorities = authorities;
     }
 
@@ -24,7 +24,7 @@ public enum Role {
     }
 
     // MÉTODO ESTÁTICO PARA CONVERTIR UNA CADENA EN UN OBJETO ROLE
-    public static Role fromString(String roleStr) {
+    public static RoleEnum fromString(String roleStr) {
         switch (roleStr.toUpperCase()) {
             case "USER":
                 return USER;

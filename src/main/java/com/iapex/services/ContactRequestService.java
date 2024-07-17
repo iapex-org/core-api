@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.dtos.ContactRequestDTO;
-import com.iapex.enums.ContactRequestStatus;
+import com.iapex.enums.ContactRequestStatusEnum;
 import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.patient.Patient;
@@ -86,9 +86,9 @@ public class ContactRequestService {
             }
 
             // VERIFICAR SI EL ESTADO PROPORCIONADO ES VÁLIDO
-            ContactRequestStatus newStatus;
+            ContactRequestStatusEnum newStatus;
             try {
-                newStatus = ContactRequestStatus.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
+                newStatus = ContactRequestStatusEnum.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
             } catch (IllegalArgumentException e) {
                 return new Response("Error: El estado proporcionado no es válido");
             }

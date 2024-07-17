@@ -1,6 +1,6 @@
 package com.iapex.dtos.user;
 
-import com.iapex.models.Role;
+import com.iapex.enums.RoleEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -38,7 +38,7 @@ public class UserWebDTO {
 
 	private boolean accountVerified;
 
-	private Role role;
+	private RoleEnum role;
 
 	// Getters y setters
 	public boolean isAccountVerified() {
@@ -105,11 +105,11 @@ public class UserWebDTO {
 		this.position = position;
 	}
 
-	public Role getRole() {
+	public RoleEnum getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(RoleEnum role) {
 		this.role = role;
 	}
 

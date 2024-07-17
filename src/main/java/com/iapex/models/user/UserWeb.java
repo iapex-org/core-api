@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iapex.config.AppUserDetails;
-import com.iapex.models.Role;
+import com.iapex.enums.RoleEnum;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.token.TokenWeb;
 
@@ -57,7 +57,7 @@ public class UserWeb implements AppUserDetails {
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleEnum role;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "userWeb", cascade = CascadeType.ALL)
@@ -146,11 +146,11 @@ public class UserWeb implements AppUserDetails {
         this.accountVerified = accountVerified;
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 

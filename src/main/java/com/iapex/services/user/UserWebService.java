@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.dtos.user.UserWebAuthenticationDTO;
 import com.iapex.dtos.user.UserWebDTO;
+import com.iapex.enums.RoleEnum;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
-import com.iapex.models.Role;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.response.AuthenticationResponse;
 import com.iapex.models.response.Response;
@@ -104,7 +104,7 @@ public class UserWebService {
         userWeb.setSecondLastName(request.getSecondLastName());
         userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
         userWeb.setPosition(request.getPosition());
-        userWeb.setRole(request.getRole() != null ? request.getRole() : Role.USER);
+        userWeb.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER);
         userWeb.setAccountVerified(false);
 
         // Buscar la institución por su nombre
