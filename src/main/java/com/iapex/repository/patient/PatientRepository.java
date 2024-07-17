@@ -10,14 +10,16 @@ import com.iapex.model.patient.Patient;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-	// ESTE MÉTODO BUSCA LAS PACIENTES POR SU ID CON STATUS TRUE.
-    Optional<Patient> findByIdPatientAndStatusFalse(Long idPatient);
+    // Busca un paciente por su ID y verifica que esté activo (status true)
+    Optional<Patient> findByIdPatientAndActiveTrue(Long idPatient);
 
-    // ESTE MÉTODO BUSCA LOS PACIENTES CON STATUS TRUE.
-    List<Patient> findByStatusFalse();
+    // Busca todos los pacientes que estén activos (status true)
+    List<Patient> findByActiveTrue();
     
+    // Busca un paciente por su nombre
     Optional<Patient> findByName(String name);
 
-    List<Patient> findByInstitution(Institution institution);
+    // Busca pacientes por la institución a la que pertenecen
+    List<Patient> findByHealthInstitution(Institution institution);
 
 }

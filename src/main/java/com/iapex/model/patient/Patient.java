@@ -1,8 +1,8 @@
 package com.iapex.model.patient;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import com.iapex.model.institution.Institution;
+import com.iapex.model.user.UserWeb;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,276 +18,198 @@ import jakarta.persistence.Table;
 @Table(name = "patients")
 public class Patient {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPatient;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long idPatient;
 
-    @Column(length = 30)
-    private String hairColor;
-
-    @Column(length = 30)
-    private String skinColor;
-
-    @Column(length = 30)
-    private String eyeColor;
-
-    @Column(length = 10)
-    private String sex;
-
-    private double height;
-
-    private double weight;
-
-    private LocalDate birthDate;
-
-    private int age;
-
-    @Column(length = 30)
-    private String hairType;
-
-    @Column(columnDefinition = "TEXT")
-    private String traits;
-
-    @Column(length = 30)
-    private String build;
-
-    @Column(length = 30)
-    private String posture;
-
-    @Column(columnDefinition = "TEXT")
-    private String physicalConditions;
-
-    @Column(length = 50)
+	@Column(length = 50, nullable = false)
     private String name;
 
     @Column(length = 50)
-    private String fathername;
+    private String lastName;
 
     @Column(length = 50)
-    private String mothername;
+    private String secondLastName;
 
-    @Column(length = 10)
-    private String bloodType;
+    @Column(length = 10, nullable = false)
+    private String gender;
 
-    @Column(length = 30)
-    private String nationality;
+    @Column(nullable = false)
+    private Integer approximateAge;
 
-    @Column(length = 11)
-    private String insuranceNumber;
+    @Column(nullable = false)
+    private LocalDateTime registrationDateTime;
 
-    @Column(length = 75)
-    private String nameRegister;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_user_institution", referencedColumnName = "id_user_institution", nullable = false)
+    private UserWeb registeringUser;
 
-    @Column(columnDefinition = "TEXT")
-    private String additionalNotes;
+    @Column(nullable = false)
+    private Boolean active = true;
 
-    private boolean status;
+    @Column(length = 50, nullable = false)
+    private String skinColor;
 
-    @ManyToOne
-    @JoinColumn(name = "id_institution", referencedColumnName = "idInstitution")
-    private Institution institution;
+    @Column(length = 100, nullable = false)
+    private String hair;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @Column(length = 50, nullable = false)
+    private String eyeColor;
+
+    @Column(nullable = false)
+    private Integer approximateHeight;
+
+    @Column(length = 255)
+    private String medicalConditions;
+
+    @Column(length = 255)
+    private String distinctiveFeatures;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
+	
+	@Column(length = 255)
+    private String additionalNotes;
+	
+	
+	
+	
+	// Getters and Setters
 
-    // Getters and Setters
-    public List<Image> getImages() {
-        return images;
-    }
+	public Long getIdPatient() {
+		return idPatient;
+	}
 
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
+	public void setIdPatient(Long idPatient) {
+		this.idPatient = idPatient;
+	}
 
-    public Long getIdPatient() {
-        return idPatient;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setIdPatient(Long idPatient) {
-        this.idPatient = idPatient;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getHairColor() {
-        return hairColor;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setHairColor(String hairColor) {
-        this.hairColor = hairColor;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public String getSkinColor() {
-        return skinColor;
-    }
+	public String getSecondLastName() {
+		return secondLastName;
+	}
 
-    public void setSkinColor(String skinColor) {
-        this.skinColor = skinColor;
-    }
+	public void setSecondLastName(String secondLastName) {
+		this.secondLastName = secondLastName;
+	}
 
-    public String getEyeColor() {
-        return eyeColor;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public void setEyeColor(String eyeColor) {
-        this.eyeColor = eyeColor;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public String getSex() {
-        return sex;
-    }
+	public Integer getApproximateAge() {
+		return approximateAge;
+	}
 
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
+	public void setApproximateAge(Integer approximateAge) {
+		this.approximateAge = approximateAge;
+	}
 
-    public double getHeight() {
-        return height;
-    }
+	public LocalDateTime getRegistrationDateTime() {
+		return registrationDateTime;
+	}
 
-    public void setHeight(double height) {
-        this.height = height;
-    }
+	public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
+		this.registrationDateTime = registrationDateTime;
+	}
 
-    public double getWeight() {
-        return weight;
-    }
+	public UserWeb getRegisteringUser() {
+		return registeringUser;
+	}
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
+	public void setRegisteringUser(UserWeb registeringUser) {
+		this.registeringUser = registeringUser;
+	}
 
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
+	public Boolean getActive() {
+		return active;
+	}
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
 
-    public int getAge() {
-        return age;
-    }
+	public String getSkinColor() {
+		return skinColor;
+	}
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+	public void setSkinColor(String skinColor) {
+		this.skinColor = skinColor;
+	}
 
-    public String getHairType() {
-        return hairType;
-    }
+	public String getHair() {
+		return hair;
+	}
 
-    public void setHairType(String hairType) {
-        this.hairType = hairType;
-    }
+	public void setHair(String hair) {
+		this.hair = hair;
+	}
 
-    public String getTraits() {
-        return traits;
-    }
+	public String getEyeColor() {
+		return eyeColor;
+	}
 
-    public void setTraits(String traits) {
-        this.traits = traits;
-    }
+	public void setEyeColor(String eyeColor) {
+		this.eyeColor = eyeColor;
+	}
 
-    public String getBuild() {
-        return build;
-    }
+	public Integer getApproximateHeight() {
+		return approximateHeight;
+	}
 
-    public void setBuild(String build) {
-        this.build = build;
-    }
+	public void setApproximateHeight(Integer approximateHeight) {
+		this.approximateHeight = approximateHeight;
+	}
 
-    public String getPosture() {
-        return posture;
-    }
+	public String getMedicalConditions() {
+		return medicalConditions;
+	}
 
-    public void setPosture(String posture) {
-        this.posture = posture;
-    }
+	public void setMedicalConditions(String medicalConditions) {
+		this.medicalConditions = medicalConditions;
+	}
 
-    public String getPhysicalConditions() {
-        return physicalConditions;
-    }
+	public String getDistinctiveFeatures() {
+		return distinctiveFeatures;
+	}
 
-    public void setPhysicalConditions(String physicalConditions) {
-        this.physicalConditions = physicalConditions;
-    }
+	public void setDistinctiveFeatures(String distinctiveFeatures) {
+		this.distinctiveFeatures = distinctiveFeatures;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public List<Image> getImages() {
+		return images;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setImages(List<Image> images) {
+		this.images = images;
+	}
 
-    public String getFathername() {
-        return fathername;
-    }
+	public String getAdditionalNotes() {
+		return additionalNotes;
+	}
 
-    public void setFathername(String fathername) {
-        this.fathername = fathername;
-    }
-
-    public String getMothername() {
-        return mothername;
-    }
-
-    public void setMothername(String mothername) {
-        this.mothername = mothername;
-    }
-
-    public String getBloodType() {
-        return bloodType;
-    }
-
-    public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
-    }
-
-    public String getNationality() {
-        return nationality;
-    }
-
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
-    }
-
-    public String getInsuranceNumber() {
-        return insuranceNumber;
-    }
-
-    public void setInsuranceNumber(String insuranceNumber) {
-        this.insuranceNumber = insuranceNumber;
-    }
-
-    public boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public Institution getInstitution() {
-        return institution;
-    }
-
-    public void setInstitution(Institution institution) {
-        this.institution = institution;
-    }
-
-    public String getNameRegister() {
-        return nameRegister;
-    }
-
-    public void setNameRegister(String nameRegister) {
-        this.nameRegister = nameRegister;
-    }
-
-    public String getAdditionalNotes() {
-        return additionalNotes;
-    }
-
-    public void setAdditionalNotes(String additionalNotes) {
-        this.additionalNotes = additionalNotes;
-    }
+	public void setAdditionalNotes(String additionalNotes) {
+		this.additionalNotes = additionalNotes;
+	}
+	
 }
