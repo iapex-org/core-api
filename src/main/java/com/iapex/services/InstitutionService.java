@@ -50,12 +50,12 @@ public class InstitutionService {
         
         // CONFIGURAR DIRECTION
         Direction direction = new Direction();
-        direction.setState(request.getDirectionState());
-        direction.setCity(request.getDirectionCity());
-        direction.setPostalCode(request.getDirectionPostalCode());
-        direction.setNeighborhood(request.getDirectionNeighborhood());
-        direction.setStreet(request.getDirectionStreet());
-        direction.setNumber(request.getDirectionNumber());
+        direction.setState(request.getState());
+        direction.setCity(request.getCity());
+        direction.setPostalCode(request.getPostalCode());
+        direction.setNeighborhood(request.getNeighborhood());
+        direction.setStreet(request.getStreet());
+        direction.setNumber(request.getNumber());
         institution.setDirection(direction);
 
         institution.setActive(false); // INSTITUCIÓN NO VERIFICADA INICIALMENTE
@@ -89,12 +89,12 @@ public class InstitutionService {
         if (institution.isActive() != request.isActive()) institution.setActive(request.isActive());
 
         Direction direction = institution.getDirection();
-        if (!Objects.equals(direction.getState(), request.getDirectionState())) direction.setState(request.getDirectionState());
-        if (!Objects.equals(direction.getCity(), request.getDirectionCity())) direction.setCity(request.getDirectionCity());
-        if (!Objects.equals(direction.getPostalCode(), request.getDirectionPostalCode())) direction.setPostalCode(request.getDirectionPostalCode());
-        if (!Objects.equals(direction.getNeighborhood(), request.getDirectionNeighborhood())) direction.setNeighborhood(request.getDirectionNeighborhood());
-        if (!Objects.equals(direction.getStreet(), request.getDirectionStreet())) direction.setStreet(request.getDirectionStreet());
-        if (!Objects.equals(direction.getNumber(), request.getDirectionNumber())) direction.setNumber(request.getDirectionNumber());
+        if (!Objects.equals(direction.getState(), request.getState())) direction.setState(request.getState());
+        if (!Objects.equals(direction.getCity(), request.getCity())) direction.setCity(request.getCity());
+        if (!Objects.equals(direction.getPostalCode(), request.getPostalCode())) direction.setPostalCode(request.getPostalCode());
+        if (!Objects.equals(direction.getNeighborhood(), request.getNeighborhood())) direction.setNeighborhood(request.getNeighborhood());
+        if (!Objects.equals(direction.getStreet(), request.getStreet())) direction.setStreet(request.getStreet());
+        if (!Objects.equals(direction.getNumber(), request.getNumber())) direction.setNumber(request.getNumber());
 
         institutionRepository.save(institution);
 
@@ -176,12 +176,12 @@ public class InstitutionService {
         dto.setRegistrationDateTime(institution.getRegistrationDateTime());
 
         if (institution.getDirection() != null) {
-            dto.setDirectionState(institution.getDirection().getState());
-            dto.setDirectionCity(institution.getDirection().getCity());
-            dto.setDirectionPostalCode(institution.getDirection().getPostalCode());
-            dto.setDirectionNeighborhood(institution.getDirection().getNeighborhood());
-            dto.setDirectionStreet(institution.getDirection().getStreet());
-            dto.setDirectionNumber(institution.getDirection().getNumber());
+            dto.setState(institution.getDirection().getState());
+            dto.setCity(institution.getDirection().getCity());
+            dto.setPostalCode(institution.getDirection().getPostalCode());
+            dto.setNeighborhood(institution.getDirection().getNeighborhood());
+            dto.setStreet(institution.getDirection().getStreet());
+            dto.setNumber(institution.getDirection().getNumber());
         }
 
         return dto;

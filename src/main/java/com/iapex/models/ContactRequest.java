@@ -3,7 +3,7 @@ package com.iapex.models;
 import java.time.LocalDateTime;
 
 import com.iapex.models.patient.Patient;
-
+import com.iapex.models.user.UserWeb;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,18 +22,18 @@ public class ContactRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String interestedPersonName;
 
-    @Column(length = 100)
-    private String attendedBy;
-
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String missingPersonName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
+
+    @Column(length = 25, nullable = false)
+    private String relationship;
 
     @Column(length = 10)
     private String phoneNumber;
@@ -41,16 +41,18 @@ public class ContactRequest {
     @Column(length = 100)
     private String email;
 
-    @Column(length = 25)
-    private String relationship;
-
-    private LocalDateTime requestDate;
-
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    @Column(length = 15)
+    @Column(nullable = false)
+    private LocalDateTime requestDateTime;
+
+    @Column(length = 20, nullable = false)
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attending_user_id")
+    private UserWeb attendingUser;
 
     // Getters y setters
     public Long getId() {
@@ -69,6 +71,30 @@ public class ContactRequest {
         this.interestedPersonName = interestedPersonName;
     }
 
+    public String getMissingPersonName() {
+        return missingPersonName;
+    }
+
+    public void setMissingPersonName(String missingPersonName) {
+        this.missingPersonName = missingPersonName;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -85,28 +111,20 @@ public class ContactRequest {
         this.email = email;
     }
 
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
-
-    public LocalDateTime getRequestDate() {
-        return requestDate;
-    }
-
-    public void setRequestDate(LocalDateTime requestDate) {
-        this.requestDate = requestDate;
-    }
-
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public LocalDateTime getRequestDateTime() {
+        return requestDateTime;
+    }
+
+    public void setRequestDateTime(LocalDateTime requestDateTime) {
+        this.requestDateTime = requestDateTime;
     }
 
     public String getStatus() {
@@ -117,27 +135,11 @@ public class ContactRequest {
         this.status = status;
     }
 
-    public String getAttendedBy() {
-        return attendedBy;
+    public UserWeb getAttendingUser() {
+        return attendingUser;
     }
 
-    public void setAttendedBy(String attendedBy) {
-        this.attendedBy = attendedBy;
-    }
-
-    public String getMissingPersonName() {
-        return missingPersonName;
-    }
-
-    public void setMissingPersonName(String missingPersonName) {
-        this.missingPersonName = missingPersonName;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setAttendingUser(UserWeb attendingUser) {
+        this.attendingUser = attendingUser;
     }
 }

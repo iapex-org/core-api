@@ -1,59 +1,59 @@
-package com.iapex.dtos;
+package com.iapex.dtos.contactRequest;
 
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 
 public class ContactRequestDTO {
 
     private Long id;
 
+    @NotBlank(message = "El nombre del interesado es obligatorio")
     @Size(max = 100, message = "El nombre del interesado no puede tener más de 100 caracteres")
     private String interestedPersonName;
 
-    private String attendedBy;
-
+    @NotBlank(message = "El nombre de la persona que buscas es obligatorio")
     @Size(max = 100, message = "El nombre de la persona que buscas no puede tener más de 100 caracteres")
     private String missingPersonName;
 
-    private Long idPatient;
+    private Long patient;
 
-    private String patientName;
+    @NotBlank(message = "La relación con el paciente es obligatoria")
+    @Size(max = 25, message = "La relación con el paciente no puede tener más de 25 caracteres")
+    private String relationship;
 
-    @Size(max = 10, message = "El número de teléfono no puede tener más de 20 caracteres")
+    @Size(max = 10, min = 10, message = "El número de teléfono debe tener 10 caracteres")
     private String phoneNumber;
 
     @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
     private String email;
 
-    @Size(max = 25, message = "La relación con el paciente no puede tener más de 25 caracteres")
-    private String relationship;
-
-    private LocalDateTime requestDate;
-
     private String message;
 
+    private LocalDateTime requestDateTime;
+
     private String status;
+
+    private String attendingUser;
 
     // Default constructor
     public ContactRequestDTO() {
     }
 
     // Constructor with all fields
-    public ContactRequestDTO(Long Id, String interestedPersonName, String attendedBy,
-            String missingPersonName,
-            Long idPatient, String patientName, String phoneNumber, String email, String relationship,
-            LocalDateTime requestDate, String message, String status) {
+    public ContactRequestDTO(Long Id, String interestedPersonName, String attendingUser,
+            String missingPersonName, Long patient, String phoneNumber, String email, String relationship,
+            LocalDateTime requestDateTime, String message, String status) {
         this.id = Id;
         this.interestedPersonName = interestedPersonName;
-        this.attendedBy = attendedBy;
+        this.attendingUser = attendingUser;
         this.missingPersonName = missingPersonName;
-        this.idPatient = idPatient;
-        this.patientName = patientName;
+        this.patient = patient;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.relationship = relationship;
-        this.requestDate = requestDate;
+        this.requestDateTime = requestDateTime;
         this.message = message;
         this.status = status;
     }
@@ -63,8 +63,8 @@ public class ContactRequestDTO {
         return id;
     }
 
-    public void setId(Long Id) {
-        this.id = Id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getInterestedPersonName() {
@@ -75,15 +75,7 @@ public class ContactRequestDTO {
         this.interestedPersonName = interestedPersonName;
     }
 
-    public String getAttendedBy() {
-        return attendedBy;
-    }
-
-    public void setAttendedBy(String attendedBy) {
-        this.attendedBy = attendedBy;
-    }
-
-    public String getmissingPersonName() {
+    public String getMissingPersonName() {
         return missingPersonName;
     }
 
@@ -91,20 +83,20 @@ public class ContactRequestDTO {
         this.missingPersonName = missingPersonName;
     }
 
-    public Long getIdPatient() {
-        return idPatient;
+    public Long getPatient() {
+        return patient;
     }
 
-    public void setIdPatient(Long idPatient) {
-        this.idPatient = idPatient;
+    public void setPatient(Long patient) {
+        this.patient = patient;
     }
 
-    public String getPatientName() {
-        return patientName;
+    public String getRelationship() {
+        return relationship;
     }
 
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
     }
 
     public String getPhoneNumber() {
@@ -123,28 +115,20 @@ public class ContactRequestDTO {
         this.email = email;
     }
 
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
-
-    public LocalDateTime getRequestDate() {
-        return requestDate;
-    }
-
-    public void setRequestDate(LocalDateTime requestDate) {
-        this.requestDate = requestDate;
-    }
-
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public LocalDateTime getRequestDateTime() {
+        return requestDateTime;
+    }
+
+    public void setRequestDateTime(LocalDateTime requestDateTime) {
+        this.requestDateTime = requestDateTime;
     }
 
     public String getStatus() {
@@ -154,4 +138,12 @@ public class ContactRequestDTO {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getAttendingUser() {
+        return attendingUser;
+    }
+
+    public void setAttendingUser(String attendingUser) {
+        this.attendingUser = attendingUser;
+    }    
 }

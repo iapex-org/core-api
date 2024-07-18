@@ -60,8 +60,6 @@ public class PatientDTO {
 
     @Size(max = 255, message = "Las notas adicionales deben tener máximo 255 caracteres")
     private String additionalNotes;
-
-
     
     // Constructor
     public PatientDTO() {

@@ -33,39 +33,38 @@ public class Institution {
     @Column(length = 100, unique = true, nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(length = 50, nullable = false)
+    private String type;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "direction_id", referencedColumnName = "id")
+    private Direction direction;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String openingHours;
-    
-    @Column(columnDefinition = "TEXT")
-    private String mapUrl;
 
     @Column(columnDefinition = "TEXT")
     private String emails;
-
-    @Column(length = 100)
-    private String image;
-
-    private String imageUrl;
-
-    @Column(length = 50)
-    private String type;
 
     @Column(columnDefinition = "TEXT")
     private String phoneNumbers;
 
     @Column(columnDefinition = "TEXT")
     private String websites;
-    
-    @Unique
-    @Column(length = 50, nullable = false)
-    private String verificationKey;
 
     @Temporal(TemporalType.DATE)
     private Date registrationDateTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "direction_id", referencedColumnName = "id")
-    private Direction direction;
+    private String image;
+
+    private String imageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String mapUrl;
+
+    @Unique
+    @Column(length = 50, nullable = false)
+    private String verificationKey;
 
     @OneToOne(mappedBy = "institution", cascade = CascadeType.ALL)
     private Membership membership;

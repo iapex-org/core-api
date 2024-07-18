@@ -10,56 +10,57 @@ public class InstitutionDTO {
     @Size(max = 100, message = "El nombre de la institución no puede tener más de 100 caracteres")
     private String name;
 
+    @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
+    private String type;
+
+    @Size(max = 50, message = "El estado no debe exceder los 50 caracteres")
+    private String state;
+
+    @Size(max = 50, message = "La ciudad no debe exceder los 50 caracteres")
+    private String city;
+
+    @Size(max = 25, message = "El código postal no debe exceder los 25 caracteres")
+    private String postalCode;
+
+    @Size(max = 50, message = "El vecindario no debe exceder los 50 caracteres")
+    private String neighborhood;
+
+    @Size(max = 50, message = "La calle no debe exceder los 50 caracteres")
+    private String street;
+
+    @Size(max = 25, message = "El número de dirección no debe exceder los 25 caracteres")
+    private String number;
+
     @Size(max = 100, message = "El horario de apertura no puede tener más de 100 caracteres")
     private String openingHours;
-
-    private String mapUrl;
 
     @Size(max = 255, message = "Los correos electrónicos no pueden tener más de 255 caracteres")
     private String emails;
 
-    @Size(max = 100, message = "El nombre de la imagen no puede tener más de 100 caracteres")
+    @Size(max = 255, message = "Los números de teléfono no pueden tener más de 255 caracteres")
+    private String phoneNumbers;
+    
+    @Size(max = 255, message = "Las URLs de los sitios web no pueden tener más de 255 caracteres")
+    private String websites;
+
+    private Date registrationDateTime;
+
     private String image;
 
     private String imageUrl;
 
-    @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
-    private String type;
-
-    @Size(max = 255, message = "Los números de teléfono no pueden tener más de 255 caracteres")
-    private String phoneNumbers;
-
-    @Size(max = 255, message = "Las URLs de los sitios web no pueden tener más de 255 caracteres")
-    private String websites;
+    private String mapUrl;
 
     @Size(max = 50, message = "La clave de verificación no puede tener más de 50 caracteres")
     private String verificationKey;
 
-    private Date registrationDateTime;
-
     private boolean active;
 
-    @Size(max = 50, message = "El estado no debe exceder los 50 caracteres")
-    private String directionState;
-
-    @Size(max = 50, message = "La ciudad no debe exceder los 50 caracteres")
-    private String directionCity;
-
-    @Size(max = 25, message = "El código postal no debe exceder los 25 caracteres")
-    private String directionPostalCode;
-
-    @Size(max = 50, message = "El vecindario no debe exceder los 50 caracteres")
-    private String directionNeighborhood;
-
-    @Size(max = 50, message = "La calle no debe exceder los 50 caracteres")
-    private String directionStreet;
-
-    @Size(max = 25, message = "El número de dirección no debe exceder los 25 caracteres")
-    private String directionNumber;
-
+    // Constructor
     public InstitutionDTO() {
     }
-
+    
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -164,51 +165,51 @@ public class InstitutionDTO {
         this.active = active;
     }
 
-    public String getDirectionState() {
-        return directionState;
+    public String getState() {
+        return state;
     }
 
-    public void setDirectionState(String directionState) {
-        this.directionState = directionState;
+    public void setState(String directionState) {
+        this.state = directionState;
     }
 
-    public String getDirectionCity() {
-        return directionCity;
+    public String getCity() {
+        return city;
     }
 
-    public void setDirectionCity(String directionCity) {
-        this.directionCity = directionCity;
+    public void setCity(String directionCity) {
+        this.city = directionCity;
     }
 
-    public String getDirectionPostalCode() {
-        return directionPostalCode;
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public void setDirectionPostalCode(String directionPostalCode) {
-        this.directionPostalCode = directionPostalCode;
+    public void setPostalCode(String directionPostalCode) {
+        this.postalCode = directionPostalCode;
     }
 
-    public String getDirectionNeighborhood() {
-        return directionNeighborhood;
+    public String getNeighborhood() {
+        return neighborhood;
     }
 
-    public void setDirectionNeighborhood(String directionNeighborhood) {
-        this.directionNeighborhood = directionNeighborhood;
+    public void setNeighborhood(String directionNeighborhood) {
+        this.neighborhood = directionNeighborhood;
     }
 
-    public String getDirectionStreet() {
-        return directionStreet;
+    public String getStreet() {
+        return street;
     }
 
-    public void setDirectionStreet(String directionStreet) {
-        this.directionStreet = directionStreet;
+    public void setStreet(String directionStreet) {
+        this.street = directionStreet;
     }
 
-    public String getDirectionNumber() {
-        return directionNumber;
+    public String getNumber() {
+        return number;
     }
 
-    public void setDirectionNumber(String directionNumber) {
-        this.directionNumber = directionNumber;
+    public void setNumber(String directionNumber) {
+        this.number = directionNumber;
     }
 }

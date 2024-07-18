@@ -1,4 +1,3 @@
-
 package com.iapex.services;
 
 import java.nio.file.AccessDeniedException;
@@ -12,7 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iapex.dtos.ContactRequestDTO;
+import com.iapex.dtos.contactRequest.ContactRequestDTO;
+import com.iapex.dtos.contactRequest.UpdateContactRequestDTO;
 import com.iapex.enums.ContactRequestStatusEnum;
 import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
@@ -31,45 +31,33 @@ public class ContactRequestService {
     @Autowired
     private PatientRepository patientRepository;
 
-    // REGISTRA UNA NUEVA CONVERSACIÓN
     @Transactional
-    public Response createContactRequest(ContactRequestDTO request) {
-        try {
-            ContactRequest contactRequest = new ContactRequest();
-            contactRequest.setInterestedPersonName(request.getInterestedPersonName());
-            contactRequest.setMissingPersonName(request.getmissingPersonName());
+    public Response createContactRequest(ContactRequestDTO request) throws Exception {
+        ContactRequest contactRequest = new ContactRequest();
+        contactRequest.setInterestedPersonName(request.getInterestedPersonName());
+        contactRequest.setMissingPersonName(request.getMissingPersonName());
 
-            if (request.getIdPatient() != null) {
-                Patient patient = patientRepository.findById(request.getIdPatient())
-                        .orElseThrow(() -> new Exception("Paciente no encontrado con el ID proporcionado"));
-                contactRequest.setPatient(patient);
-            } else {
-                throw new Exception("Se debe proporcionar el ID del paciente");
-            }
+        Patient patient = patientRepository.findById(request.getPatient())
+                .orElseThrow(() -> new Exception("Paciente no encontrado con el ID proporcionado"));
+        contactRequest.setPatient(patient);
 
-            contactRequest.setPhoneNumber(request.getPhoneNumber());
-            contactRequest.setEmail(request.getEmail());
-            contactRequest.setRelationship(request.getRelationship());
-            contactRequest.setRequestDate(LocalDateTime.now());
-            contactRequest.setMessage(request.getMessage());
-            contactRequest.setStatus("NUEVA");
+        contactRequest.setPhoneNumber(request.getPhoneNumber());
+        contactRequest.setEmail(request.getEmail());
+        contactRequest.setRelationship(request.getRelationship());
+        contactRequest.setRequestDateTime(LocalDateTime.now());
+        contactRequest.setMessage(request.getMessage());
+        contactRequest.setStatus("NUEVA");
 
-            contactRequestRepository.save(contactRequest);
-            return new Response("Solicitud de contacto enviada exitosamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Response("Error al registrar la solicitud de contacto: " + e.getMessage());
-        }
+        contactRequestRepository.save(contactRequest);
+        return new Response("Solicitud de contacto enviada exitosamente");
     }
 
-    // OBTIENE UNA CONVERSACIÓN POR SU ID
     public ContactRequestDTO getContactRequestById(Long id) throws Exception {
         ContactRequest contactRequest = contactRequestRepository.findById(id)
-                .orElseThrow(() -> new Exception("Conversación no encontrada"));
+                .orElseThrow(() -> new Exception("Solicitud de contacto no encontrada"));
         return convertToDTO(contactRequest);
     }
 
-    // OBTIENE TODAS LAS CONVERSACIONES
     public List<ContactRequestDTO> getAllContactRequests() {
         List<ContactRequest> contactRequests = contactRequestRepository.findAll();
         return contactRequests.stream()
@@ -78,91 +66,93 @@ public class ContactRequestService {
     }
 
     @Transactional
-    public Response updateContactRequestById(Long id, ContactRequestDTO request, String name, String fatherName, String motherName) {
+    public Response updateContactRequestById(Long id, UpdateContactRequestDTO request) {
         try {
-            // VERIFICAR SI SE PROPORCIONÓ UN NUEVO ESTADO
-            if (request.getStatus() == null || request.getStatus().trim().isEmpty()) {
-                return new Response("Error: Se debe proporcionar un nuevo estado para la conversación");
-            }
-
-            // VERIFICAR SI EL ESTADO PROPORCIONADO ES VÁLIDO
-            ContactRequestStatusEnum newStatus;
-            try {
-                newStatus = ContactRequestStatusEnum.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
-            } catch (IllegalArgumentException e) {
-                return new Response("Error: El estado proporcionado no es válido");
-            }
-
-            // BUSCAR LA CONVERSACIÓN POR SU ID O LANZAR UNA EXCEPCIÓN SI NO SE ENCUENTRA
+            // Obtener la solicitud de contacto
             ContactRequest contactRequest = contactRequestRepository.findById(id)
-                    .orElseThrow(() -> new Exception("Conversación no encontrada"));
+                    .orElseThrow(() -> new Exception("Solicitud de contacto no encontrada"));
 
-            // ACTUALIZAR EL ESTADO DE LA CONVERSACIÓN SI ES DIFERENTE
-            if (!contactRequest.getStatus().equals(newStatus.name())) {
-                contactRequest.setStatus(newStatus.name());
+            // Actualizar el estado si está presente en la solicitud
+            if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
+                ContactRequestStatusEnum newStatus;
+                try {
+                    newStatus = ContactRequestStatusEnum.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
+                } catch (IllegalArgumentException e) {
+                    return new Response("Error: El estado proporcionado no es válido");
+                }
 
-                // CREAR EL NOMBRE COMPLETO DE LA PERSONA QUE ATIENDE
-                String fullName = String.format("%s %s %s", name, fatherName, motherName).trim();
-                contactRequest.setAttendedBy(fullName);
-
-                // GUARDAR LOS CAMBIOS
-                contactRequestRepository.save(contactRequest);
-                return new Response("Estado de la conversación actualizado exitosamente");
-            } else {
-                return new Response("El estado proporcionado es igual al estado actual. No se realizaron cambios.");
+                // Actualizar solo si el nuevo estado es diferente al actual
+                if (!contactRequest.getStatus().equals(newStatus.name())) {
+                    contactRequest.setStatus(newStatus.name());
+                }
             }
+
+            // Actualizar el usuario atendiendo si está presente en la solicitud
+            if (request.getAttendingUser() != null && !request.getAttendingUser().trim().isEmpty()) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                UserWeb userWeb = (UserWeb) authentication.getPrincipal();
+
+                // Verificar si el usuario tiene permiso para cambiar el usuario atendiendo
+                if (!userWeb.getUsername().equals(request.getAttendingUser())) {
+                    return new Response("Error: No tienes permiso para cambiar el usuario asociado a esta solicitud");
+                }
+
+                contactRequest.setAttendingUser(userWeb);
+            }
+
+            // Guardar la solicitud de contacto con los cambios realizados
+            contactRequestRepository.save(contactRequest);
+
+            // Determinar el mensaje de respuesta según las actualizaciones realizadas
+            if (request.getStatus() != null && request.getAttendingUser() != null) {
+                return new Response("Estado y usuario atendiendo actualizados exitosamente");
+            } else if (request.getStatus() != null) {
+                return new Response("Estado de la solicitud de contacto actualizado exitosamente");
+            } else if (request.getAttendingUser() != null) {
+                return new Response("Usuario atendiendo actualizado exitosamente");
+            } else {
+                return new Response("No se realizaron cambios en la solicitud de contacto");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof AccessDeniedException || e.getCause() instanceof AccessDeniedException) {
                 return new Response("Debes estar logueado para acceder a este recurso");
             }
-            return new Response("Error al actualizar el estado de la conversación: " + e.getMessage());
+            return new Response("Error al actualizar la solicitud de contacto: " + e.getMessage());
         }
     }
 
-    // OBTIENE LAS CONVERSACIONES DE LA MISMA INSTITUCIÓN QUE EL USUARIO AUTENTICADO
     public List<ContactRequestDTO> getContactRequestsByInstitution() {
         try {
-            // OBTENER LA INFORMACIÓN DEL USUARIO AUTENTICADO
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserWeb userWeb = (UserWeb) authentication.getPrincipal();
-            // OBTENER LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             Institution institution = userWeb.getInstitution();
-            // OBTENER LAS CONVERSACIONES ASOCIADAS A LA INSTITUCIÓN DEL USUARIO AUTENTICADO
             List<ContactRequest> contactRequests = contactRequestRepository.findByPatientInstitution(institution);
-            // CONVERTIR LAS CONVERSACIONES A DTOS
             return contactRequests.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
-            // MANEJAR LA EXCEPCIÓN ADECUADAMENTE SEGÚN TUS REQUERIMIENTOS
-            return Collections.emptyList(); // O PODRÍAS RETORNAR UN MENSAJE DE ERROR
+            return Collections.emptyList();
         }
     }
 
     private ContactRequestDTO convertToDTO(ContactRequest contactRequest) {
         Patient patient = contactRequest.getPatient();
-        String patientName = "";
-        if (patient != null) {
-            patientName = String.format("%s %s %s",
-                    patient.getName() != null ? patient.getName() : "",
-                    patient.getLastName() != null ? patient.getLastName() : "",
-                    patient.getSecondLastName() != null ? patient.getSecondLastName() : "")
-                    .trim().replaceAll("\\s+", " ");
-        }
-
         return new ContactRequestDTO(
                 contactRequest.getId(),
                 contactRequest.getInterestedPersonName(),
-                contactRequest.getAttendedBy(),
+                contactRequest.getAttendingUser() != null ? String.format("%s %s %s",
+                        contactRequest.getAttendingUser().getName(),
+                        contactRequest.getAttendingUser().getLastName(),
+                        contactRequest.getAttendingUser().getSecondLastName()).trim() : null,
                 contactRequest.getMissingPersonName(),
-                patient != null ? patient.getId() : null,
-                patientName.isEmpty() ? null : patientName,
+                patient.getId(),
                 contactRequest.getPhoneNumber(),
                 contactRequest.getEmail(),
                 contactRequest.getRelationship(),
-                contactRequest.getRequestDate(),
+                contactRequest.getRequestDateTime(),
                 contactRequest.getMessage(),
                 contactRequest.getStatus());
     }

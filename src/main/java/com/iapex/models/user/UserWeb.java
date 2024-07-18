@@ -6,9 +6,10 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iapex.config.AppUserDetails;
 import com.iapex.enums.RoleEnum;
+import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.token.TokenWeb;
-
+import jakarta.persistence.FetchType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,6 +63,9 @@ public class UserWeb implements AppUserDetails {
     @JsonManagedReference
     @OneToMany(mappedBy = "userWeb", cascade = CascadeType.ALL)
     private List<TokenWeb> tokens;
+
+    @OneToMany(mappedBy = "attendingUser", fetch = FetchType.LAZY)
+    private List<ContactRequest> contactRequests;
 
     // Constructor
     public UserWeb() {
@@ -160,6 +164,14 @@ public class UserWeb implements AppUserDetails {
 
     public void setTokens(List<TokenWeb> tokens) {
         this.tokens = tokens;
+    }
+
+    public List<ContactRequest> getContactRequests() {
+        return contactRequests;
+    }
+
+    public void setContactRequests(List<ContactRequest> contactRequests) {
+        this.contactRequests = contactRequests;
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

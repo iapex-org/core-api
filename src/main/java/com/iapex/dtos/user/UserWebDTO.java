@@ -18,7 +18,6 @@ public class UserWebDTO {
     private String lastName;
 
     @Size(max = 50, message = "El apellido materno no puede tener más de 50 caracteres")
-    @NotBlank(message = "El apellido materno es obligatorio")
     private String secondLastName;
 
     @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")

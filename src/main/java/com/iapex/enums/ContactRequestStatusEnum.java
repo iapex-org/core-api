@@ -3,8 +3,8 @@ package com.iapex.enums;
 public enum ContactRequestStatusEnum {
     NUEVA("Nueva"),
     EN_REVISION("En revisión"),
-    ENCONTRADA("Encontrada"),
-    NO_ENCONTRADA("No encontrada");
+    ENCONTRADA("Encontradao"),
+    NO_ENCONTRADA("No encontrado");
 
     private final String displayName;
 
