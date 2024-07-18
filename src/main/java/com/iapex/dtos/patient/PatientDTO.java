@@ -26,7 +26,6 @@ public class PatientDTO {
     @NotNull(message = "La edad aproximada es obligatoria")
     private Integer approximateAge;
 
-    @NotNull(message = "La fecha y hora de registro es obligatoria")
     private LocalDateTime registrationDateTime;
 
     private String registeringUser;
@@ -62,6 +61,8 @@ public class PatientDTO {
     @Size(max = 255, message = "Las notas adicionales deben tener máximo 255 caracteres")
     private String additionalNotes;
 
+
+    
     // Constructor
     public PatientDTO() {
     }
@@ -242,4 +243,5 @@ public class PatientDTO {
     public void setActive(boolean active) {
         this.active = active;
     }
+
 }    

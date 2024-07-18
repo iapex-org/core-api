@@ -19,6 +19,7 @@ import com.iapex.dtos.patient.ImageDTO;
 import com.iapex.dtos.patient.PatientDTO;
 import com.iapex.models.patient.Image;
 import com.iapex.models.response.Response;
+import com.iapex.models.user.UserWeb;
 import com.iapex.services.PatientService;
 import com.iapex.services.files.StorageService;
 
@@ -32,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/patients")
+@RequestMapping("/api/v1/patients")
 public class PatientController {
 
     @Autowired
@@ -65,7 +66,7 @@ public class PatientController {
     }
 
     // Acceder a la imagen del paciente por su nombre de archivo
-    @GetMapping("/{filename:.+}")
+    @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
             Resource file = storageService.loadAsResource(filename);
@@ -101,8 +102,8 @@ public class PatientController {
             Response errorResponse = new Response("Paciente no encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-    }
-
+    }    
+    
     // Pensado para ser usado en la app web, ya que solo muestra los pacientes que
     // corresponden a la institución de la que forma parte el usuario autenticado
     // Obtener los pacientes de la misma institución que el usuario autenticado
@@ -166,7 +167,7 @@ public class PatientController {
                         String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
                         String imageUrl = ServletUriComponentsBuilder
                                 .fromHttpUrl(host)
-                                .path("/patients/") // Ruta de las imágenes de los pacientes
+                                .path("/api/v1/patients/images/") // Ruta de las imágenes de los pacientes
                                 .path(storedFilename)
                                 .toUriString();
 
@@ -194,6 +195,10 @@ public class PatientController {
                 return ResponseEntity.status(401).body(new Response(
                         "Necesita iniciar sesión como personal de la institucion para usar este recurso"));
             }
+            
+         // Obtener el usuario autenticado
+            UserWeb authenticatedUser = (UserWeb) authentication.getPrincipal();
+
 
             // Llamar al servicio para registrar el paciente
             Response response = patientService.registerPatient(patientDTO);
@@ -204,3 +209,4 @@ public class PatientController {
         }
     }
 }
+

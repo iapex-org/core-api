@@ -1,5 +1,6 @@
 package com.iapex.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +36,18 @@ public class PatientService {
     private UserWebRepository userWebRepository;
 
     @Transactional
-    public Response registerPatient(PatientDTO request)
-            throws Exception {
+    public Response registerPatient(PatientDTO request) throws Exception {
         try {
             // Buscar institución por nombre
             Institution institution = institutionRepository.findByName(request.getInstitution())
                     .orElseThrow(() -> new Exception("Institución no encontrada"));
-            // Buscar registering user por nombre completo
-            UserWeb registeringUser = userWebRepository.findByNameAndLastNameAndSecondLastName(
-                    request.getName(), request.getLastName(), request.getSecondLastName())
+
+            // Obtener el usuario autenticado
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+            // Buscar el usuario autenticado por correo electrónico
+            UserWeb authenticatedUser = userWebRepository.findByEmail(currentUserEmail)
                     .orElseThrow(() -> new Exception("Usuario no encontrado"));
 
             // Crear un nuevo paciente
@@ -52,8 +57,8 @@ public class PatientService {
             patient.setSecondLastName(request.getSecondLastName());
             patient.setGender(request.getGender());
             patient.setApproximateAge(request.getApproximateAge());
-            patient.setRegistrationDateTime(request.getRegistrationDateTime());
-            patient.setRegisteringUser(registeringUser);
+            patient.setRegistrationDateTime(LocalDateTime.now());
+            patient.setRegisteringUser(authenticatedUser);
             patient.setSkinColor(request.getSkinColor());
             patient.setHair(request.getHair());
             patient.setComplexion(request.getComplexion());
@@ -64,7 +69,7 @@ public class PatientService {
             patient.setInstitution(institution);
             patient.setAdditionalNotes(request.getAdditionalNotes());
             // Establecer el estado del paciente en false (no encontrado)
-            patient.setActive(false);
+            patient.setActive(true);
             // Asociar las imágenes al paciente
             List<ImageDTO> imageDTOs = request.getImages();
             List<Image> images = new ArrayList<>();
@@ -82,14 +87,13 @@ public class PatientService {
             // Asignar la lista de imágenes al paciente
             patient.setImages(images);
 
-            // GUARDAR EL PACIENTE
+            // Guardar el paciente
             patientRepository.save(patient);
             return new Response("El registro del paciente fue exitoso.");
         } catch (Exception e) {
             throw new Exception("Error al registrar el paciente: " + e.getMessage());
         }
     }
-
     // OBTENER PACIENTE POR ID
     public PatientDTO getPatientById(Long id) throws Exception {
         Patient patient = patientRepository.findById(id)
@@ -189,6 +193,12 @@ public class PatientService {
                 .map(image -> new ImageDTO(image.getId(), image.getImage(), image.getImageUrl()))
                 .collect(Collectors.toList());
 
+        // Crear el nombre completo del usuario registrante
+        String registeringUserFullName = String.format("%s %s %s",
+                patient.getRegisteringUser().getName(),
+                patient.getRegisteringUser().getLastName(),
+                patient.getRegisteringUser().getSecondLastName());
+
         return new PatientDTO(
                 patient.getName(),
                 patient.getLastName(),
@@ -196,7 +206,7 @@ public class PatientService {
                 patient.getGender(),
                 patient.getApproximateAge(),
                 patient.getRegistrationDateTime(),
-                patient.getRegisteringUser().getName(),
+                registeringUserFullName,  // Usa el nombre completo aquí
                 patient.getActive(),
                 patient.getSkinColor(),
                 patient.getHair(),

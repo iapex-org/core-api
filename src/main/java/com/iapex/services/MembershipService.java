@@ -25,7 +25,6 @@ public class MembershipService {
     @Autowired
     private InstitutionRepository institutionRepository;
     
-    
     @Transactional
     public Response registerMembership(MembershipDTO request) throws InstitutionNotFoundException, InstitutionAlreadyExistsException {
         // VERIFICAR SI LA INSTITUCIÓN EXISTE
@@ -34,11 +33,13 @@ public class MembershipService {
 
         // VALIDAR QUE LA FECHA DE FINALIZACIÓN SEA MAYOR A LA FECHA DE INICIO
         if (request.getEndDate().isBefore(request.getStartDate()) || request.getEndDate().isEqual(request.getStartDate())) {
-            throw new IllegalArgumentException("La fecha de finalización debe ser posterior a la fecha de inicio"); }
+            throw new IllegalArgumentException("La fecha de finalización debe ser posterior a la fecha de inicio");
+        }
 
         // VERIFICAR SI YA EXISTE UNA MEMBRESÍA ACTIVA PARA LA INSTITUCIÓN
         if (membershipRepository.findByInstitutionAndStatus(institution, true).isPresent()) {
-            throw new InstitutionAlreadyExistsException("Ya existe una membresía activa para esta institución"); }
+            throw new InstitutionAlreadyExistsException("Ya existe una membresía activa para esta institución");
+        }
         
         // CREAR NUEVA MEMBRESÍA
         Membership newMembership = new Membership();
@@ -51,12 +52,11 @@ public class MembershipService {
         membershipRepository.save(newMembership);
         // ACTUALIZAR EL ESTADO DE LA INSTITUCIÓN A TRUE SI EL STATUS DE LA MEMBRESÍA ES TRUE
         if (request.isStatus()) {
-            institution.setStatus(true);
+            institution.setActive(true);
             institutionRepository.save(institution);
         }
         return new Response("Membresía registrada con éxito, recuerda activar la membresía si no lo hiciste al registrarla");
     }
-    
     
     @Transactional
     public Response updateById(Long id, MembershipDTO request) throws InstitutionNotFoundException {
@@ -86,13 +86,12 @@ public class MembershipService {
 
         // ACTUALIZAR EL ESTADO DE LA INSTITUCIÓN SI EL ESTADO DE LA MEMBRESÍA HA CAMBIADO
         if (previousStatus != request.isStatus()) {
-            institution.setStatus(request.isStatus());
+            institution.setActive(request.isStatus());
             institutionRepository.save(institution);
         }
         membershipRepository.save(membership);
         return new Response("Membresía actualizada con éxito");
     }
-    
     
     // OBTENER MEMEBRECIA POR ID
     public MembershipDTO getMembershipById(Long id) throws Exception {
@@ -101,7 +100,6 @@ public class MembershipService {
         return convertToDTO(membership);
     }
     
-    
     // OBTENER TODAS LAS MENBRECIAS
     public List<MembershipDTO> getAllMemberships() {
         List<Membership> memberships = membershipRepository.findAll();
@@ -109,7 +107,6 @@ public class MembershipService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
 
     private MembershipDTO convertToDTO(Membership membership) {
         return new MembershipDTO(

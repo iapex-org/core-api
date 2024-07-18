@@ -1,6 +1,8 @@
 package com.iapex.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,9 @@ import com.iapex.services.files.StorageService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +36,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/institutions")
 public class InstitutionController {
 
+	
+	
     @Autowired
     private InstitutionService institutionService;
 
@@ -47,6 +54,13 @@ public class InstitutionController {
         List<InstitutionDTO> institutions = institutionService.getAllInstitutions();
         return ResponseEntity.ok(institutions);
     }
+    
+    // Obtener todas las instituciones con active en TRUE
+    @GetMapping("/active-names")
+    public ResponseEntity<List<String>> getActiveInstitutionNames() {
+        List<String> activeInstitutionNames = institutionService.getActiveInstitutionNames();
+        return ResponseEntity.ok(activeInstitutionNames);
+    }
 
     // Obtener todas las instituciones con status TRUE
     @GetMapping("/activated")
@@ -55,7 +69,7 @@ public class InstitutionController {
         return ResponseEntity.ok(institutions);
     }
 
-    // Obtener institución por ID con status TRUE
+    // Obtener institución por ID con status TRUE, es decir cuando la institucion esta activada
     @GetMapping("/{id}/activated")
     public ResponseEntity<?> getInstitution(@PathVariable Long id) {
         try {
@@ -67,7 +81,7 @@ public class InstitutionController {
         }
     }
 
-    // Obtener todas las instituciones por su nombre
+    // Obtener todas las instituciones por su nombre con status true
     @GetMapping("/{name}")
     public ResponseEntity<?> getInstitutionByName(@PathVariable String name) {
         try {
@@ -75,9 +89,25 @@ public class InstitutionController {
             return ResponseEntity.ok(institution);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new Response("No se encontró la institución con nombre: " + name));
+                    .body(new Response("No se encontró la institución con nombre, solo se mostraran instittuciones activas: " + name));
         }
     }
+    
+    // Acceder a la imagen del paciente por su nombre de archivo
+    @GetMapping("/images/{filename:.+}")
+    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+        try {
+            Resource file = storageService.loadAsResource(filename);
+            String contentType = Files.probeContentType(file.getFile().toPath());
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(file);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
 
     // Obtener la institución del usuario autenticado
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -100,7 +130,8 @@ public class InstitutionController {
     }
 
     // Crear una nueva institución
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //imageFile campo para archivos
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createInstitution(
             @Valid @ModelAttribute InstitutionDTO request,
@@ -123,7 +154,7 @@ public class InstitutionController {
                 String host = this.request.getRequestURL().toString().replace(this.request.getRequestURI(), "");
                 String imageUrl = ServletUriComponentsBuilder
                         .fromHttpUrl(host)
-                        .path("/institutions/")
+                        .path("/api/v1/institutions/images/")  // Nota el cambio aquí
                         .path(storedFilename)
                         .toUriString();
 
@@ -143,7 +174,7 @@ public class InstitutionController {
     }
 
     // Actualizar una institución
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInstitution(
             @PathVariable Long id,
@@ -173,7 +204,7 @@ public class InstitutionController {
                 String host = this.request.getRequestURL().toString().replace(this.request.getRequestURI(), "");
                 String imageUrl = ServletUriComponentsBuilder
                         .fromHttpUrl(host)
-                        .path("/institutions/")
+                        .path("/api/v1/institutions/images/") 
                         .path(storedFilename)
                         .toUriString();
 
@@ -198,7 +229,7 @@ public class InstitutionController {
     }
 
     // Eliminar una institución
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInstitution(@PathVariable Long id) {
         try {

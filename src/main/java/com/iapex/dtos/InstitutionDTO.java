@@ -7,60 +7,59 @@ public class InstitutionDTO {
 
     private Long id;
 
-    @Size(max = 50, message = "El nombre de la institución no puede tener más de 50 caracteres")
+    @Size(max = 100, message = "El nombre de la institución no puede tener más de 100 caracteres")
     private String name;
-
-    @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
-    private String email;
-
-    @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
-    private String typeInstitution;
 
     @Size(max = 100, message = "El horario de apertura no puede tener más de 100 caracteres")
     private String openingHours;
 
-    private String history;
+    private String mapUrl;
 
-    @Size(max = 100, message = "La URL de la imagen no puede tener más de 100 caracteres")
+    @Size(max = 255, message = "Los correos electrónicos no pueden tener más de 255 caracteres")
+    private String emails;
+
+    @Size(max = 100, message = "El nombre de la imagen no puede tener más de 100 caracteres")
     private String image;
 
     private String imageUrl;
 
-    private boolean status;
+    @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
+    private String type;
 
-    @Size(max = 100, message = "El numero maximo de caracteres para el campo telefono es de 100 caracteres")
-    private String contactPhone;
+    @Size(max = 255, message = "Los números de teléfono no pueden tener más de 255 caracteres")
+    private String phoneNumbers;
 
-    @Size(max = 100, message = "La URL del sitio web no puede tener más de 100 caracteres")
-    private String contactWebsite;
+    @Size(max = 255, message = "Las URLs de los sitios web no pueden tener más de 255 caracteres")
+    private String websites;
 
-    private String directionUrlMapsInstitution;
+    @Size(max = 50, message = "La clave de verificación no puede tener más de 50 caracteres")
+    private String verificationKey;
 
-    @Size(max = 35, message = "El estado no debe exceder los 35 caracteres")
+    private Date registrationDateTime;
+
+    private boolean active;
+
+    @Size(max = 50, message = "El estado no debe exceder los 50 caracteres")
     private String directionState;
 
-    @Size(max = 35, message = "El municipio no debe exceder los 35 caracteres")
-    private String directionMunicipality;
+    @Size(max = 50, message = "La ciudad no debe exceder los 50 caracteres")
+    private String directionCity;
 
-    @Size(max = 35, message = "El código postal no debe exceder los 35 caracteres")
+    @Size(max = 25, message = "El código postal no debe exceder los 25 caracteres")
     private String directionPostalCode;
 
-    @Size(max = 35, message = "La colonia no debe exceder los 35 caracteres")
-    private String directionColony;
+    @Size(max = 50, message = "El vecindario no debe exceder los 50 caracteres")
+    private String directionNeighborhood;
 
-    @Size(max = 35, message = "La calle no debe exceder los 35 caracteres")
+    @Size(max = 50, message = "La calle no debe exceder los 50 caracteres")
     private String directionStreet;
 
-    @Size(max = 35, message = "El número de dirección no debe exceder los 35 caracteres")
+    @Size(max = 25, message = "El número de dirección no debe exceder los 25 caracteres")
     private String directionNumber;
 
-    private Date registrationDate;
-
-    // Constructor vacío
     public InstitutionDTO() {
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -77,14 +76,6 @@ public class InstitutionDTO {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getOpeningHours() {
         return openingHours;
     }
@@ -93,12 +84,20 @@ public class InstitutionDTO {
         this.openingHours = openingHours;
     }
 
-    public String getHistory() {
-        return history;
+    public String getMapUrl() {
+        return mapUrl;
     }
 
-    public void setHistory(String history) {
-        this.history = history;
+    public void setMapUrl(String mapUrl) {
+        this.mapUrl = mapUrl;
+    }
+
+    public String getEmails() {
+        return emails;
+    }
+
+    public void setEmails(String emails) {
+        this.emails = emails;
     }
 
     public String getImage() {
@@ -117,44 +116,52 @@ public class InstitutionDTO {
         this.imageUrl = imageUrl;
     }
 
-    public boolean isStatus() {
-        return status;
+    public String getType() {
+        return type;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getContactPhone() {
-        return contactPhone;
+    public String getPhoneNumbers() {
+        return phoneNumbers;
     }
 
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
+    public void setPhoneNumbers(String phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
     }
 
-    public String getContactWebsite() {
-        return contactWebsite;
+    public String getWebsites() {
+        return websites;
     }
 
-    public void setContactWebsite(String contactWebsite) {
-        this.contactWebsite = contactWebsite;
+    public void setWebsites(String websites) {
+        this.websites = websites;
     }
 
-    public String getTypeInstitution() {
-        return typeInstitution;
+    public String getVerificationKey() {
+        return verificationKey;
     }
 
-    public void setTypeInstitution(String typeInstitution) {
-        this.typeInstitution = typeInstitution;
+    public void setVerificationKey(String verificationKey) {
+        this.verificationKey = verificationKey;
     }
 
-    public String getDirectionUrlMapsInstitution() {
-        return directionUrlMapsInstitution;
+    public Date getRegistrationDateTime() {
+        return registrationDateTime;
     }
 
-    public void setDirectionUrlMapsInstitution(String directionUrlMapsInstitution) {
-        this.directionUrlMapsInstitution = directionUrlMapsInstitution;
+    public void setRegistrationDateTime(Date registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getDirectionState() {
@@ -165,12 +172,12 @@ public class InstitutionDTO {
         this.directionState = directionState;
     }
 
-    public String getDirectionMunicipality() {
-        return directionMunicipality;
+    public String getDirectionCity() {
+        return directionCity;
     }
 
-    public void setDirectionMunicipality(String directionMunicipality) {
-        this.directionMunicipality = directionMunicipality;
+    public void setDirectionCity(String directionCity) {
+        this.directionCity = directionCity;
     }
 
     public String getDirectionPostalCode() {
@@ -181,12 +188,12 @@ public class InstitutionDTO {
         this.directionPostalCode = directionPostalCode;
     }
 
-    public String getDirectionColony() {
-        return directionColony;
+    public String getDirectionNeighborhood() {
+        return directionNeighborhood;
     }
 
-    public void setDirectionColony(String directionColony) {
-        this.directionColony = directionColony;
+    public void setDirectionNeighborhood(String directionNeighborhood) {
+        this.directionNeighborhood = directionNeighborhood;
     }
 
     public String getDirectionStreet() {
@@ -204,13 +211,4 @@ public class InstitutionDTO {
     public void setDirectionNumber(String directionNumber) {
         this.directionNumber = directionNumber;
     }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
 }

@@ -15,25 +15,23 @@ public class Direction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
-    private String urlMapsInstitution;
 
-    @Column(length = 35)
+    @Column(length = 50, nullable = false)
     private String state;
 
-    @Column(length = 35)
-    private String municipality;
+	@Column(length = 50, nullable = false)
+    private String city;
 
-    @Column(length = 35)
+    @Column(length = 25, nullable = false)
     private String postalCode;
 
-    @Column(length = 35)
-    private String colony;
+    @Column(length = 50, nullable = false)
+    private String neighborhood;
 
-    @Column(length = 35)
+    @Column(length = 50, nullable = false)
     private String street;
 
-    @Column(length = 35)
+    @Column(length = 25,  nullable = false)
     private String number;
 
     // Constructor
@@ -49,13 +47,6 @@ public class Direction {
         this.id = id;
     }
 
-    public String getUrlMapsInstitution() {
-        return urlMapsInstitution;
-    }
-
-    public void setUrlMapsInstitution(String urlMapsInstitution) {
-        this.urlMapsInstitution = urlMapsInstitution;
-    }
 
     public String getState() {
         return state;
@@ -65,13 +56,6 @@ public class Direction {
         this.state = state;
     }
 
-    public String getMunicipality() {
-        return municipality;
-    }
-
-    public void setMunicipality(String municipality) {
-        this.municipality = municipality;
-    }
 
     public String getPostalCode() {
         return postalCode;
@@ -79,14 +63,6 @@ public class Direction {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    public String getColony() {
-        return colony;
-    }
-
-    public void setColony(String colony) {
-        this.colony = colony;
     }
 
     public String getStreet() {
@@ -104,4 +80,20 @@ public class Direction {
     public void setNumber(String number) {
         this.number = number;
     }
+    
+    public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getNeighborhood() {
+		return neighborhood;
+	}
+
+	public void setNeighborhood(String neighborhood) {
+		this.neighborhood = neighborhood;
+	}
 }

@@ -3,6 +3,8 @@ package com.iapex.models.institution;
 import java.util.Date;
 import java.util.List;
 
+import org.checkerframework.common.aliasing.qual.Unique;
+
 import com.iapex.models.Membership;
 import com.iapex.models.patient.Patient;
 
@@ -28,17 +30,17 @@ public class Institution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, unique = true, nullable = false)
+    @Column(length = 100, unique = true, nullable = false)
     private String name;
 
-    @Column(length = 100)
+    @Column(nullable = false)
     private String openingHours;
-
-    @Column(length = 100)
-    private String email;
+    
+    @Column(columnDefinition = "TEXT")
+    private String mapUrl;
 
     @Column(columnDefinition = "TEXT")
-    private String history;
+    private String emails;
 
     @Column(length = 100)
     private String image;
@@ -46,15 +48,20 @@ public class Institution {
     private String imageUrl;
 
     @Column(length = 50)
-    private String typeInstitution;
+    private String type;
+
+    @Column(columnDefinition = "TEXT")
+    private String phoneNumbers;
+
+    @Column(columnDefinition = "TEXT")
+    private String websites;
+    
+    @Unique
+    @Column(length = 50, nullable = false)
+    private String verificationKey;
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "registration_date")
-    private Date registrationDate;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contact_id", referencedColumnName = "id")
-    private Contact contact;
+    private Date registrationDateTime;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "direction_id", referencedColumnName = "id")
@@ -66,8 +73,8 @@ public class Institution {
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
     private List<Patient> patients;
 
-    @Column(name = "status", nullable = false)
-    private boolean status;
+    @Column(nullable = false)
+    private boolean active;
 
     // Constructor vacío
     public Institution() {
@@ -98,12 +105,20 @@ public class Institution {
         this.openingHours = openingHours;
     }
 
-    public String getHistory() {
-        return history;
+    public String getMapUrl() {
+        return mapUrl;
     }
 
-    public void setHistory(String history) {
-        this.history = history;
+    public void setMapUrl(String mapUrl) {
+        this.mapUrl = mapUrl;
+    }
+
+    public String getEmails() {
+        return emails;
+    }
+
+    public void setEmails(String emails) {
+        this.emails = emails;
     }
 
     public String getImage() {
@@ -122,28 +137,44 @@ public class Institution {
         this.imageUrl = imageUrl;
     }
 
-    public String getTypeInstitution() {
-        return typeInstitution;
+    public String getType() {
+        return type;
     }
 
-    public void setTypeInstitution(String typeInstitution) {
-        this.typeInstitution = typeInstitution;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public Date getRegistrationDate() {
-        return registrationDate;
+    public String getPhoneNumbers() {
+        return phoneNumbers;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
+    public void setPhoneNumbers(String phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
     }
 
-    public Contact getContact() {
-        return contact;
+    public String getWebsites() {
+        return websites;
     }
 
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setWebsites(String websites) {
+        this.websites = websites;
+    }
+
+    public String getVerificationKey() {
+        return verificationKey;
+    }
+
+    public void setVerificationKey(String verificationKey) {
+        this.verificationKey = verificationKey;
+    }
+
+    public Date getRegistrationDateTime() {
+        return registrationDateTime;
+    }
+
+    public void setRegistrationDateTime(Date registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
     }
 
     public Direction getDirection() {
@@ -154,19 +185,27 @@ public class Institution {
         this.direction = direction;
     }
 
-    public boolean isStatus() {
-        return status;
+    public Membership getMembership() {
+        return membership;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setMembership(Membership membership) {
+        this.membership = membership;
     }
 
-    public String getEmail() {
-        return email;
+    public List<Patient> getPatients() {
+        return patients;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPatients(List<Patient> patients) {
+        this.patients = patients;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

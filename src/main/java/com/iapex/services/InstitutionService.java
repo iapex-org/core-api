@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.iapex.dtos.InstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
-import com.iapex.models.institution.Contact;
 import com.iapex.models.institution.Direction;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.response.Response;
@@ -24,7 +23,6 @@ public class InstitutionService {
     @Autowired
     private InstitutionRepository institutionRepository;
 
-
     public InstitutionService(
             InstitutionRepository institutionRepository,
             PasswordEncoder passwordEncoder,
@@ -34,44 +32,36 @@ public class InstitutionService {
     
     //CREAR UNA INSTITUCION
     public Response register(InstitutionDTO request) throws Exception {
-        //if (institutionRepository.findByEmail(request.getEmail()).isPresent()) {
-            //throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este correo electrónico.");}
-        
         if (institutionRepository.findByName(request.getName()).isPresent()) {
             throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
         }
 
         Institution institution = new Institution();
         institution.setName(request.getName());
-        institution.setEmail(request.getEmail());
-        institution.setTypeInstitution(request.getTypeInstitution());
         institution.setOpeningHours(request.getOpeningHours());
-        institution.setHistory(request.getHistory());
+        institution.setMapUrl(request.getMapUrl());
+        institution.setEmails(request.getEmails());
         institution.setImage(request.getImage());
         institution.setImageUrl(request.getImageUrl());
-        
-        
-        // CONFIGURAR CONTACT
-        Contact contact = new Contact();
-        contact.setPhone(request.getContactPhone());
-        contact.setWebsite(request.getContactWebsite());
-        institution.setContact(contact);
+        institution.setType(request.getType());
+        institution.setPhoneNumbers(request.getPhoneNumbers());
+        institution.setWebsites(request.getWebsites());
+        institution.setVerificationKey(request.getVerificationKey());
         
         // CONFIGURAR DIRECTION
         Direction direction = new Direction();
-        direction.setUrlMapsInstitution(request.getDirectionUrlMapsInstitution());
         direction.setState(request.getDirectionState());
-        direction.setMunicipality(request.getDirectionMunicipality());
+        direction.setCity(request.getDirectionCity());
         direction.setPostalCode(request.getDirectionPostalCode());
-        direction.setColony(request.getDirectionColony());
+        direction.setNeighborhood(request.getDirectionNeighborhood());
         direction.setStreet(request.getDirectionStreet());
         direction.setNumber(request.getDirectionNumber());
         institution.setDirection(direction);
 
-        institution.setStatus(false); // INSTITUCIÓN NO VERIFICADA INICIALMENTE
+        institution.setActive(false); // INSTITUCIÓN NO VERIFICADA INICIALMENTE
 
         // ESTABLECER LA FECHA DE REGISTRO A LA FECHA ACTUAL
-        institution.setRegistrationDate(new Date());
+        institution.setRegistrationDateTime(new Date());
 
         institutionRepository.save(institution);
 
@@ -83,27 +73,26 @@ public class InstitutionService {
     public Response updateInstitution(Long id, InstitutionDTO request) throws Exception {
         Institution institution = getInstitutionById(id);
 
-        if (!Objects.equals(institution.getName(), request.getName()) && institutionRepository.findByName(request.getName()).isPresent()) throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
+        if (!Objects.equals(institution.getName(), request.getName()) && institutionRepository.findByName(request.getName()).isPresent()) 
+            throw new InstitutionAlreadyExistsException("Ya existe una institución registrada con este nombre.");
 
         if (!Objects.equals(institution.getName(), request.getName())) institution.setName(request.getName());
-        if (!Objects.equals(institution.getEmail(), request.getEmail())) institution.setEmail(request.getEmail());
-        if (!Objects.equals(institution.getTypeInstitution(), request.getTypeInstitution())) institution.setTypeInstitution(request.getTypeInstitution());
         if (!Objects.equals(institution.getOpeningHours(), request.getOpeningHours())) institution.setOpeningHours(request.getOpeningHours());
-        if (!Objects.equals(institution.getHistory(), request.getHistory())) institution.setHistory(request.getHistory());
+        if (!Objects.equals(institution.getMapUrl(), request.getMapUrl())) institution.setMapUrl(request.getMapUrl());
+        if (!Objects.equals(institution.getEmails(), request.getEmails())) institution.setEmails(request.getEmails());
         if (!Objects.equals(institution.getImage(), request.getImage())) institution.setImage(request.getImage());
         if (!Objects.equals(institution.getImageUrl(), request.getImageUrl())) institution.setImageUrl(request.getImageUrl());
-        if (institution.isStatus() != request.isStatus()) institution.setStatus(request.isStatus());
-
-        Contact contact = institution.getContact();
-        if (!Objects.equals(contact.getPhone(), request.getContactPhone())) contact.setPhone(request.getContactPhone());
-        if (!Objects.equals(contact.getWebsite(), request.getContactWebsite())) contact.setWebsite(request.getContactWebsite());
+        if (!Objects.equals(institution.getType(), request.getType())) institution.setType(request.getType());
+        if (!Objects.equals(institution.getPhoneNumbers(), request.getPhoneNumbers())) institution.setPhoneNumbers(request.getPhoneNumbers());
+        if (!Objects.equals(institution.getWebsites(), request.getWebsites())) institution.setWebsites(request.getWebsites());
+        if (!Objects.equals(institution.getVerificationKey(), request.getVerificationKey())) institution.setVerificationKey(request.getVerificationKey());
+        if (institution.isActive() != request.isActive()) institution.setActive(request.isActive());
 
         Direction direction = institution.getDirection();
-        if (!Objects.equals(direction.getUrlMapsInstitution(), request.getDirectionUrlMapsInstitution())) direction.setUrlMapsInstitution(request.getDirectionUrlMapsInstitution());
         if (!Objects.equals(direction.getState(), request.getDirectionState())) direction.setState(request.getDirectionState());
-        if (!Objects.equals(direction.getMunicipality(), request.getDirectionMunicipality())) direction.setMunicipality(request.getDirectionMunicipality());
+        if (!Objects.equals(direction.getCity(), request.getDirectionCity())) direction.setCity(request.getDirectionCity());
         if (!Objects.equals(direction.getPostalCode(), request.getDirectionPostalCode())) direction.setPostalCode(request.getDirectionPostalCode());
-        if (!Objects.equals(direction.getColony(), request.getDirectionColony())) direction.setColony(request.getDirectionColony());
+        if (!Objects.equals(direction.getNeighborhood(), request.getDirectionNeighborhood())) direction.setNeighborhood(request.getDirectionNeighborhood());
         if (!Objects.equals(direction.getStreet(), request.getDirectionStreet())) direction.setStreet(request.getDirectionStreet());
         if (!Objects.equals(direction.getNumber(), request.getDirectionNumber())) direction.setNumber(request.getDirectionNumber());
 
@@ -118,9 +107,9 @@ public class InstitutionService {
             .orElseThrow(() -> new Exception("Institución no encontrada "));
     }
     
-    //OBTENER POR ID SOLO SI STATUS ES TRUE
+    //OBTENER POR ID SOLO SI ACTIVE ES TRUE
     public Institution getInstitutionByIdTrue(Long id) throws Exception {
-        return institutionRepository.findByIdAndStatusTrue(id)
+        return institutionRepository.findByIdAndActiveTrue(id)
             .orElseThrow(() -> new Exception("Institución no encontrada o no está activa"));
     }
 
@@ -132,9 +121,9 @@ public class InstitutionService {
                 .collect(Collectors.toList());
     }
 
-    //LISTAR INSTITUCIONES CON STATUS TRUE
+    //LISTAR INSTITUCIONES CON ACTIVE TRUE
     public List<InstitutionDTO> getAllInstitutionsTrue() {
-        List<Institution> institutions = institutionRepository.findByStatusTrue();
+        List<Institution> institutions = institutionRepository.findByActiveTrue();
         return institutions.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -148,9 +137,9 @@ public class InstitutionService {
         return new Response("La institución ha sido eliminada exitosamente.");
     }
     
-    //BUSCAR POR NOMBRE CON STATUS TRUE
+    //BUSCAR POR NOMBRE CON ACTIVE TRUE
     public Institution getInstitutionByName(String name) throws Exception {
-        return institutionRepository.findByNameAndStatusTrue(name)
+        return institutionRepository.findByNameAndActiveTrue(name)
             .orElseThrow(() -> new Exception("Institución no encontrada con nombre: " + name));
     }
     
@@ -163,29 +152,34 @@ public class InstitutionService {
         return convertToDto(institution);
     }
 
+    public List<String> getActiveInstitutionNames() {
+        List<Institution> activeInstitutions = institutionRepository.findByActiveTrue();
+        return activeInstitutions.stream()
+                .map(Institution::getName)
+                .collect(Collectors.toList());
+    }
     
     public InstitutionDTO convertToDto(Institution institution) {
         InstitutionDTO dto = new InstitutionDTO();
         dto.setId(institution.getId());
         dto.setName(institution.getName());
-        dto.setEmail(institution.getEmail());
-        dto.setTypeInstitution(institution.getTypeInstitution());
         dto.setOpeningHours(institution.getOpeningHours());
-        dto.setHistory(institution.getHistory());
+        dto.setMapUrl(institution.getMapUrl());
+        dto.setEmails(institution.getEmails());
+        dto.setImage(institution.getImage());
         dto.setImageUrl(institution.getImageUrl());
-        dto.setStatus(institution.isStatus());
-        dto.setRegistrationDate(institution.getRegistrationDate());
-
-        if (institution.getContact() != null) {
-            dto.setContactPhone(institution.getContact().getPhone());
-        }
+        dto.setType(institution.getType());
+        dto.setPhoneNumbers(institution.getPhoneNumbers());
+        dto.setWebsites(institution.getWebsites());
+        dto.setVerificationKey(institution.getVerificationKey());
+        dto.setActive(institution.isActive());
+        dto.setRegistrationDateTime(institution.getRegistrationDateTime());
 
         if (institution.getDirection() != null) {
-            dto.setDirectionUrlMapsInstitution(institution.getDirection().getUrlMapsInstitution());
             dto.setDirectionState(institution.getDirection().getState());
-            dto.setDirectionMunicipality(institution.getDirection().getMunicipality());
+            dto.setDirectionCity(institution.getDirection().getCity());
             dto.setDirectionPostalCode(institution.getDirection().getPostalCode());
-            dto.setDirectionColony(institution.getDirection().getColony());
+            dto.setDirectionNeighborhood(institution.getDirection().getNeighborhood());
             dto.setDirectionStreet(institution.getDirection().getStreet());
             dto.setDirectionNumber(institution.getDirection().getNumber());
         }

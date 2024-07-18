@@ -6,9 +6,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum RoleEnum {
     // DEFINICIÓN DE LOS ROLES DISPONIBLES EN EL SISTEMA
-    USER(List.of(new SimpleGrantedAuthority("USER"))),
-    ADMIN(List.of(new SimpleGrantedAuthority("ADMIN"))),
-	EMPLOYEE(List.of(new SimpleGrantedAuthority("EMPLOYEE")));
+    USER(List.of(new SimpleGrantedAuthority("USER"))),//user_mobile
+    ADMIN(List.of(new SimpleGrantedAuthority("ADMIN"))),//super_admin
+	EMPLOYEE(List.of(new SimpleGrantedAuthority("EMPLOYEE")));////user_web
 
     // CAMPO PARA ALMACENAR LAS AUTORIDADES ASOCIADAS A CADA ROL
     private final List<GrantedAuthority> authorities;

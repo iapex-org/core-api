@@ -14,24 +14,24 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
 
     // ESTE MÉTODO BUSCA UNA ENTIDAD INSTITUTION EN LA BASE DE DATOS UTILIZANDO EL CAMPO EMAIL.
     // DEVUELVE UN OPTIONAL QUE CONTIENE LA ENTIDAD SI SE ENCUENTRA, O VACÍO SI NO SE ENCUENTRA.
-    Optional<Institution> findByEmail(String email);
+    Optional<Institution> findByEmails(String emails);
 
     // ESTE MÉTODO BUSCA UNA ENTIDAD INSTITUTION EN LA BASE DE DATOS UTILIZANDO EL CAMPO NAME.
     // DEVUELVE UN OPTIONAL QUE CONTIENE LA ENTIDAD SI SE ENCUENTRA, O VACÍO SI NO SE ENCUENTRA.
     Optional<Institution> findByName(String name);
     
     // ESTE MÉTODO BUSCA LAS INSTITUCIONES CON STATUS TRUE.
-    List<Institution> findByStatusTrue();
+    List<Institution> findByActiveTrue();
     
-    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU NOMBRE CON STATUS TRUE.
-    Optional<Institution> findByNameAndStatusTrue(String name);
+    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU NOMBRE CON Active TRUE.
+    Optional<Institution> findByNameAndActiveTrue(String name);
 
-    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON STATUS TRUE.
-    Optional<Institution> findByIdAndStatusTrue(Long idInstitution);
+    // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON Active TRUE.
+    Optional<Institution> findByIdAndActiveTrue(Long idInstitution);
 
     
     @Modifying
-    @Query("UPDATE Institution i SET i.status = false WHERE i.id NOT IN (SELECT DISTINCT m.institution.id FROM Membership m WHERE m.status = true)")
+    @Query("UPDATE Institution i SET i.active = false WHERE i.id NOT IN (SELECT DISTINCT m.institution.id FROM Membership m WHERE m.status = true)")
     void updateInstitutionStatusWithNoActiveMemberships();
 
 }
