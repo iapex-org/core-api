@@ -14,15 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.iapex.dtos.patient.ImageDTO;
 import com.iapex.dtos.patient.PatientDTO;
 import com.iapex.models.patient.Image;
 import com.iapex.models.response.Response;
-import com.iapex.models.user.UserWeb;
 import com.iapex.services.PatientService;
 import com.iapex.services.files.StorageService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -54,7 +51,6 @@ public class PatientController {
 	     return ResponseEntity.ok(patients);
 	 }
 
-
 	// Obtener un paciente por su ID
 	// USER_WEB: Usado en la web cuando se accede a un paciente, se cargan los datos de su ID
 	@GetMapping("/{id}")
@@ -68,7 +64,6 @@ public class PatientController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	    }
 	}
-
 
     // Acceder a la imagen del paciente por su nombre de archivo
     @GetMapping("/images/{filename:.+}")
@@ -92,9 +87,7 @@ public class PatientController {
     public ResponseEntity<List<PatientDTO>> getAllPatientsTrue() {
         List<PatientDTO> patients = patientService.getAllPatientsTrue();
         return ResponseEntity.ok(patients);
-    }
-    
-    
+    } 
 
     // Pensado para ser usado en la app móvil, especificamente al momento de abrir
     // un resultado especifico de un paciente
@@ -202,10 +195,6 @@ public class PatientController {
                 return ResponseEntity.status(401).body(new Response(
                         "Necesita iniciar sesión como personal de la institucion para usar este recurso"));
             }
-            
-            // Obtener el usuario autenticado
-            UserWeb authenticatedUser = (UserWeb) authentication.getPrincipal();
-
 
             // Llamar al servicio para registrar el paciente
             Response response = patientService.registerPatient(patientDTO);
@@ -216,7 +205,7 @@ public class PatientController {
         }
     }
     
-    @PutMapping(value = "updatePatient/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePatient(@PathVariable Long id,
                                            @Valid @ModelAttribute PatientDTO patientDTO,
                                            BindingResult result,
@@ -271,4 +260,3 @@ public class PatientController {
         }
     }
 }
-
