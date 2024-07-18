@@ -28,4 +28,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     // Busca pacientes por la institución a la que pertenecen
     List<Patient> findByInstitution(Institution institution);
+    
+    //Este método buscará pacientes que estén activos y cuya institución asociada también esté activa.
+    List<Patient> findByActiveTrueAndInstitution_ActiveTrue();
 }

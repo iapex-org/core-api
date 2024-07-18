@@ -55,8 +55,8 @@ public class InstitutionController {
         return ResponseEntity.ok(institutions);
     }
     
-    // Obtener todas las instituciones con active en TRUE
-    @GetMapping("/active-names")
+    // Obtener el nombre de todas las instituciones con active en TRUE
+    @GetMapping("/active-institution-names")
     public ResponseEntity<List<String>> getActiveInstitutionNames() {
         List<String> activeInstitutionNames = institutionService.getActiveInstitutionNames();
         return ResponseEntity.ok(activeInstitutionNames);

@@ -45,25 +45,30 @@ public class PatientController {
     @Autowired
     private HttpServletRequest request;
 
-    // Obtener todos los pacientes
-    @GetMapping
-    public ResponseEntity<List<PatientDTO>> getAllPatients() {
-        List<PatientDTO> patients = patientService.getAllPatients();
-        return ResponseEntity.ok(patients);
-    }
+	 // Obtener todos los pacientes
+	 // SUPER_ADMIN: En un futuro, si se necesita tener el control de todos los pacientes de todas las instituciones, se utilizaría 
+     // este endpoint, ya que lista tanto pacientes encontrados omo no encontrados
+	 @GetMapping
+	 public ResponseEntity<List<PatientDTO>> getAllPatients() {
+	     List<PatientDTO> patients = patientService.getAllPatients();
+	     return ResponseEntity.ok(patients);
+	 }
 
-    // Obtener un paciente por su ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getPatientById(@PathVariable Long id) {
-        try {
-            PatientDTO patientDTO = patientService.getPatientById(id);
-            return ResponseEntity.ok(patientDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Response errorResponse = new Response("Paciente no encontrado");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-        }
-    }
+
+	// Obtener un paciente por su ID
+	// USER_WEB: Usado en la web cuando se accede a un paciente, se cargan los datos de su ID
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getPatientById(@PathVariable Long id) {
+	    try {
+	        PatientDTO patientDTO = patientService.getPatientById(id);
+	        return ResponseEntity.ok(patientDTO);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        Response errorResponse = new Response("Paciente no encontrado");
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	    }
+	}
+
 
     // Acceder a la imagen del paciente por su nombre de archivo
     @GetMapping("/images/{filename:.+}")
@@ -88,10 +93,12 @@ public class PatientController {
         List<PatientDTO> patients = patientService.getAllPatientsTrue();
         return ResponseEntity.ok(patients);
     }
+    
+    
 
     // Pensado para ser usado en la app móvil, especificamente al momento de abrir
     // un resultado especifico de un paciente
-    // Obtener un paciente activo por su ID
+    // Obtener un paciente no encontrado (aun activo) por su ID
     @GetMapping("/{id}/active")
     public ResponseEntity<?> getPatientByIdTrue(@PathVariable Long id) {
         try {
@@ -196,7 +203,7 @@ public class PatientController {
                         "Necesita iniciar sesión como personal de la institucion para usar este recurso"));
             }
             
-         // Obtener el usuario autenticado
+            // Obtener el usuario autenticado
             UserWeb authenticatedUser = (UserWeb) authentication.getPrincipal();
 
 
@@ -205,7 +212,62 @@ public class PatientController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error"));
+            return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error, verifica que la institucion exista"));
+        }
+    }
+    
+    @PutMapping(value = "updatePatient/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updatePatient(@PathVariable Long id,
+                                           @Valid @ModelAttribute PatientDTO patientDTO,
+                                           BindingResult result,
+                                           @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = result.getFieldErrors().stream()
+                    .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated() 
+                    || authentication.getPrincipal().equals("anonymousUser")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(
+                        "Necesita iniciar sesión como personal de la institución para usar este recurso"));
+            }
+
+            List<ImageDTO> imageDTOs = new ArrayList<>();
+
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                if (imageFiles.size() < 8 || imageFiles.size() > 12) {
+                    return ResponseEntity.badRequest()
+                            .body(new Response("Debe subir entre 8 y 12 archivos de imagen."));
+                }
+
+                for (MultipartFile imageFile : imageFiles) {
+                    if (!imageFile.isEmpty()) {
+                        String originalFilename = imageFile.getOriginalFilename();
+                        String uniqueFilename = storageService.generateUniqueFilename(originalFilename);
+                        String storedFilename = storageService.saveFile(imageFile, uniqueFilename);
+
+                        String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                        String imageUrl = ServletUriComponentsBuilder
+                                .fromHttpUrl(host)
+                                .path("/api/v1/patients/images/")
+                                .path(storedFilename)
+                                .toUriString();
+
+                        imageDTOs.add(new ImageDTO(null, storedFilename, imageUrl));
+                    }
+                }
+
+                patientDTO.setImages(imageDTOs);
+            }
+
+            Response response = patientService.updatePatient(id, patientDTO);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Ha ocurrido un error al actualizar el paciente: " + e.getMessage()));
         }
     }
 }

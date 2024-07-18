@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,6 +24,7 @@ import com.iapex.models.user.UserWeb;
 import com.iapex.repositories.PatientRepository;
 import com.iapex.repositories.institution.InstitutionRepository;
 import com.iapex.repositories.user.UserWebRepository;
+import com.iapex.services.files.StorageService;
 
 @Service
 public class PatientService {
@@ -31,6 +34,9 @@ public class PatientService {
 
     @Autowired
     private InstitutionRepository institutionRepository;
+    
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private UserWebRepository userWebRepository;
@@ -94,6 +100,92 @@ public class PatientService {
             throw new Exception("Error al registrar el paciente: " + e.getMessage());
         }
     }
+    
+    @Transactional
+    public Response updatePatient(Long id, PatientDTO request) throws Exception {
+        try {
+            Patient patient = patientRepository.findById(id)
+                    .orElseThrow(() -> new Exception("Paciente no encontrado"));
+
+            // Obtener el usuario autenticado actualmente
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+            // Buscar el usuario autenticado por correo electrónico
+            UserWeb authenticatedUser = userWebRepository.findByEmail(currentUserEmail)
+                    .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+            // Actualizar el usuario registrante
+            patient.setRegisteringUser(authenticatedUser);
+
+            // Actualizar otros campos solo si han cambiado
+            if (!Objects.equals(patient.getName(), request.getName())) patient.setName(request.getName());
+            if (!Objects.equals(patient.getLastName(), request.getLastName())) patient.setLastName(request.getLastName());
+            if (!Objects.equals(patient.getSecondLastName(), request.getSecondLastName())) patient.setSecondLastName(request.getSecondLastName());
+            if (!Objects.equals(patient.getGender(), request.getGender())) patient.setGender(request.getGender());
+            if (!Objects.equals(patient.getApproximateAge(), request.getApproximateAge())) patient.setApproximateAge(request.getApproximateAge());
+            if (!Objects.equals(patient.getSkinColor(), request.getSkinColor())) patient.setSkinColor(request.getSkinColor());
+            if (!Objects.equals(patient.getHair(), request.getHair())) patient.setHair(request.getHair());
+            if (!Objects.equals(patient.getComplexion(), request.getComplexion())) patient.setComplexion(request.getComplexion());
+            if (!Objects.equals(patient.getEyeColor(), request.getEyeColor())) patient.setEyeColor(request.getEyeColor());
+            if (!Objects.equals(patient.getApproximateHeight(), request.getApproximateHeight())) patient.setApproximateHeight(request.getApproximateHeight());
+            if (!Objects.equals(patient.getMedicalConditions(), request.getMedicalConditions())) patient.setMedicalConditions(request.getMedicalConditions());
+            if (!Objects.equals(patient.getDistinctiveFeatures(), request.getDistinctiveFeatures())) patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
+            if (!Objects.equals(patient.getAdditionalNotes(), request.getAdditionalNotes())) patient.setAdditionalNotes(request.getAdditionalNotes());
+            if (patient.isActive() != request.isActive()) patient.setActive(request.isActive());
+
+            // Actualizar la institución si ha cambiado
+            if (!Objects.equals(patient.getInstitution().getName(), request.getInstitution())) {
+                Institution newInstitution = institutionRepository.findByName(request.getInstitution())
+                        .orElseThrow(() -> new Exception("Institución no encontrada"));
+                patient.setInstitution(newInstitution);
+            }
+
+            // Actualizar imágenes si se proporcionaron nuevas
+            if (request.getImages() != null && !request.getImages().isEmpty()) {
+                // Validar la cantidad de imágenes
+                if (request.getImages().size() < 8 || request.getImages().size() > 12) {
+                    throw new Exception("Debe proporcionar entre 8 y 12 imágenes.");
+                }
+
+                // Crear un mapa de las imágenes existentes por su nombre de archivo
+                Map<String, Image> existingImages = patient.getImages().stream()
+                        .collect(Collectors.toMap(Image::getImage, image -> image));
+
+                List<Image> updatedImages = new ArrayList<>();
+                for (ImageDTO imageDTO : request.getImages()) {
+                    Image image = existingImages.get(imageDTO.getImage());
+                    if (image == null) {
+                        // Si es una nueva imagen, crear una nueva entidad Image
+                        image = new Image();
+                        image.setImage(imageDTO.getImage());
+                        image.setImageUrl(imageDTO.getImageUrl());
+                        image.setPatient(patient);
+                    } else {
+                        // Si la imagen ya existe, actualizar su URL si es necesario
+                        image.setImageUrl(imageDTO.getImageUrl());
+                        existingImages.remove(imageDTO.getImage());
+                    }
+                    updatedImages.add(image);
+                }
+
+                // Eliminar las imágenes que ya no se usan
+                for (Image oldImage : existingImages.values()) {
+                    storageService.deleteFile(oldImage.getImage());
+                }
+
+                // Actualizar la colección de imágenes del paciente
+                patient.getImages().clear();
+                patient.getImages().addAll(updatedImages);
+            }
+
+            patientRepository.save(patient);
+            return new Response("El paciente ha sido actualizado exitosamente.");
+        } catch (Exception e) {
+            throw new Exception("Error al actualizar el paciente: " + e.getMessage());
+        }
+    }
+    
     // OBTENER PACIENTE POR ID
     public PatientDTO getPatientById(Long id) throws Exception {
         Patient patient = patientRepository.findById(id)
@@ -101,13 +193,6 @@ public class PatientService {
         return convertToDTO(patient);
     }
 
-    // OBTENER POR ID SOLO SI STATUS ES FALSE ES DECIR NO ENCONTRADO
-    public PatientDTO getPatientByIdFalse(Long id) throws Exception {
-        Patient patient = patientRepository.findByIdAndActiveFalse(id)
-                .orElseThrow(() -> new Exception("Paciente no encontrado"));
-
-        return convertToDTO(patient);
-    }
 
     // OBTENER POR ID SOLO SI STATUS ES FALSE ES DECIR NO ENCONTRADO
     public PatientDTO getPatientByIdTrue(Long id) throws Exception {
@@ -125,22 +210,15 @@ public class PatientService {
                 .collect(Collectors.toList());
     }
 
-    // OBTENER TODAS LOS PACIENTES CON STATUS FALSE ES DECIR NO ENCONTRADOS
-    public List<PatientDTO> getAllPatientsFalse() {
-        List<Patient> patients = patientRepository.findByActiveFalse();
-        return patients.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
 
     // OBTENER TODAS LOS PACIENTES CON STATUS TRUE ES DECIR NO ENCONTRADOS
     public List<PatientDTO> getAllPatientsTrue() {
-        List<Patient> patients = patientRepository.findByActiveTrue();
+        List<Patient> patients = patientRepository.findByActiveTrueAndInstitution_ActiveTrue();
         return patients.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
+    
     @Transactional
     public Response updateById(Long id, PatientDTO request) {
         try {
@@ -149,7 +227,7 @@ public class PatientService {
                     .orElseThrow(() -> new Exception("Paciente no encontrado"));
 
             // ACTUALIZAR EL ESTADO DEL PACIENTE SI ES DIFERENTE
-            if (patient.getActive() != request.isActive()) {
+            if (patient.isActive() != request.isActive()) {
                 patient.setActive(request.isActive());
 
                 // GUARDAR LOS CAMBIOS
@@ -207,7 +285,7 @@ public class PatientService {
                 patient.getApproximateAge(),
                 patient.getRegistrationDateTime(),
                 registeringUserFullName,  // Usa el nombre completo aquí
-                patient.getActive(),
+                patient.isActive(),
                 patient.getSkinColor(),
                 patient.getHair(),
                 patient.getComplexion(),
@@ -220,3 +298,4 @@ public class PatientService {
                 patient.getAdditionalNotes());
     }
 }
+
