@@ -278,13 +278,14 @@ public class PatientService {
                 patient.getRegisteringUser().getSecondLastName());
 
         return new PatientDTO(
+                patient.getId(),
                 patient.getName(),
                 patient.getLastName(),
                 patient.getSecondLastName(),
                 patient.getGender(),
                 patient.getApproximateAge(),
                 patient.getRegistrationDateTime(),
-                registeringUserFullName,  // Usa el nombre completo aquí
+                registeringUserFullName,
                 patient.isActive(),
                 patient.getSkinColor(),
                 patient.getHair(),

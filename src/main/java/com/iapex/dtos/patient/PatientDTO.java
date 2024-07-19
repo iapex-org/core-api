@@ -2,13 +2,11 @@ package com.iapex.dtos.patient;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class PatientDTO {
 
-    @JsonIgnore
     private Long id;
 
     @Size(max = 50, message = "El nombre debe tener máximo 50 caracteres")
@@ -60,16 +58,18 @@ public class PatientDTO {
 
     @Size(max = 255, message = "Las notas adicionales deben tener máximo 255 caracteres")
     private String additionalNotes;
-    
+
     // Constructor
     public PatientDTO() {
     }
 
     // Constructor con todos los atributos
-    public PatientDTO(String name, String lastName, String secondLastName, String gender, Integer approximateAge,
-                      LocalDateTime registrationDateTime, String registeringUser, boolean active, String skinColor, 
-                      String hair, String complexion, String eyeColor, Integer approximateHeight, String medicalConditions,
-                      String distinctiveFeatures, String institution, List<ImageDTO> images, String additionalNotes) {
+    public PatientDTO(Long id, String name, String lastName, String secondLastName, String gender,
+            Integer approximateAge,
+            LocalDateTime registrationDateTime, String registeringUser, boolean active, String skinColor,
+            String hair, String complexion, String eyeColor, Integer approximateHeight, String medicalConditions,
+            String distinctiveFeatures, String institution, List<ImageDTO> images, String additionalNotes) {
+        this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.secondLastName = secondLastName;
@@ -242,4 +242,4 @@ public class PatientDTO {
         this.active = active;
     }
 
-}    
+}
