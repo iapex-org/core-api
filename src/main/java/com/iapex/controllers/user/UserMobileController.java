@@ -38,7 +38,7 @@ public class UserMobileController {
     }
     
     
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN') or hasAuthority('USER_MOBILE')")
     @PutMapping("/updateUser/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserMobileDTO request, BindingResult result, Authentication authentication) {
         // Verificar si el usuario tiene permiso para actualizar el usuario con el ID especificado
@@ -52,7 +52,7 @@ public class UserMobileController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN') or hasAuthority('USER_MOBILE')")
     @GetMapping("/getUserById/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id, Authentication authentication) {
         // Verificar si el usuario tiene permiso para acceder al usuario con el ID especificado

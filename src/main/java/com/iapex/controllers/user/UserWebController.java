@@ -37,7 +37,7 @@ public class UserWebController {
     }
 
     // Obttener todos los usuarios
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserWebDTO>> getAllUsers() {
         List<UserWebDTO> userDTOs = userWebService.getAllUserDTOs();
@@ -45,6 +45,7 @@ public class UserWebController {
     }
 
     // Obtener usuario por ID
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserWebById(@PathVariable Long id) {
         try {
@@ -57,7 +58,7 @@ public class UserWebController {
     }
 
     // Obtener todos los usuarios asociados a la institución del usuario autenticado
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/current/institution")
     public ResponseEntity<List<UserWebDTO>> getUsersByInstitution(Authentication authentication) {
         String email = authentication.getName();
@@ -88,7 +89,7 @@ public class UserWebController {
     }
 
     // Actualizar un usuario
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUserWeb(
             @PathVariable Long id,
@@ -115,7 +116,7 @@ public class UserWebController {
     }
 
     // Eliminar un usuario
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         try {

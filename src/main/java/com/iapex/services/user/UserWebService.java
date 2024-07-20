@@ -104,7 +104,7 @@ public class UserWebService {
         userWeb.setSecondLastName(request.getSecondLastName());
         userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
         userWeb.setPosition(request.getPosition());
-        userWeb.setRole(request.getRole() != null ? request.getRole() : RoleEnum.EMPLOYEE);
+        userWeb.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER_WEB);
         userWeb.setAccountVerified(false);
 
         // Buscar la institución por su nombre

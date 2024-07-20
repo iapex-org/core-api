@@ -6,10 +6,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum RoleEnum {
     // DEFINICIÓN DE LOS ROLES DISPONIBLES EN EL SISTEMA
-    USER(List.of(new SimpleGrantedAuthority("USER"))),//user_mobile
-    ADMIN(List.of(new SimpleGrantedAuthority("ADMIN"))),//super_admin
-	EMPLOYEE(List.of(new SimpleGrantedAuthority("EMPLOYEE")));////user_web
-
+    USER_MOBILE(List.of(new SimpleGrantedAuthority("USER_MOBILE"))),
+    SUPER_ADMIN(List.of(new SimpleGrantedAuthority("SUPER_ADMIN"))),
+    USER_WEB(List.of(new SimpleGrantedAuthority("USER_WEB")));////
     // CAMPO PARA ALMACENAR LAS AUTORIDADES ASOCIADAS A CADA ROL
     private final List<GrantedAuthority> authorities;
 
@@ -26,12 +25,12 @@ public enum RoleEnum {
     // MÉTODO ESTÁTICO PARA CONVERTIR UNA CADENA EN UN OBJETO ROLE
     public static RoleEnum fromString(String roleStr) {
         switch (roleStr.toUpperCase()) {
-            case "USER":
-                return USER;
-            case "EMPLOYEE":
-                return EMPLOYEE;
-            case "ADMIN":
-                return ADMIN;
+            case "USER_MOBILE":
+                return USER_MOBILE;
+            case "USER_WEB":
+                return USER_WEB;
+            case "SUPER_ADMIN":
+                return SUPER_ADMIN;
             default:
                 throw new IllegalArgumentException("Role no reconocido: " + roleStr);
         }

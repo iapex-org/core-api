@@ -48,7 +48,7 @@ public class InstitutionController {
     private HttpServletRequest request;
 
     // Obtener todas las instituciones
-    // @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
         List<InstitutionDTO> institutions = institutionService.getAllInstitutions();
@@ -110,7 +110,7 @@ public class InstitutionController {
     
 
     // Obtener la institución del usuario autenticado
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @GetMapping("/current-user")
     public ResponseEntity<?> getInstitutionByUser() {
         try {
@@ -131,7 +131,7 @@ public class InstitutionController {
 
     // Crear una nueva institución
     //imageFile campo para archivos
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createInstitution(
             @Valid @ModelAttribute InstitutionDTO request,
@@ -174,7 +174,7 @@ public class InstitutionController {
     }
 
     // Actualizar una institución
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInstitution(
             @PathVariable Long id,
@@ -229,7 +229,7 @@ public class InstitutionController {
     }
 
     // Eliminar una institución
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInstitution(@PathVariable Long id) {
         try {

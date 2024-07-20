@@ -7,6 +7,7 @@ import com.iapex.services.ContactRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public class ContactRequestController {
     private ContactRequestService contactRequestService;
 
     // Obtiene todas las solicitudes de contacto
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<ContactRequestDTO>> getAllContactRequests() {
         List<ContactRequestDTO> contactRequests = contactRequestService.getAllContactRequests();
@@ -27,6 +29,7 @@ public class ContactRequestController {
     }
 
     // Obtiene una solicitud de contacto por ID
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getContactRequestById(@PathVariable Long id) {
         try {
@@ -39,6 +42,7 @@ public class ContactRequestController {
 
     // Obtiene las solicitudes de contacto por la institución del usuario
     // autenticado
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @GetMapping("/current-user/institution")
     public ResponseEntity<List<ContactRequestDTO>> getContactRequestsByInstitution() {
         List<ContactRequestDTO> contactRequests = contactRequestService.getContactRequestsByInstitution();
@@ -63,6 +67,7 @@ public class ContactRequestController {
     }
 
     // Actualiza una solicitud de contacto por ID
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateContactRequestById(@PathVariable Long id,
             @RequestBody UpdateContactRequestDTO request) {

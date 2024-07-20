@@ -107,7 +107,7 @@ public class PatientController {
     // Pensado para ser usado en la app web, ya que solo muestra los pacientes que
     // corresponden a la institución de la que forma parte el usuario autenticado
     // Obtener los pacientes de la misma institución que el usuario autenticado
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @GetMapping("/current-user/institution")
     public ResponseEntity<List<PatientDTO>> getPatientsByInstitution() {
         try {
@@ -122,6 +122,7 @@ public class PatientController {
 
     // Impotante: Enviar archivos desde "imageFile"
     // Crear un paciente
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerPatient(
             @Valid @ModelAttribute PatientDTO patientDTO,
@@ -194,6 +195,7 @@ public class PatientController {
         }
     }
     
+    @PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePatient(@PathVariable Long id,
                                            @Valid @ModelAttribute PatientDTO patientDTO,

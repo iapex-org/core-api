@@ -70,7 +70,7 @@ public class UserMobileService {
         userMobile.setEmail(request.getEmail());
         userMobile.setPassword(passwordEncoder.encode(request.getPassword()));
         userMobile.setPhone(request.getPhone());
-        userMobile.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER);
+        userMobile.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER_MOBILE);
         userMobile.setStatus(false); // Usuario no verificado inicialmente
 
         userMobileRepository.save(userMobile);
