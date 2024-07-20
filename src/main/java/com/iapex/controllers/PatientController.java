@@ -129,49 +129,46 @@ public class PatientController {
             @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles) {
 
         if (result.hasErrors()) {
-            // Manejo de errores de validación
             Map<String, String> errors = result.getFieldErrors().stream()
                     .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
             return ResponseEntity.badRequest().body(errors);
         }
 
-        try {
+        // Verificar la autenticación del usuario primero
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).body(new Response(
+                    "Necesita iniciar sesión como personal de la institución para usar este recurso"));
+        }
 
+        try {
             List<Image> images = new ArrayList<>();
 
-            // Procesar archivos de imagen si se proporcionaron
+            // Validar la cantidad de archivos de imagen
             if (imageFiles != null) {
-                // Validar la cantidad de archivos de imagen
                 if (imageFiles.isEmpty()) {
-                    // Si imageFiles está presnte, pero vacío, mostrar el mensaje correspondiente
                     return ResponseEntity.badRequest()
                             .body(new Response("Debe adjuntar al menos un archivo de imagen."));
                 } else if (imageFiles.size() < 8 || imageFiles.size() > 12) {
-                    // Si la cantidad de archivos de imagen no está entre 8 y 12, mostrar el mensaje
-                    // correspondiente
                     return ResponseEntity.badRequest()
                             .body(new Response("Debe subir al menos 8 y como máximo 12 archivos de imagen."));
                 }
-            }
 
-            // Procesar archivos de imagen si se proporcionaron
-            if (imageFiles != null && !imageFiles.isEmpty()) {
+                // Procesar archivos de imagen
                 for (MultipartFile imageFile : imageFiles) {
                     if (!imageFile.isEmpty()) {
-                        // Guardar el archivo de imagen en el sistema de archivos
                         String originalFilename = imageFile.getOriginalFilename();
                         String uniqueFilename = storageService.generateUniqueFilename(originalFilename);
                         String storedFilename = storageService.saveFile(imageFile, uniqueFilename);
 
-                        // Construir la URL completa de la imagen
                         String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
                         String imageUrl = ServletUriComponentsBuilder
                                 .fromHttpUrl(host)
-                                .path("/api/v1/patients/images/") // Ruta de las imágenes de los pacientes
+                                .path("/api/v1/patients/images/")
                                 .path(storedFilename)
                                 .toUriString();
 
-                        // Guardar la imagen en la lista de imágenes
                         Image image = new Image();
                         image.setImage(storedFilename);
                         image.setImageUrl(imageUrl);
@@ -188,20 +185,12 @@ public class PatientController {
             // Establecer las imágenes en el DTO del paciente
             patientDTO.setImages(imageDTOs);
 
-            // Obtener la autenticación del usuario
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()
-                    || authentication.getPrincipal().equals("anonymousUser")) {
-                return ResponseEntity.status(401).body(new Response(
-                        "Necesita iniciar sesión como personal de la institucion para usar este recurso"));
-            }
-
             // Llamar al servicio para registrar el paciente
             Response response = patientService.registerPatient(patientDTO);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error, verifica que la institucion exista"));
+            return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error, verifica que la institución exista"));
         }
     }
     
