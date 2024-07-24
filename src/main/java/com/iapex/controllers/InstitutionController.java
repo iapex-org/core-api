@@ -55,6 +55,18 @@ public class InstitutionController {
         return ResponseEntity.ok(institutions);
     }
     
+    // Obtener institución por ID sin importar su estado
+    @GetMapping("/getInstitutionById/{id}")
+    public ResponseEntity<?> getInstitutionById(@PathVariable Long id) {
+        try {
+            Institution institution = institutionService.getInstitutionById(id);
+            return ResponseEntity.ok(institution);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Response("No se encontró la institución con ID: " + id));
+        }
+    }
+    
     // Obtener el nombre de todas las instituciones con active en TRUE
     @GetMapping("/active-institution-names")
     public ResponseEntity<List<String>> getActiveInstitutionNames() {

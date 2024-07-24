@@ -72,7 +72,7 @@ public class UserMobileController {
 
     // ENDPOINT PARA OBTENER TODOS LOS USUARIOS
     //SOLO DASHBOARD
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserMobile>> getAllUsers() {
         List<UserMobile> users = userMobileService.getAllUsers();
