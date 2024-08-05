@@ -166,7 +166,7 @@ public class InstitutionController {
                 String host = this.request.getRequestURL().toString().replace(this.request.getRequestURI(), "");
                 String imageUrl = ServletUriComponentsBuilder
                         .fromHttpUrl(host)
-                        .path("/api/v1/institutions/images/")  // Nota el cambio aquí
+                        .path("/api/v1/institutions/images/")
                         .path(storedFilename)
                         .toUriString();
 

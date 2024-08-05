@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -113,9 +114,11 @@ public class UserWebService {
         	userWeb.setInstitution(institution);
 
         	userWebRepository.save(userWeb);
-
-        String verificationCode = webEmailService.sendVerificationUserWebEmail(userWeb);
-
+            CompletableFuture<String> emailFuture = webEmailService.sendVerificationUserWebEmailAsync(userWeb);
+            emailFuture.thenAccept(verificationCode -> {
+            }).exceptionally(ex -> {
+                return null;
+            });
         return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
     }
     
@@ -187,7 +190,7 @@ public class UserWebService {
                     .collect(Collectors.toList());
     }
 
-    private UserWebDTO convertToDTO(UserWeb userWeb) {
+    public UserWebDTO convertToDTO(UserWeb userWeb) {
         UserWebDTO dto = new UserWebDTO();
         dto.setId(userWeb.getId());
         dto.setName(userWeb.getName());

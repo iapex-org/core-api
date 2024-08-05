@@ -19,13 +19,17 @@ import com.iapex.models.user.UserWeb;
 import com.iapex.services.email.WebEmailService;
 import com.iapex.services.user.UserWebService;
 
+import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/usersWeb")
+@RequestMapping("/api/v1/userWeb")
 public class UserWebController {
 
     private final UserWebService userWebService;
@@ -147,45 +151,74 @@ public class UserWebController {
         }
     }
 
-    // Confirmar que la cuenta es real
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirmUser(@RequestParam("email") String email, @RequestParam("code") String code) {
+    public ResponseEntity<?> confirmUser(@RequestParam("code") String code) {
         try {
-            webEmailService.verifyUserWebWithCode(email, code);
+            webEmailService.verifyUserWebWithCode(code);
             return ResponseEntity.ok(new Response("Usuario verificado correctamente"));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Usuario no encontrado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Response("Error al verificar el usuario: " + e.getMessage()));
         }
     }
-
-    // Reenviar el código de confirmación
+    
     @GetMapping("/resend-verification")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
-            webEmailService.resendVerificationCode(email);
-            return ResponseEntity.ok(new Response("Nuevo código de verificación enviado"));
+            CompletableFuture<String> future = webEmailService.resendVerificationCode(email);
+            ResponseEntity<Response> response = ResponseEntity.accepted()
+                .body(new Response("Se ha iniciado el proceso de reenvío del código de verificación"));
+            future.thenAccept(verificationCode -> {
+            }).exceptionally(ex -> { return null;});
+            return response;
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new Response(e.getMessage()));
+            return ResponseEntity.badRequest()
+                .body(new Response("Error al iniciar el proceso de reenvío: " + e.getMessage()));
         }
     }
 
-    // Solicitar correo con el código para restablecer la contraseña
+
+ // Solicitar correo con el código para restablecer la contraseña
     @PostMapping("/password-reset/request")
     public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
         try {
             UserWeb userWeb = userWebService.findByEmail(email);
             if (userWeb != null) {
-                webEmailService.sendPasswordResetUserWebEmail(userWeb);
-                return ResponseEntity
-                        .ok(new Response("Se ha enviado un correo con instrucciones para restablecer la contraseña"));
+                CompletableFuture<String> future = webEmailService.sendPasswordResetUserWebEmailAsync(userWeb);
+                future.exceptionally(ex -> {
+                    return null;
+                });
+                return ResponseEntity.accepted()
+                    .body(new Response("Se ha iniciado el proceso de envío de instrucciones para restablecer la contraseña"));
             }
+            return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
+                .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
         }
-        return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
     }
 
+    // Reenviar el correo con el código para restablecer la contraseña
+    @PostMapping("/password-reset/resend")
+    public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
+        try {
+            UserWeb userWeb = userWebService.findByEmail(email);
+            if (userWeb != null) {
+                CompletableFuture<String> future = webEmailService.sendPasswordResetUserWebEmailAsync(userWeb);
+                 future.exceptionally(ex -> {
+                    return null;
+                });
+                return ResponseEntity.accepted()
+                    .body(new Response("Se ha iniciado el proceso de envío de un nuevo correo con instrucciones para restablecer la contraseña."));
+            }
+            return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
+        }
+    }
+    
     // Restablecer la contraseña
     @PostMapping("/password-reset")
     public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDTO request) {
@@ -204,21 +237,19 @@ public class UserWebController {
                     .body(new Response("Error al restablecer la contraseña"));
         }
     }
-
-    // Reenviar el correo con el código para restablecer la contraseña
-    @PostMapping("/password-reset/resend")
-    public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
+    
+    //Obtener datos del usuario autenticado
+    @GetMapping("/myAccount")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         try {
-            UserWeb userWeb = userWebService.findByEmail(email);
-            if (userWeb != null) {
-                webEmailService.sendPasswordResetUserWebEmail(userWeb);
-                return ResponseEntity.ok(new Response(
-                        "Se ha enviado un nuevo correo con instrucciones para restablecer la contraseña."));
-            }
+            UserWeb userWeb = (UserWeb) authentication.getPrincipal();
+            UserWebDTO userWebDTO = userWebService.convertToDTO(userWeb);
+            return ResponseEntity.ok(userWebDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
+                    .body(new Response("Error al obtener los datos del usuario: " + e.getMessage()));
         }
-        return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
     }
 }
+

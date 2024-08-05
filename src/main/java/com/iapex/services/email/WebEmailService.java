@@ -1,12 +1,16 @@
 package com.iapex.services.email;
 
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.iapex.models.user.UserWeb;
@@ -88,6 +92,28 @@ public class WebEmailService {
         }
     }
     
+    @Async("taskExecutor")
+    public CompletableFuture<String> sendVerificationUserWebEmailAsync(UserWeb userWeb) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendVerificationUserWebEmail(userWeb);
+            } catch (MessagingException e) {
+                throw new CompletionException(e);
+            }
+        });
+    }
+    
+    @Async("taskExecutor")
+    public CompletableFuture<String> sendPasswordResetUserWebEmailAsync(UserWeb userWeb) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendPasswordResetUserWebEmail(userWeb);
+            } catch (MessagingException e) {
+                throw new CompletionException(e);
+            }
+        });
+    }
+    
     public String sendVerificationUserWebEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
 
@@ -116,6 +142,7 @@ public class WebEmailService {
                     "                <h2 style=\"text-align: center;\">Gracias por registrarte. Confirma tu correo electrónico para confirmar tu cuenta.</h2>\n" +
                     "                <p>Una vez que tu cuenta haya sido confirmada, podrás acceder a la institución correspondiente. Recuerda que debes esperar a que la institución en la que estás registrado confirme tu acceso.</p>\n" +
                     "                <h3 style=\"text-align: center;\">Tu código de verificación es: " + verificationCode + "</h3>\n" +
+                    "				 <p>Para confirmar tu cuenta, ingresa este código en la aplicación.</p>\n" +
                     "            </td>\n" +
                     "        </tr>\n" +
                     "        <tr>\n" +
@@ -170,9 +197,19 @@ public class WebEmailService {
     }
     
     // VERIFICAR LA INSTITUCIÓN DEL USUARIO CON EL CÓDIGO
-    public void verifyUserWebWithCode(String email, String verificationCode) throws Exception {
+    public void verifyUserWebWithCode(String verificationCode) throws Exception {
+        Cache codeToEmailCache = cacheManager.getCache("codeToEmailCache");
+        if (codeToEmailCache == null) {
+            throw new Exception("Cache de verificación no disponible");
+        }
+
+        String email = codeToEmailCache.get(verificationCode, String.class);
+        if (email == null) {
+            throw new Exception("Código de verificación no válido o expirado.");
+        }
+
         UserWeb userWeb = userWebRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email asociado al código."));
 
         Cache verificationCache = cacheManager.getCache("verificationCodes");
         if (verificationCache == null) {
@@ -180,7 +217,7 @@ public class WebEmailService {
         }
 
         String cachedCode = verificationCache.get(email, String.class);
-        if (cachedCode == null || !cachedCode.equals(verificationCode)) {
+        if (!verificationCode.equals(cachedCode)) {
             throw new Exception("Código de verificación no válido.");
         }
 
@@ -188,22 +225,27 @@ public class WebEmailService {
         userWebRepository.save(userWeb);
 
         verificationCache.evict(email);
-        cacheManager.getCache("codeToEmailCache").evict(verificationCode);
+        codeToEmailCache.evict(verificationCode);
     }
     
     
     // REENVIAR EL CÓDIGO DE VERIFICACIÓN
-    public String resendVerificationCode(String email) throws MessagingException {
-        UserWeb userWeb = userWebRepository.findByEmail(email)
-            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
+    @Async("taskExecutor")
+    public CompletableFuture<String> resendVerificationCode(String email) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                UserWeb userWeb = userWebRepository.findByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con el email: " + email));
 
-        if (userWeb.isAccountVerified()) {
-            throw new IllegalStateException("La cuenta ya está verificada");
-        }
-
-        return sendVerificationUserWebEmail(userWeb);
+                if (userWeb.isAccountVerified()) {
+                    throw new IllegalStateException("La cuenta ya está verificada");
+                }
+                return sendVerificationUserWebEmail(userWeb);
+            } catch (MessagingException e) {
+                throw new CompletionException(e);
+            }
+        });
     }
-    
     
     // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO
     public void sendEmailInstitution(String from, String body) throws MessagingException {
