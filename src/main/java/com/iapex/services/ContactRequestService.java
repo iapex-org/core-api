@@ -72,6 +72,12 @@ public class ContactRequestService {
             ContactRequest contactRequest = contactRequestRepository.findById(id)
                     .orElseThrow(() -> new Exception("Solicitud de contacto no encontrada"));
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserWeb currentUser = (UserWeb) authentication.getPrincipal();
+
+            boolean statusUpdated = false;
+            boolean userUpdated = false;
+
             // Actualizar el estado si está presente en la solicitud
             if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
                 ContactRequestStatusEnum newStatus;
@@ -84,31 +90,34 @@ public class ContactRequestService {
                 // Actualizar solo si el nuevo estado es diferente al actual
                 if (!contactRequest.getStatus().equals(newStatus.name())) {
                     contactRequest.setStatus(newStatus.name());
+                    statusUpdated = true;
+
+                    // Actualizar automáticamente el usuario atendiendo
+                    contactRequest.setAttendingUser(currentUser);
+                    userUpdated = true;
                 }
             }
 
-            // Actualizar el usuario atendiendo si está presente en la solicitud
-            if (request.getAttendingUser() != null && !request.getAttendingUser().trim().isEmpty()) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                UserWeb userWeb = (UserWeb) authentication.getPrincipal();
-
+            // Actualizar el usuario atendiendo si está presente en la solicitud y no se actualizó automáticamente
+            if (!userUpdated && request.getAttendingUser() != null && !request.getAttendingUser().trim().isEmpty()) {
                 // Verificar si el usuario tiene permiso para cambiar el usuario atendiendo
-                if (!userWeb.getUsername().equals(request.getAttendingUser())) {
+                if (!currentUser.getUsername().equals(request.getAttendingUser())) {
                     return new Response("Error: No tienes permiso para cambiar el usuario asociado a esta solicitud");
                 }
 
-                contactRequest.setAttendingUser(userWeb);
+                contactRequest.setAttendingUser(currentUser);
+                userUpdated = true;
             }
 
             // Guardar la solicitud de contacto con los cambios realizados
             contactRequestRepository.save(contactRequest);
 
             // Determinar el mensaje de respuesta según las actualizaciones realizadas
-            if (request.getStatus() != null && request.getAttendingUser() != null) {
+            if (statusUpdated && userUpdated) {
                 return new Response("Estado y usuario atendiendo actualizados exitosamente");
-            } else if (request.getStatus() != null) {
+            } else if (statusUpdated) {
                 return new Response("Estado de la solicitud de contacto actualizado exitosamente");
-            } else if (request.getAttendingUser() != null) {
+            } else if (userUpdated) {
                 return new Response("Usuario atendiendo actualizado exitosamente");
             } else {
                 return new Response("No se realizaron cambios en la solicitud de contacto");
@@ -122,7 +131,6 @@ public class ContactRequestService {
             return new Response("Error al actualizar la solicitud de contacto: " + e.getMessage());
         }
     }
-
     public List<ContactRequestDTO> getContactRequestsByInstitution() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -137,6 +145,7 @@ public class ContactRequestService {
             return Collections.emptyList();
         }
     }
+    
 
     private ContactRequestDTO convertToDTO(ContactRequest contactRequest) {
         Patient patient = contactRequest.getPatient();
@@ -154,6 +163,7 @@ public class ContactRequestService {
                 contactRequest.getRelationship(),
                 contactRequest.getRequestDateTime(),
                 contactRequest.getMessage(),
-                contactRequest.getStatus());
-    }
+                contactRequest.getStatus().toLowerCase()
+                );
+               }
 }
