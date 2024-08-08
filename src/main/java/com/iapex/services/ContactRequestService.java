@@ -131,6 +131,8 @@ public class ContactRequestService {
             return new Response("Error al actualizar la solicitud de contacto: " + e.getMessage());
         }
     }
+    
+    
     public List<ContactRequestDTO> getContactRequestsByInstitution() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/patients")
 public class PatientController {
 
+	
     @Autowired
     private PatientService patientService;
 
@@ -122,7 +123,7 @@ public class PatientController {
 
     // Impotante: Enviar archivos desde "imageFile"
     // Crear un paciente
-    @PreAuthorize("hasAuthority('USER_WEB')")
+    //@PreAuthorize("hasAuthority('USER_WEB')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerPatient(
             @Valid @ModelAttribute PatientDTO patientDTO,

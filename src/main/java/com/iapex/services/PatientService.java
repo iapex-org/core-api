@@ -44,10 +44,6 @@ public class PatientService {
     @Transactional
     public Response registerPatient(PatientDTO request) throws Exception {
         try {
-            // Buscar institución por nombre
-            Institution institution = institutionRepository.findByName(request.getInstitution())
-                    .orElseThrow(() -> new Exception("Institución no encontrada"));
-
             // Obtener el usuario autenticado
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -55,6 +51,12 @@ public class PatientService {
             // Buscar el usuario autenticado por correo electrónico
             UserWeb authenticatedUser = userWebRepository.findByEmail(currentUserEmail)
                     .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+            // Obtener la institución del usuario autenticado
+            Institution institution = authenticatedUser.getInstitution();
+            if (institution == null) {
+                throw new Exception("El usuario autenticado no está asociado a ninguna institución");
+            }
 
             // Crear un nuevo paciente
             Patient patient = new Patient();
@@ -72,10 +74,10 @@ public class PatientService {
             patient.setApproximateHeight(request.getApproximateHeight());
             patient.setMedicalConditions(request.getMedicalConditions());
             patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
-            patient.setInstitution(institution);
+            patient.setInstitution(institution);  // Asignar la institución del usuario autenticado
             patient.setAdditionalNotes(request.getAdditionalNotes());
-            // Establecer el estado del paciente en false (no encontrado)
             patient.setActive(true);
+
             // Asociar las imágenes al paciente
             List<ImageDTO> imageDTOs = request.getImages();
             List<Image> images = new ArrayList<>();
@@ -90,7 +92,6 @@ public class PatientService {
                         })
                         .collect(Collectors.toList());
             }
-            // Asignar la lista de imágenes al paciente
             patient.setImages(images);
 
             // Guardar el paciente
@@ -100,7 +101,6 @@ public class PatientService {
             throw new Exception("Error al registrar el paciente: " + e.getMessage());
         }
     }
-    
     @Transactional
     public Response updatePatient(Long id, PatientDTO request) throws Exception {
         try {
@@ -299,4 +299,5 @@ public class PatientService {
                 patient.getAdditionalNotes());
     }
 }
+
 

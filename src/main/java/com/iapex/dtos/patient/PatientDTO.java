@@ -51,7 +51,6 @@ public class PatientDTO {
     @Size(max = 255, message = "Las características distintivas deben tener máximo 255 caracteres")
     private String distinctiveFeatures;
 
-    @NotNull(message = "La institución es obligatoria")
     private String institution;
 
     private List<ImageDTO> images;
