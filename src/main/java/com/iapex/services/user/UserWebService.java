@@ -365,4 +365,3 @@ public class UserWebService {
         return new Response("El usuario ha sido actualizado exitosamente.");
     }
 }
-

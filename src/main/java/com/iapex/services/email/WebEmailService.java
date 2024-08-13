@@ -36,6 +36,7 @@ public class WebEmailService {
 
     public String sendPasswordResetUserWebEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
+        String resetUrl = "http://localhost:4200/access/restore-password?code=" + verificationCode;
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -45,7 +46,7 @@ public class WebEmailService {
                     "<html lang=\"es\">\n" +
                     "<head>\n" +
                     "    <meta charset=\"UTF-8\">\n" +
-                    "    <meta name=\"viewport\" content=\"width=device-width, intial-scale=1.0\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
                     "    <title>Restablecimiento de contraseña</title>\n" +
                     "</head>\n" +
                     "<body style=\"font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: transparent !important;\">\n" +
@@ -60,8 +61,8 @@ public class WebEmailService {
                     "            <td style=\"padding: 20px;\">\n" +
                     "                <img src=\"" + IMAGE_URL + "\" alt=\"IAPEX Logo\" style=\"max-width: 200px; height: auto; display: block; margin: 0 auto 20px;\">\n" +
                     "                <h2 style=\"text-align: center;\">Restablecimiento de contraseña</h2>\n" +
-                    "                <p>Has solicitado restablecer tu contraseña. Utiliza el siguiente código para completar el proceso:</p>\n" +
-                    "                <h3 style=\"text-align: center;\">Tu código de verificación es: " + verificationCode + "</h3>\n" +
+                    "                <p>Has solicitado restablecer tu contraseña. Utiliza el siguiente enlace para completar el proceso:</p>\n" +
+                    "                <p style=\"text-align: center;\"><a href=\"" + resetUrl + "\">Restablecer Contraseña</a></p>\n" +
                     "                <p>Si no has solicitado este cambio, por favor ignora este correo o contacta con soporte.</p>\n" +
                     "            </td>\n" +
                     "        </tr>\n" +
@@ -91,7 +92,7 @@ public class WebEmailService {
             throw new MessagingException("Error al enviar el correo electrónico de verificación: " + e.getMessage());
         }
     }
-    
+
     @Async("taskExecutor")
     public CompletableFuture<String> sendVerificationUserWebEmailAsync(UserWeb userWeb) {
         return CompletableFuture.supplyAsync(() -> {

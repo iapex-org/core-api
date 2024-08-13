@@ -143,7 +143,7 @@ public class InstitutionController {
 
     // Crear una nueva institución
     //imageFile campo para archivos
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createInstitution(
             @Valid @ModelAttribute InstitutionDTO request,

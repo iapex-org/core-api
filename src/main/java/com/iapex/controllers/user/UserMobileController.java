@@ -174,26 +174,7 @@ public class UserMobileController {
        }
    }
    
-///
-    //RESTABLECER CONTRASEÑA
-    //http://localhost:8080/userMobile/reset-password
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDTO request) {
-        try {
-            boolean isVerified = userMobileService.verifyCodeAndResetPassword(
-                request.getVerificationCode(), 
-                request.getNewPassword()
-            );
-            if (isVerified) {
-                return ResponseEntity.ok(new Response("Contraseña actualizada correctamente"));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Código de verificación inválido o expirado"));
-            }
-        } catch (Exception e) {
-            //logger.error("Error al restablecer la contraseña", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response("Error al restablecer la contraseña"));
-        }
-    }
+
 
     //REENVIAR CORREO DE RESTABLECIMIENTO DE CONTRASEÑA
     //http://localhost:8080/userMobile/resend-reset-password?email=20223l001010@utcv.edu.mx
