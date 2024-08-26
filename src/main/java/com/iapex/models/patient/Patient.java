@@ -3,6 +3,7 @@ package com.iapex.models.patient;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.user.UserWeb;
 
@@ -43,10 +44,6 @@ public class Patient {
     @Column(nullable = false)
     private LocalDateTime registrationDateTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "registering_user_id", referencedColumnName = "id", nullable = false)
-    private UserWeb registeringUser;
-
     @Column(nullable = false)
     private Boolean active = true;
 
@@ -71,12 +68,19 @@ public class Patient {
     @Column(length = 255)
     private String distinctiveFeatures;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "institution_id", referencedColumnName = "id", nullable = false)
-	private Institution institution;
+	@ManyToOne
+	@JoinColumn(name = "registering_user_id", referencedColumnName = "id", nullable = true)
+	private UserWeb registeringUser;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+	@ManyToOne
+	@JoinColumn(name = "institution_id", referencedColumnName = "id", nullable = false)
+	private Institution institution;
+	
+	@OneToMany(mappedBy = "patient", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	private List<ContactRequest> contactRequests;
+
+	@OneToMany(mappedBy = "patient", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	private List<Image> images;
 	
 	@Column(length = 255)
     private String additionalNotes;
@@ -232,5 +236,13 @@ public class Patient {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+    
+    public List<ContactRequest> getContactRequests() {
+        return contactRequests;
+    }
+
+    public void setContactRequests(List<ContactRequest> contactRequests) {
+        this.contactRequests = contactRequests;
     }
 }

@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,15 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.iapex.dtos.patient.ImageDTO;
 import com.iapex.dtos.patient.PatientDTO;
+import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.patient.Image;
 import com.iapex.models.patient.Patient;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
+import com.iapex.repositories.ContactRequestRepository;
 import com.iapex.repositories.PatientRepository;
 import com.iapex.repositories.institution.InstitutionRepository;
 import com.iapex.repositories.user.UserWebRepository;
 import com.iapex.services.files.StorageService;
+
+import jakarta.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class PatientService {
@@ -40,6 +62,14 @@ public class PatientService {
 
     @Autowired
     private UserWebRepository userWebRepository;
+    
+    @Autowired
+    private ContactRequestRepository contactRequestRepository;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    private static final Logger logger = LoggerFactory.getLogger(PatientService.class);
 
     @Transactional
     public Response registerPatient(PatientDTO request) throws Exception {
@@ -106,18 +136,18 @@ public class PatientService {
         try {
             Patient patient = patientRepository.findById(id)
                     .orElseThrow(() -> new Exception("Paciente no encontrado"));
-
+    
             // Obtener el usuario autenticado actualmente
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
-
+    
             // Buscar el usuario autenticado por correo electrónico
             UserWeb authenticatedUser = userWebRepository.findByEmail(currentUserEmail)
                     .orElseThrow(() -> new Exception("Usuario no encontrado"));
-
+    
             // Actualizar el usuario registrante
             patient.setRegisteringUser(authenticatedUser);
-
+    
             // Actualizar otros campos solo si han cambiado
             if (!Objects.equals(patient.getName(), request.getName())) patient.setName(request.getName());
             if (!Objects.equals(patient.getLastName(), request.getLastName())) patient.setLastName(request.getLastName());
@@ -133,58 +163,62 @@ public class PatientService {
             if (!Objects.equals(patient.getDistinctiveFeatures(), request.getDistinctiveFeatures())) patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
             if (!Objects.equals(patient.getAdditionalNotes(), request.getAdditionalNotes())) patient.setAdditionalNotes(request.getAdditionalNotes());
             if (patient.isActive() != request.isActive()) patient.setActive(request.isActive());
-
-            // Actualizar la institución si ha cambiado
-            if (!Objects.equals(patient.getInstitution().getName(), request.getInstitution())) {
-                Institution newInstitution = institutionRepository.findByName(request.getInstitution())
-                        .orElseThrow(() -> new Exception("Institución no encontrada"));
-                patient.setInstitution(newInstitution);
-            }
-
-            // Actualizar imágenes si se proporcionaron nuevas
+    
+            // Verificar si la lista de imágenes es nula o vacía
             if (request.getImages() != null && !request.getImages().isEmpty()) {
                 // Validar la cantidad de imágenes
                 if (request.getImages().size() < 8 || request.getImages().size() > 12) {
                     throw new Exception("Debe proporcionar entre 8 y 12 imágenes.");
                 }
-
+    
                 // Crear un mapa de las imágenes existentes por su nombre de archivo
                 Map<String, Image> existingImages = patient.getImages().stream()
                         .collect(Collectors.toMap(Image::getImage, image -> image));
-
+    
                 List<Image> updatedImages = new ArrayList<>();
                 for (ImageDTO imageDTO : request.getImages()) {
-                    Image image = existingImages.get(imageDTO.getImage());
-                    if (image == null) {
-                        // Si es una nueva imagen, crear una nueva entidad Image
-                        image = new Image();
+                    Image existingImage = existingImages.get(imageDTO.getImage());
+                    if (existingImage == null || !existingImage.getImageUrl().equals(imageDTO.getImageUrl())) {
+                        // Si es una imagen nueva o ha cambiado, crear o actualizar la entidad Image
+                        Image image = (existingImage != null) ? existingImage : new Image();
                         image.setImage(imageDTO.getImage());
                         image.setImageUrl(imageDTO.getImageUrl());
                         image.setPatient(patient);
+                        updatedImages.add(image);
+    
+                        // Si la imagen existía pero ha cambiado, eliminar la versión anterior
+                        if (existingImage != null) {
+                            storageService.deleteFile(existingImage.getImage());
+                        }
                     } else {
-                        // Si la imagen ya existe, actualizar su URL si es necesario
-                        image.setImageUrl(imageDTO.getImageUrl());
-                        existingImages.remove(imageDTO.getImage());
+                        // Si la imagen es la misma, simplemente la añadimos a la lista actualizada
+                        updatedImages.add(existingImage);
                     }
-                    updatedImages.add(image);
+                    // Remover la imagen del mapa de existentes
+                    existingImages.remove(imageDTO.getImage());
                 }
-
+    
                 // Eliminar las imágenes que ya no se usan
                 for (Image oldImage : existingImages.values()) {
                     storageService.deleteFile(oldImage.getImage());
                 }
-
+    
                 // Actualizar la colección de imágenes del paciente
                 patient.getImages().clear();
                 patient.getImages().addAll(updatedImages);
             }
-
+    
             patientRepository.save(patient);
             return new Response("El paciente ha sido actualizado exitosamente.");
         } catch (Exception e) {
             throw new Exception("Error al actualizar el paciente: " + e.getMessage());
         }
     }
+    
+    
+    
+
+   
     
     // OBTENER PACIENTE POR ID
     public PatientDTO getPatientById(Long id) throws Exception {
@@ -265,6 +299,36 @@ public class PatientService {
             return Collections.emptyList(); // O PODRÍAS RETORNAR UN MENSAJE DE ERROR
         }
     }
+    
+    //transactionTemplate para tener mas control sobre la transaccion
+    @Transactional
+    public Response deletePatient(Long id) {
+        return transactionTemplate.execute(new TransactionCallback<Response>() {
+            @Override
+            public Response doInTransaction(TransactionStatus status) {
+                try {
+                    Patient patient = patientRepository.findById(id)
+                        .orElseThrow(() -> new Exception("Paciente no encontrado con ID: " + id));
+
+                    if (!patient.getId().equals(id)) {
+                        throw new Exception("ID del paciente no coincide con el solicitado");
+                    }
+                    for (Image image : patient.getImages()) {
+                        storageService.deleteFile(image.getImage());
+                    }
+                   List<ContactRequest> contactRequests = patient.getContactRequests();
+                    contactRequestRepository.deleteAll(contactRequests);
+
+                    patientRepository.deleteById(id);
+                    return new Response("Paciente y todos sus datos asociados han sido eliminados exitosamente.");
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    return new Response("Error al eliminar el paciente: " + e.getMessage());
+                }
+            }
+        });
+    }
+
 
     private PatientDTO convertToDTO(Patient patient) {
         List<ImageDTO> imageDTOs = patient.getImages().stream()
@@ -299,5 +363,6 @@ public class PatientService {
                 patient.getAdditionalNotes());
     }
 }
+
 
 

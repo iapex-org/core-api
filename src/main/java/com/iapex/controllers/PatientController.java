@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -201,7 +202,8 @@ public class PatientController {
     public ResponseEntity<?> updatePatient(@PathVariable Long id,
                                            @Valid @ModelAttribute PatientDTO patientDTO,
                                            BindingResult result,
-                                           @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles) {
+                                           @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles,
+                                           HttpServletRequest request) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
                     .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -224,20 +226,36 @@ public class PatientController {
                             .body(new Response("Debe subir entre 8 y 12 archivos de imagen."));
                 }
 
+                // Asegurarse de que la lista de imágenes en patientDTO esté inicializada
+                if (patientDTO.getImages() == null) {
+                    patientDTO.setImages(new ArrayList<>());
+                }
+
                 for (MultipartFile imageFile : imageFiles) {
                     if (!imageFile.isEmpty()) {
                         String originalFilename = imageFile.getOriginalFilename();
-                        String uniqueFilename = storageService.generateUniqueFilename(originalFilename);
-                        String storedFilename = storageService.saveFile(imageFile, uniqueFilename);
+                        // Verificar si ya existe una imagen con este nombre
+                        Optional<ImageDTO> existingImage = patientDTO.getImages().stream()
+                                .filter(img -> img.getImage().equals(originalFilename))
+                                .findFirst();
 
-                        String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
-                        String imageUrl = ServletUriComponentsBuilder
-                                .fromHttpUrl(host)
-                                .path("/api/v1/patients/images/")
-                                .path(storedFilename)
-                                .toUriString();
+                        if (existingImage.isPresent()) {
+                            // Si la imagen ya existe, no la procesamos de nuevo
+                            imageDTOs.add(existingImage.get());
+                        } else {
+                            // Si es una nueva imagen, la procesamos y guardamos
+                            String uniqueFilename = storageService.generateUniqueFilename(originalFilename);
+                            String storedFilename = storageService.saveFile(imageFile, uniqueFilename);
 
-                        imageDTOs.add(new ImageDTO(null, storedFilename, imageUrl));
+                            String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                            String imageUrl = ServletUriComponentsBuilder
+                                    .fromHttpUrl(host)
+                                    .path("/api/v1/patients/images/")
+                                    .path(storedFilename)
+                                    .toUriString();
+
+                            imageDTOs.add(new ImageDTO(null, storedFilename, imageUrl));
+                        }
                     }
                 }
 
@@ -251,4 +269,28 @@ public class PatientController {
                     .body(new Response("Ha ocurrido un error al actualizar el paciente: " + e.getMessage()));
         }
     }
+
+    
+    
+    @PreAuthorize("hasAuthority('USER_WEB')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
+        try {
+            // Verificar la autenticación del usuario
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()
+                    || authentication.getPrincipal().equals("anonymousUser")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(
+                        "Necesita iniciar sesión como personal de la institución para usar este recurso"));
+            }
+
+            Response response = patientService.deletePatient(id);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al eliminar el paciente: " + e.getMessage()));
+        }
+    }
 }
+

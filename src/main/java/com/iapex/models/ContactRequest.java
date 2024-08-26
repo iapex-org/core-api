@@ -29,7 +29,7 @@ public class ContactRequest {
     private String missingPersonName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = true)
     private Patient patient;
 
     @Column(length = 25, nullable = false)
@@ -143,3 +143,4 @@ public class ContactRequest {
         this.attendingUser = attendingUser;
     }
 }
+
