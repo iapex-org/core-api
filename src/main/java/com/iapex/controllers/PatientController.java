@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/patients")
 public class PatientController {
 
-	
     @Autowired
     private PatientService patientService;
 
@@ -44,31 +43,33 @@ public class PatientController {
     @Autowired
     private HttpServletRequest request;
 
-	 // Obtener todos los pacientes
-	 // SUPER_ADMIN: En un futuro, si se necesita tener el control de todos los pacientes de todas las instituciones, se utilizaría 
-     // este endpoint, ya que lista tanto pacientes encontrados omo no encontrados
-	 @GetMapping
-	 public ResponseEntity<List<PatientDTO>> getAllPatients() {
-	     List<PatientDTO> patients = patientService.getAllPatients();
-	     return ResponseEntity.ok(patients);
-	 }
+    // Obtener todos los pacientes
+    // SUPER_ADMIN: En un futuro, si se necesita tener el control de todos los
+    // pacientes de todas las instituciones, se utilizaría
+    // este endpoint, ya que lista tanto pacientes encontrados como no encontrados
+    @GetMapping
+    public ResponseEntity<List<PatientDTO>> getAllPatients() {
+        List<PatientDTO> patients = patientService.getAllPatients();
+        return ResponseEntity.ok(patients);
+    }
 
-	// Obtener un paciente por su ID
-	// USER_WEB: Usado en la web cuando se accede a un paciente, se cargan los datos de su ID
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getPatientById(@PathVariable Long id) {
-	    try {
-	        PatientDTO patientDTO = patientService.getPatientById(id);
-	        return ResponseEntity.ok(patientDTO);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        Response errorResponse = new Response("Paciente no encontrado");
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-	    }
-	}
+    // Obtener un paciente por su ID
+    // USER_WEB: Usado en la web cuando se accede a un paciente, se cargan los datos
+    // de su ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPatientById(@PathVariable Long id) {
+        try {
+            PatientDTO patientDTO = patientService.getPatientById(id);
+            return ResponseEntity.ok(patientDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Response errorResponse = new Response("Paciente no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
 
     // Acceder a la imagen del paciente por su nombre de archivo
-    @GetMapping("/images/{filename:.+}")
+    @GetMapping("/image/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
             Resource file = storageService.loadAsResource(filename);
@@ -86,10 +87,16 @@ public class PatientController {
     // pacientes no encontrados (aún activos)
     // Obtener todos los pacientes activos
     @GetMapping("/active")
-    public ResponseEntity<List<PatientDTO>> getAllPatientsTrue() {
-        List<PatientDTO> patients = patientService.getAllPatientsTrue();
-        return ResponseEntity.ok(patients);
-    } 
+    public ResponseEntity<?> getAllPatientsTrue() {
+        try {
+            List<PatientDTO> patients = patientService.getAllPatientsTrue();
+            return ResponseEntity.ok(patients);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Response errorResponse = new Response("Error al obtener los pacientes activos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 
     // Pensado para ser usado en la app móvil, especificamente al momento de abrir
     // un resultado especifico de un paciente
@@ -104,13 +111,13 @@ public class PatientController {
             Response errorResponse = new Response("Paciente no encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-    }    
-    
+    }
+
     // Pensado para ser usado en la app web, ya que solo muestra los pacientes que
     // corresponden a la institución de la que forma parte el usuario autenticado
     // Obtener los pacientes de la misma institución que el usuario autenticado
     @PreAuthorize("hasAuthority('USER_WEB')")
-    @GetMapping("/current-user/institution")
+    @GetMapping("/me/institution")
     public ResponseEntity<List<PatientDTO>> getPatientsByInstitution() {
         try {
             // Llamar al servicio para obtener los pacientes de la misma institución
@@ -124,7 +131,7 @@ public class PatientController {
 
     // Impotante: Enviar archivos desde "imageFile"
     // Crear un paciente
-    //@PreAuthorize("hasAuthority('USER_WEB')")
+    // @PreAuthorize("hasAuthority('USER_WEB')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerPatient(
             @Valid @ModelAttribute PatientDTO patientDTO,
@@ -193,17 +200,19 @@ public class PatientController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error, verifica que la institución exista"));
+            return ResponseEntity.internalServerError()
+                    .body(new Response("Ha ocurrido un error, verifica que la institución exista"));
         }
     }
-    
+
+    // Actualizar un paciente
     @PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePatient(@PathVariable Long id,
-                                           @Valid @ModelAttribute PatientDTO patientDTO,
-                                           BindingResult result,
-                                           @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles,
-                                           HttpServletRequest request) {
+            @Valid @ModelAttribute PatientDTO patientDTO,
+            BindingResult result,
+            @RequestParam(value = "imageFile", required = false) List<MultipartFile> imageFiles,
+            HttpServletRequest request) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()
                     .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -212,7 +221,7 @@ public class PatientController {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated() 
+            if (authentication == null || !authentication.isAuthenticated()
                     || authentication.getPrincipal().equals("anonymousUser")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(
                         "Necesita iniciar sesión como personal de la institución para usar este recurso"));
@@ -270,8 +279,7 @@ public class PatientController {
         }
     }
 
-    
-    
+    // Eliminar un paciente
     @PreAuthorize("hasAuthority('USER_WEB')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {
@@ -293,4 +301,3 @@ public class PatientController {
         }
     }
 }
-

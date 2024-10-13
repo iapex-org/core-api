@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.iapex.dtos.MembershipDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.exceptions.InstitutionNotFoundException;
@@ -26,8 +25,8 @@ public class MembershipController {
     @Autowired
     private MembershipService membershipService;
 
-    // Obtener todas las membresías    
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // Obtener todas las membresías
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<MembershipDTO>> getAllMemberships() {
         List<MembershipDTO> memberships = membershipService.getAllMemberships();

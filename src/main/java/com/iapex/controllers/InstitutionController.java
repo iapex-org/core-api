@@ -14,7 +14,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.iapex.dtos.InstitutionDTO;
 import com.iapex.exceptions.InstitutionAlreadyExistsException;
 import com.iapex.models.institution.Institution;
@@ -22,10 +21,8 @@ import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
 import com.iapex.services.InstitutionService;
 import com.iapex.services.files.StorageService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -36,8 +33,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/institutions")
 public class InstitutionController {
 
-	
-	
     @Autowired
     private InstitutionService institutionService;
 
@@ -48,15 +43,15 @@ public class InstitutionController {
     private HttpServletRequest request;
 
     // Obtener todas las instituciones
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
         List<InstitutionDTO> institutions = institutionService.getAllInstitutions();
         return ResponseEntity.ok(institutions);
     }
-    
+
     // Obtener institución por ID sin importar su estado
-    @GetMapping("/getInstitutionById/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getInstitutionById(@PathVariable Long id) {
         try {
             Institution institution = institutionService.getInstitutionById(id);
@@ -66,23 +61,24 @@ public class InstitutionController {
                     .body(new Response("No se encontró la institución con ID: " + id));
         }
     }
-    
+
     // Obtener el nombre de todas las instituciones con active en TRUE
-    @GetMapping("/active-institution-names")
+    @GetMapping("/active/names")
     public ResponseEntity<List<String>> getActiveInstitutionNames() {
         List<String> activeInstitutionNames = institutionService.getActiveInstitutionNames();
         return ResponseEntity.ok(activeInstitutionNames);
     }
 
     // Obtener todas las instituciones con status TRUE
-    @GetMapping("/activated")
+    @GetMapping("/active")
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutionsTrue() {
         List<InstitutionDTO> institutions = institutionService.getAllInstitutionsTrue();
         return ResponseEntity.ok(institutions);
     }
 
-    // Obtener institución por ID con status TRUE, es decir cuando la institucion esta activada
-    @GetMapping("/{id}/activated")
+    // Obtener institución por ID con status TRUE, es decir cuando la institucion
+    // esta activada
+    @GetMapping("/id/{id}/active")
     public ResponseEntity<?> getInstitution(@PathVariable Long id) {
         try {
             Institution institution = institutionService.getInstitutionByIdTrue(id);
@@ -93,20 +89,23 @@ public class InstitutionController {
         }
     }
 
-    // Obtener todas las instituciones por su nombre con status true
-    @GetMapping("/{name}")
+    // Obtener institución por nombre con status TRUE, es decir cuando la
+    // institucion esta activada
+    @GetMapping("/name/{name}/active")
     public ResponseEntity<?> getInstitutionByName(@PathVariable String name) {
         try {
             Institution institution = institutionService.getInstitutionByName(name);
             return ResponseEntity.ok(institution);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new Response("No se encontró la institución con nombre, solo se mostraran instittuciones activas: " + name));
+                    .body(new Response(
+                            "No se encontró la institución con nombre, solo se mostraran instittuciones activas: "
+                                    + name));
         }
     }
-    
+
     // Acceder a la imagen del paciente por su nombre de archivo
-    @GetMapping("/images/{filename:.+}")
+    @GetMapping("/image/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
             Resource file = storageService.loadAsResource(filename);
@@ -119,11 +118,10 @@ public class InstitutionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
 
     // Obtener la institución del usuario autenticado
     @PreAuthorize("hasAuthority('USER_WEB')")
-    @GetMapping("/current-user")
+    @GetMapping("/me")
     public ResponseEntity<?> getInstitutionByUser() {
         try {
             // Obtener información del usuario autenticado
@@ -142,8 +140,8 @@ public class InstitutionController {
     }
 
     // Crear una nueva institución
-    //imageFile campo para archivos
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // imageFile campo para archivos
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createInstitution(
             @Valid @ModelAttribute InstitutionDTO request,
@@ -216,7 +214,7 @@ public class InstitutionController {
                 String host = this.request.getRequestURL().toString().replace(this.request.getRequestURI(), "");
                 String imageUrl = ServletUriComponentsBuilder
                         .fromHttpUrl(host)
-                        .path("/api/v1/institutions/images/") 
+                        .path("/api/v1/institutions/images/")
                         .path(storedFilename)
                         .toUriString();
 

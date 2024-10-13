@@ -11,8 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import com.iapex.dtos.user.PasswordResetRequestDTO;
 import com.iapex.dtos.user.UserMobileAuthenticationDTO;
 import com.iapex.dtos.user.UserMobileDTO;
 import com.iapex.exceptions.UserAlreadyExistsException;
@@ -21,11 +19,9 @@ import com.iapex.models.response.Response;
 import com.iapex.models.user.UserMobile;
 import com.iapex.services.email.MobileEmailService;
 import com.iapex.services.user.UserMobileService;
-
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8100", "http://localhost:8101"})
-@RequestMapping("/userMobile")
+@RequestMapping("/api/v1/users/mobile")
 @RestController
 public class UserMobileController {
 
