@@ -105,7 +105,7 @@ public class InstitutionController {
     }
 
     // Acceder a la imagen del paciente por su nombre de archivo
-    @GetMapping("/image/{filename:.+}")
+    @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
             Resource file = storageService.loadAsResource(filename);
