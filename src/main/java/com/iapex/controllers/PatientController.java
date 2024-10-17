@@ -160,9 +160,9 @@ public class PatientController {
                 if (imageFiles.isEmpty()) {
                     return ResponseEntity.badRequest()
                             .body(new Response("Debe adjuntar al menos un archivo de imagen."));
-                } else if (imageFiles.size() < 8 || imageFiles.size() > 12) {
+                } else if (imageFiles.size() < 2 || imageFiles.size() > 4) {
                     return ResponseEntity.badRequest()
-                            .body(new Response("Debe subir al menos 8 y como máximo 12 archivos de imagen."));
+                            .body(new Response("Debe subir al menos 2 y como máximo 4 archivos de imagen."));
                 }
 
                 // Procesar archivos de imagen
