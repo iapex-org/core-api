@@ -75,8 +75,6 @@ public class UserMobileService {
 
         userMobileRepository.save(userMobile);
 
-        String verificationCode = mobileEmailService.sendVerificationEmail(userMobile);
-
         return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
     }
 

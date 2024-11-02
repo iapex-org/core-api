@@ -2,6 +2,9 @@ package com.iapex.dtos.patient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.iapex.models.institution.Institution;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -51,7 +54,7 @@ public class PatientDTO {
     @Size(max = 255, message = "Las características distintivas deben tener máximo 255 caracteres")
     private String distinctiveFeatures;
 
-    private String institution;
+    private Institution institution;
 
     private List<ImageDTO> images;
 
@@ -63,11 +66,11 @@ public class PatientDTO {
     }
 
     // Constructor con todos los atributos
-    public PatientDTO(Long id, String name, String lastName, String secondLastName, String gender,
-            Integer approximateAge,
-            LocalDateTime registrationDateTime, String registeringUser, boolean active, String skinColor,
-            String hair, String complexion, String eyeColor, Integer approximateHeight, String medicalConditions,
-            String distinctiveFeatures, String institution, List<ImageDTO> images, String additionalNotes) {
+    public PatientDTO(Long id, String name, String lastName, String secondLastName, String gender, 
+                      Integer approximateAge, LocalDateTime registrationDateTime, String registeringUser, 
+                      boolean active, String skinColor, String hair, String complexion, String eyeColor, 
+                      Integer approximateHeight, String medicalConditions, String distinctiveFeatures, 
+                      Institution institution, List<ImageDTO> images, String additionalNotes) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -209,11 +212,11 @@ public class PatientDTO {
         this.distinctiveFeatures = distinctiveFeatures;
     }
 
-    public String getInstitution() {
+    public Institution getInstitution() {
         return institution;
     }
 
-    public void setInstitution(String institution) {
+    public void setInstitution(Institution institution) {
         this.institution = institution;
     }
 

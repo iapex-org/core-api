@@ -200,10 +200,7 @@ public class MobileEmailService {
     
     public void sendEmail(String from, String body) throws MessagingException {
         try {
-        	UserMobile userMobile = userMobileRepository.findByEmail(from)
-                .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
-
-            MimeMessage message = mailSender.createMimeMessage();
+        	MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setFrom("ayuda@iapex.com");

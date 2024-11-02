@@ -15,7 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.iapex.dtos.user.UserWebAuthenticationDTO;
 import com.iapex.dtos.user.UserWebDTO;
 import com.iapex.enums.RoleEnum;
@@ -31,7 +30,6 @@ import com.iapex.repositories.token.TokenWebRepository;
 import com.iapex.repositories.user.UserWebRepository;
 import com.iapex.services.email.WebEmailService;
 import com.iapex.services.security.JwtService;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -52,10 +50,10 @@ public class UserWebService {
 
     @Autowired
     private TokenWebRepository tokenWebRepository;
-    
+
     @Autowired
     private InstitutionRepository institutionRepository;
-    
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -81,20 +79,24 @@ public class UserWebService {
     /**
      * REGISTRA UN NUEVO USUARIO.
      *
-     * ESTE MÉTODO VERIFICA SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO PROPORCIONADO.
-     * SI NO EXISTE, CREA UN NUEVO USUARIO, LO GUARDA EN EL REPOSITORIO Y ENVÍA UN CORREO
+     * ESTE MÉTODO VERIFICA SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO
+     * PROPORCIONADO.
+     * SI NO EXISTE, CREA UN NUEVO USUARIO, LO GUARDA EN EL REPOSITORIO Y ENVÍA UN
+     * CORREO
      * ELECTRÓNICO DE VERIFICACIÓN.
      *
      * @param request LOS DATOS DEL USUARIO QUE SE DESEA REGISTRAR.
-     * @return UNA RESPUESTA INDICANDO QUE EL REGISTRO FUE EXITOSO Y QUE SE DEBE VERIFICAR EL CORREO ELECTRÓNICO.
-     * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO PROPORCIONADO.
+     * @return UNA RESPUESTA INDICANDO QUE EL REGISTRO FUE EXITOSO Y QUE SE DEBE
+     *         VERIFICAR EL CORREO ELECTRÓNICO.
+     * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO
+     *                   PROPORCIONADO.
      */
     public Response registerUser(UserWebDTO request) throws Exception {
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             throw new IllegalArgumentException("Por favor ingresa un correo electrónico.");
         }
-    	
-    	if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
+
+        if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
         }
 
@@ -110,49 +112,53 @@ public class UserWebService {
 
         // Buscar la institución por su nombre
         Institution institution = institutionRepository.findByName(request.getInstitution())
-        	    .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
-        	userWeb.setInstitution(institution);
+                .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
+        userWeb.setInstitution(institution);
 
-        	userWebRepository.save(userWeb);
-            CompletableFuture<String> emailFuture = webEmailService.sendVerificationUserWebEmailAsync(userWeb);
-            emailFuture.thenAccept(verificationCode -> {
-            }).exceptionally(ex -> {
-                return null;
-            });
+        userWebRepository.save(userWeb);
+        CompletableFuture<String> emailFuture = webEmailService.sendVerificationUserWebEmailAsync(userWeb);
+        emailFuture.thenAccept(verificationCode -> {
+        }).exceptionally(ex -> {
+            return null;
+        });
         return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
     }
-    
+
     /**
      * AUTENTICA A UN USUARIO.
      * 
-     * ESTE MÉTODO VERIFICA LAS CREDENCIALES DEL USUARIO Y GENERA UN TOKEN JWT SI LA AUTENTICACIÓN 
-     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ CONFIRMADO Y SI LA CONTRASEÑA ES CORRECTA.
+     * ESTE MÉTODO VERIFICA LAS CREDENCIALES DEL USUARIO Y GENERA UN TOKEN JWT SI LA
+     * AUTENTICACIÓN
+     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ CONFIRMADO Y SI LA CONTRASEÑA
+     * ES CORRECTA.
      * 
      * @param request LOS DATOS DE AUTENTICACIÓN DEL USUARIO.
-     * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE ÉXITO.
-     * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
+     * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE
+     *         ÉXITO.
+     * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON
+     *                          INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
      */
     public AuthenticationResponse authenticateWeb(UserWebAuthenticationDTO request) {
-    	UserWeb userWeb;
+        UserWeb userWeb;
         if (request.getEmail() != null) {
-        	userWeb = userWebRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
+            userWeb = userWebRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
         } else {
             throw new RuntimeException("Debe proporcionar correo electrónico");
         }
         if (!userWeb.isConfirmed()) {
-            throw new RuntimeException("El usuario no está confirmado. Por favor, revise su correo electrónico para confirmar su cuenta.");
+            throw new RuntimeException(
+                    "El usuario no está confirmado. Por favor, revise su correo electrónico para confirmar su cuenta.");
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new RuntimeException("Debe proporcionar una contraseña");
         }
         try {
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                		userWeb.getEmail(),
-                    request.getPassword()
-                )
-            );
+                    new UsernamePasswordAuthenticationToken(
+                            userWeb.getEmail(),
+                            request.getPassword()));
         } catch (BadCredentialsException e) {
             throw new RuntimeException("Contraseña incorrecta");
         }
@@ -162,32 +168,32 @@ public class UserWebService {
         saveUserTokenWeb(token, userWeb);
         return new AuthenticationResponse(token, "Inicio de sesión exitoso", authorities);
     }
-    
+
     /**
      * OBTIENE TODOS LOS USUARIOS INSTITUCIONALES.
      *
-     * ESTE MÉTODO RECUPERA TODOS LOS USUARIOS INSTITUCIONALES ALMACENADOS EN LA BASE DE DATOS.
+     * ESTE MÉTODO RECUPERA TODOS LOS USUARIOS INSTITUCIONALES ALMACENADOS EN LA
+     * BASE DE DATOS.
      *
      * @return UNA LISTA DE TODOS LOS USUARIOS INSTITUCIONALES.
      */
     public List<UserWebDTO> getAllUserDTOs() {
         List<UserWeb> users = userWebRepository.findAll();
         return users.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    
-    //OBTIENE TODOS LOS USUARIOS DE LA INSTITUCIÓN DEL USUARIO AUTENTICADO.
+    // OBTIENE TODOS LOS USUARIOS DE LA INSTITUCIÓN DEL USUARIO AUTENTICADO.
     public List<UserWebDTO> getUsersFromSameInstitution(String authenticatedEmail) {
         UserWeb authenticatedUser = userWebRepository.findByEmail(authenticatedEmail)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         List<UserWeb> users = userWebRepository.findByInstitution(authenticatedUser.getInstitution());
-        
+
         return users.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public UserWebDTO convertToDTO(UserWeb userWeb) {
@@ -204,14 +210,14 @@ public class UserWebService {
         dto.setAccountVerified(userWeb.isAccountVerified());
         return dto;
     }
-    
 
     // 5. MÉTODOS AUXILIARES
 
     /**
      * REVOCA TODOS LOS TOKENS VÁLIDOS DEL USUARIO.
      *
-     * ESTE MÉTODO MARCA TODOS LOS TOKENS VÁLIDOS DEL USUARIO COMO CERRADOS (LOGGED OUT).
+     * ESTE MÉTODO MARCA TODOS LOS TOKENS VÁLIDOS DEL USUARIO COMO CERRADOS (LOGGED
+     * OUT).
      *
      * @param userWeb EL USUARIO CUYOS TOKENS SE DESEAN REVOCAR.
      */
@@ -237,7 +243,7 @@ public class UserWebService {
      * EXPIRACIÓN A 10 MINUTOS A PARTIR DEL MOMENTO ACTUAL. FINALMENTE, GUARDA
      * EL NUEVO TOKEN EN EL REPOSITORIO.
      *
-     * @param jwt EL TOKEN JWT QUE SE VA A GUARDAR.
+     * @param jwt     EL TOKEN JWT QUE SE VA A GUARDAR.
      * @param userWeb EL USUARIO AL QUE PERTENECE EL TOKEN.
      */
     private void saveUserTokenWeb(String jwt, UserWeb userWeb) {
@@ -252,11 +258,11 @@ public class UserWebService {
 
         tokenWebRepository.save(tokenWeb);
     }
-    
+
     /**
      * CALCULA LA FECHA DE EXPIRACIÓN DEL TOKEN.
      * 
-     * ESTE MÉTODO ESTABLECE LA FECHA DE EXPIRACIÓN DEL TOKEN A 10 MINUTOS 
+     * ESTE MÉTODO ESTABLECE LA FECHA DE EXPIRACIÓN DEL TOKEN A 10 MINUTOS
      * A PARTIR DEL MOMENTO EN QUE ES GENERADO.
      * 
      * @return LA FECHA DE EXPIRACIÓN DEL TOKEN.
@@ -267,7 +273,7 @@ public class UserWebService {
         calendar.add(Calendar.MINUTE, 10);
         return calendar.getTime();
     }
-    
+
     /**
      * ENCUENTRA UN USUARIO INSTITUCIONAL POR CORREO ELECTRÓNICO.
      *
@@ -279,7 +285,7 @@ public class UserWebService {
         return userWebRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("El correo no está registrado en la aplicación"));
     }
-    
+
     public boolean verifyCodeAndResetPassword(String verificationCode, String newPassword) {
         // BUSCAR EL EMAIL ASOCIADO CON EL CÓDIGO DE VERIFICACIÓN
         String email = webEmailService.getEmailForVerificationCode(verificationCode);
@@ -299,24 +305,26 @@ public class UserWebService {
             return true;
         }
         return false;
-    }    
-     
-    //OBTENER POR ID PARA DTO TRANSFER
+    }
+
+    // OBTENER POR ID PARA DTO TRANSFER
     public UserWebDTO getUserWebDTOById(Long id) throws Exception {
         UserWeb userWeb = getUserWebById(id);
         return convertToDTO(userWeb);
     }
-    
- // ELIMINA UN USUARIO POR SU ID.
+
+    // ELIMINA UN USUARIO POR SU ID.
     @Transactional
     public void deleteById(Long id) {
-        // BUSCA EL USUARIO INSTITUCIÓN POR SU ID O LANZA UNA EXCEPCIÓN SI NO SE ENCUENTRA
+        // BUSCA EL USUARIO INSTITUCIÓN POR SU ID O LANZA UNA EXCEPCIÓN SI NO SE
+        // ENCUENTRA
         UserWeb userWeb = userWebRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
         // BUSCA Y ELIMINA TODOS LOS TOKENS ASOCIADOS AL USUARIO INSTITUCIÓN
         List<TokenWeb> tokens = tokenWebRepository.findByUserWeb_id(id);
         tokenWebRepository.deleteAll(tokens);
-        // ELIMINA LA REFERENCIA A LA INSTITUCIÓN PARA EVITAR LA VIOLACIÓN DE CLAVE FORÁNEA
+        // ELIMINA LA REFERENCIA A LA INSTITUCIÓN PARA EVITAR LA VIOLACIÓN DE CLAVE
+        // FORÁNEA
         userWeb.setInstitution(null);
         // GUARDA EL USUARIO INSTITUCIÓN ACTUALIZADO PARA APLICAR EL CAMBIO
         userWebRepository.save(userWeb);
@@ -324,43 +332,57 @@ public class UserWebService {
         userWebRepository.delete(userWeb);
     }
 
-
-    
-    //OBTENER POR ID
+    // OBTENER POR ID
     public UserWeb getUserWebById(Long id) throws Exception {
         return userWebRepository.findById(id)
                 .orElseThrow(() -> new Exception("Usuario no encontrado"));
     }
-    
-    //ACTUALIZAR UN USUARIO POR SU ID.
+
+    // ACTUALIZAR UN USUARIO POR SU ID.
     public Response updateUserWeb(Long id, UserWebDTO request) throws Exception {
         UserWeb userWeb = getUserWebById(id);
         boolean emailChanged = false; // Verificar si el email está cambiando
-        if (!Objects.equals(userWeb.getEmail(), request.getEmail())) { 
-        if (userWebRepository.findByEmail(request.getEmail()).isPresent()) { throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
-        } emailChanged = true; }
+        if (!Objects.equals(userWeb.getEmail(), request.getEmail())) {
+            if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
+            }
+            emailChanged = true;
+        }
 
         // Actualizar campos
-        if (!Objects.equals(userWeb.getName(), request.getName())) userWeb.setName(request.getName());
-        if (emailChanged) userWeb.setEmail(request.getEmail());
-        if (!Objects.equals(userWeb.getLastName(), request.getLastName())) userWeb.setLastName(request.getLastName());
-        if (!Objects.equals(userWeb.getSecondLastName(), request.getSecondLastName())) userWeb.setSecondLastName(request.getSecondLastName());
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
-        if (!Objects.equals(userWeb.getPosition(), request.getPosition())) userWeb.setPosition(request.getPosition());
+        if (!Objects.equals(userWeb.getName(), request.getName()))
+            userWeb.setName(request.getName());
+        if (emailChanged)
+            userWeb.setEmail(request.getEmail());
+        if (!Objects.equals(userWeb.getLastName(), request.getLastName()))
+            userWeb.setLastName(request.getLastName());
+        if (!Objects.equals(userWeb.getSecondLastName(), request.getSecondLastName()))
+            userWeb.setSecondLastName(request.getSecondLastName());
+        if (request.getPassword() != null && !request.getPassword().isEmpty())
+            userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (!Objects.equals(userWeb.getPosition(), request.getPosition()))
+            userWeb.setPosition(request.getPosition());
         if (request.getRole() != null) {
-        if (!Objects.equals(userWeb.getRole(), request.getRole())) userWeb.setRole(request.getRole()); } else {request.setRole(userWeb.getRole()); }        
-       
+            if (!Objects.equals(userWeb.getRole(), request.getRole()))
+                userWeb.setRole(request.getRole());
+        } else {
+            request.setRole(userWeb.getRole());
+        }
+
         if (!Objects.equals(userWeb.getInstitution().getName(), request.getInstitution())) {
             Institution institution = institutionRepository.findByName(request.getInstitution())
-                .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada: " + request.getInstitution()));
+                    .orElseThrow(() -> new InstitutionNotFoundException(
+                            "Institución no encontrada: " + request.getInstitution()));
             userWeb.setInstitution(institution);
         }
-        if (emailChanged) {userWeb.setAccountVerified(false); }
-        userWebRepository.save(userWeb);
-        
         if (emailChanged) {
-            String verificationCode = webEmailService.sendVerificationUserWebEmail(userWeb);
-            return new Response("El usuario ha sido actualizado exitosamente. Se ha enviado un correo de verificación al nuevo email.");
+            userWeb.setAccountVerified(false);
+        }
+        userWebRepository.save(userWeb);
+
+        if (emailChanged) {
+            return new Response(
+                    "El usuario ha sido actualizado exitosamente. Se ha enviado un correo de verificación al nuevo email.");
         }
         return new Response("El usuario ha sido actualizado exitosamente.");
     }

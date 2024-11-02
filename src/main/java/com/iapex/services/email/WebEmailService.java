@@ -251,10 +251,6 @@ public class WebEmailService {
     // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO
     public void sendEmailInstitution(String from, String body) throws MessagingException {
         try {
-            // BUSCAR AL USUARIO POR CORREO ELECTRÓNICO
-            UserWeb userWeb = userWebRepository.findByEmail(from)
-                .orElseThrow(() -> new EntityNotFoundException("Correo electrónico no encontrado: " + from));
-
             // CREAR EL MENSAJE MIME
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

@@ -43,7 +43,7 @@ public class ContactRequestController {
     // Obtiene las solicitudes de contacto por la institución del usuario
     // autenticado
     @PreAuthorize("hasAuthority('USER_WEB')")
-    @GetMapping("/current-user/institution")
+    @GetMapping("/me/institution")
     public ResponseEntity<List<ContactRequestDTO>> getContactRequestsByInstitution() {
         List<ContactRequestDTO> contactRequests = contactRequestService.getContactRequestsByInstitution();
         return new ResponseEntity<>(contactRequests, HttpStatus.OK);
@@ -56,7 +56,6 @@ public class ContactRequestController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
         }
-
         try {
             Response response = contactRequestService.createContactRequest(request);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
