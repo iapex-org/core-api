@@ -26,6 +26,7 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
     // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU NOMBRE CON Active TRUE.
     Optional<Institution> findByNameAndActiveTrue(String name);
 
+    
     // ESTE MÉTODO BUSCA LAS INSTITUCIONES POR SU ID CON Active TRUE.
     Optional<Institution> findByIdAndActiveTrue(Long idInstitution);
 

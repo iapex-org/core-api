@@ -6,6 +6,7 @@ import java.util.List;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.iapex.models.Membership;
 import com.iapex.models.patient.Patient;
 
@@ -67,10 +68,11 @@ public class Institution {
     @Column(length = 50, nullable = false)
     private String verificationKey;
 
+    @JsonIgnoreProperties({"institution"})
     @OneToOne(mappedBy = "institution", cascade = CascadeType.ALL)
     private Membership membership;
 
-    @JsonIgnore
+    @JsonIgnoreProperties({"institution"})
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
     private List<Patient> patients;
 

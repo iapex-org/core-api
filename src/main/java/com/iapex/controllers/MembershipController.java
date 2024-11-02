@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ public class MembershipController {
     private MembershipService membershipService;
 
     // Obtener todas las membresías    
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<MembershipDTO>> getAllMemberships() {
         List<MembershipDTO> memberships = membershipService.getAllMemberships();
@@ -35,7 +36,7 @@ public class MembershipController {
     }
 
     // Obtener membresía por ID
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getMembershipById(@PathVariable Long id) {
         try {
@@ -48,7 +49,7 @@ public class MembershipController {
 
     // Formato que admite 2024-07-15T01:56:00
     // Crear una membresía
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Response> createMembership(@RequestBody MembershipDTO request) {
         try {
@@ -65,7 +66,7 @@ public class MembershipController {
     }
 
     // Actualizar una membresía
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateMembership(@PathVariable Long id, @RequestBody MembershipDTO request) {
         try {
@@ -76,6 +77,20 @@ public class MembershipController {
         } catch (Exception e) {
             return new ResponseEntity<>(new Response("Error inesperado al actualizar la membresía: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response> deleteMembership(@PathVariable Long id) {
+        try {
+            Response response = membershipService.deleteMembership(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Response(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al desactivar la membresía: " + e.getMessage()));
         }
     }
 }

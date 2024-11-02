@@ -117,4 +117,23 @@ public class MembershipService {
             membership.getInstitution().getName()
         );
     }
+
+    @Transactional
+    public Response deleteMembership(Long id) {
+        Membership membership = membershipRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Membresía no encontrada"));
+
+        // En lugar de eliminar, desactivamos la membresía
+        membership.setStatus(false);
+        
+        // También actualizamos el estado de la institución
+        Institution institution = membership.getInstitution();
+        institution.setActive(false);
+        
+        // Guardamos los cambios
+        institutionRepository.save(institution);
+        membershipRepository.save(membership);
+        
+        return new Response("Membresía desactivada con éxito");
+    }
 }

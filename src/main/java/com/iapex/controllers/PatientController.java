@@ -153,9 +153,9 @@ public class PatientController {
                 if (imageFiles.isEmpty()) {
                     return ResponseEntity.badRequest()
                             .body(new Response("Debe adjuntar al menos un archivo de imagen."));
-                } else if (imageFiles.size() < 8 || imageFiles.size() > 12) {
+                } else if (imageFiles.size() < 2 || imageFiles.size() > 4) {
                     return ResponseEntity.badRequest()
-                            .body(new Response("Debe subir al menos 8 y como máximo 12 archivos de imagen."));
+                            .body(new Response("Debe subir al menos 4 y como máximo 4 archivos de imagen."));
                 }
 
                 // Procesar archivos de imagen
@@ -221,9 +221,9 @@ public class PatientController {
             List<ImageDTO> imageDTOs = new ArrayList<>();
 
             if (imageFiles != null && !imageFiles.isEmpty()) {
-                if (imageFiles.size() < 8 || imageFiles.size() > 12) {
+                if (imageFiles.size() < 2 || imageFiles.size() > 4) {
                     return ResponseEntity.badRequest()
-                            .body(new Response("Debe subir entre 8 y 12 archivos de imagen."));
+                            .body(new Response("Debe subir entre 2 y 4 archivos de imagen."));
                 }
 
                 // Asegurarse de que la lista de imágenes en patientDTO esté inicializada
@@ -272,7 +272,7 @@ public class PatientController {
 
     
     
-    @PreAuthorize("hasAuthority('USER_WEB')")
+    @PreAuthorize("hasAuthority('USER_WEB') or hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {
         try {

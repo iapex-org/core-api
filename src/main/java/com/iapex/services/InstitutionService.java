@@ -143,7 +143,14 @@ public class InstitutionService {
             .orElseThrow(() -> new Exception("Institución no encontrada con nombre: " + name));
     }
     
-    // MÉTODO PARA OBTENER LA INSTITUCIÓN DTO POR USUARIO
+    // Obtener el nombre de todas las instituciones
+    public List<String> getAllInstitutionNames() {
+        return institutionRepository.findAll().stream()
+                .map(Institution::getName)
+                .collect(Collectors.toList());
+    }
+
+    //MÉTODO PARA OBTENER LA INSTITUCIÓN DTO POR USUARIO
     public InstitutionDTO getInstitutionDTOByUser(UserWeb userWeb) throws Exception {
         Institution institution = userWeb.getInstitution();
         if (institution == null) {

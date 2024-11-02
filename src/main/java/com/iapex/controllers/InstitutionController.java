@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/institutions")
 public class InstitutionController {
 
-	
-	
     @Autowired
     private InstitutionService institutionService;
 
@@ -48,13 +46,13 @@ public class InstitutionController {
     private HttpServletRequest request;
 
     // Obtener todas las instituciones
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
         List<InstitutionDTO> institutions = institutionService.getAllInstitutions();
         return ResponseEntity.ok(institutions);
     }
-    
+
     // Obtener institución por ID sin importar su estado
     @GetMapping("/getInstitutionById/{id}")
     public ResponseEntity<?> getInstitutionById(@PathVariable Long id) {
@@ -66,7 +64,14 @@ public class InstitutionController {
                     .body(new Response("No se encontró la institución con ID: " + id));
         }
     }
-    
+
+    // Endpoint para obtener el nombre de todas las instituciones
+    @GetMapping("/institution-names")
+    public ResponseEntity<List<String>> getAllInstitutionNames() {
+        List<String> allInstitutionNames = institutionService.getAllInstitutionNames();
+        return ResponseEntity.ok(allInstitutionNames);
+    }
+
     // Obtener el nombre de todas las instituciones con active en TRUE
     @GetMapping("/active-institution-names")
     public ResponseEntity<List<String>> getActiveInstitutionNames() {
@@ -81,7 +86,8 @@ public class InstitutionController {
         return ResponseEntity.ok(institutions);
     }
 
-    // Obtener institución por ID con status TRUE, es decir cuando la institucion esta activada
+    // Obtener institución por ID con status TRUE, es decir cuando la institucion
+    // esta activada
     @GetMapping("/{id}/activated")
     public ResponseEntity<?> getInstitution(@PathVariable Long id) {
         try {
@@ -101,10 +107,12 @@ public class InstitutionController {
             return ResponseEntity.ok(institution);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new Response("No se encontró la institución con nombre, solo se mostraran instittuciones activas: " + name));
+                    .body(new Response(
+                            "No se encontró la institución con nombre, solo se mostraran instittuciones activas: "
+                                    + name));
         }
     }
-    
+
     // Acceder a la imagen del paciente por su nombre de archivo
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
@@ -119,7 +127,6 @@ public class InstitutionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
 
     // Obtener la institución del usuario autenticado
     @PreAuthorize("hasAuthority('USER_WEB')")
@@ -142,8 +149,8 @@ public class InstitutionController {
     }
 
     // Crear una nueva institución
-    //imageFile campo para archivos
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // imageFile campo para archivos
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createInstitution(
             @Valid @ModelAttribute InstitutionDTO request,
@@ -186,7 +193,7 @@ public class InstitutionController {
     }
 
     // Actualizar una institución
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInstitution(
             @PathVariable Long id,
@@ -216,7 +223,7 @@ public class InstitutionController {
                 String host = this.request.getRequestURL().toString().replace(this.request.getRequestURI(), "");
                 String imageUrl = ServletUriComponentsBuilder
                         .fromHttpUrl(host)
-                        .path("/api/v1/institutions/images/") 
+                        .path("/api/v1/institutions/images/")
                         .path(storedFilename)
                         .toUriString();
 
@@ -241,7 +248,7 @@ public class InstitutionController {
     }
 
     // Eliminar una institución
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInstitution(@PathVariable Long id) {
         try {
