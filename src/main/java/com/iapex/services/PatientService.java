@@ -158,8 +158,8 @@ public class PatientService {
             // Verificar si la lista de imágenes es nula o vacía
             if (request.getImages() != null && !request.getImages().isEmpty()) {
                 // Validar la cantidad de imágenes
-                if (request.getImages().size() < 8 || request.getImages().size() > 12) {
-                    throw new Exception("Debe proporcionar entre 8 y 12 imágenes.");
+                if (request.getImages().size() < 3 || request.getImages().size() > 6) {
+                    throw new Exception("Debe proporcionar entre 3 y 6 imágenes.");
                 }
 
                 // Crear un mapa de las imágenes existentes por su nombre de archivo

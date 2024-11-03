@@ -72,7 +72,7 @@ public class Institution {
     @OneToOne(mappedBy = "institution", cascade = CascadeType.ALL)
     private Membership membership;
 
-    @JsonIgnoreProperties({"institution"})
+    @JsonIgnore
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
     private List<Patient> patients;
 
