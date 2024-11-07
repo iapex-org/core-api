@@ -22,6 +22,4 @@ public class UpdateContactRequestDTO {
     public void setAttendingUser(String attendingUser) {
         this.attendingUser = attendingUser;
     }
-
-    
 }

@@ -3,6 +3,7 @@ package com.iapex.dtos.patient;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iapex.models.institution.Institution;
 
 import jakarta.validation.constraints.NotNull;
@@ -54,6 +55,7 @@ public class PatientDTO {
     @Size(max = 255, message = "Las características distintivas deben tener máximo 255 caracteres")
     private String distinctiveFeatures;
 
+    @JsonIgnore
     private Institution institution;
 
     private List<ImageDTO> images;

@@ -11,7 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/contact-requests")
@@ -72,5 +75,23 @@ public class ContactRequestController {
             @RequestBody UpdateContactRequestDTO request) {
         Response response = contactRequestService.updateContactRequestById(id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<Map<String, Long>> getContactRequestStatistics() {
+    return ResponseEntity.ok(contactRequestService.getContactRequestStatusCount());
+    }
+
+    @GetMapping("/by-institution")
+    public ResponseEntity<?> getStatisticsByInstitution() {
+        try {
+            return ResponseEntity.ok(contactRequestService.getInstitutionStatistics());
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new Response("Necesita iniciar sesión como personal de la institución para usar este recurso"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("Error al obtener las estadísticas: " + e.getMessage()));
+        }
     }
 }

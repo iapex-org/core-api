@@ -3,7 +3,9 @@ package com.iapex.services;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -11,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.iapex.dtos.contactRequest.ContactRequestCount;
 import com.iapex.dtos.contactRequest.ContactRequestDTO;
 import com.iapex.dtos.contactRequest.UpdateContactRequestDTO;
 import com.iapex.enums.ContactRequestStatusEnum;
@@ -20,6 +23,7 @@ import com.iapex.models.patient.Patient;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
 import com.iapex.repositories.ContactRequestRepository;
+import com.iapex.repositories.ContactRequestRepositoryImpl;
 import com.iapex.repositories.PatientRepository;
 
 @Service
@@ -30,6 +34,62 @@ public class ContactRequestService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private ContactRequestRepositoryImpl contactRequestRepositoryImpl;
+
+    /**
+     * Obtiene el conteo de solicitudes de contacto agrupadas por estado y el total.
+     * @return Map<String, Long> Mapa con el conteo por cada estado y el total
+     */
+    public Map<String, Long> getContactRequestStatusCount() {
+        try {
+            List<ContactRequestCount> statusCounts = contactRequestRepositoryImpl.getContactRequestStatusCount();
+            Map<String, Long> result = new LinkedHashMap<>(); // LinkedHashMap para mantener el orden
+            
+            long total = 0;
+            for (ContactRequestCount count : statusCounts) {
+                result.put(count.getStatus(), count.getCount());
+                total += count.getCount();
+            }
+            
+            // Agregar el total al final del mapa
+            result.put("total", total);
+            
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new LinkedHashMap<>();
+        }
+    }
+
+    public Map<String, Long> getInstitutionStatistics() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() 
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new AccessDeniedException("Usuario no autenticado");
+        }
+
+        UserWeb currentUser = (UserWeb) authentication.getPrincipal();
+        Institution institution = currentUser.getInstitution();
+        if (institution == null) {
+            throw new Exception("Usuario no tiene una institución asignada");
+        }
+
+        List<ContactRequestCount> statusCounts = 
+            contactRequestRepositoryImpl.getContactRequestStatusCountByInstitution(institution.getId());
+
+        Map<String, Long> result = new LinkedHashMap<>();
+        long total = 0;
+
+        for (ContactRequestCount count : statusCounts) {
+            result.put(count.getStatus(), count.getCount());
+            total += count.getCount();
+        }
+        result.put("total", total);
+
+        return result;
+    }
 
     @Transactional
     public Response createContactRequest(ContactRequestDTO request) throws Exception {

@@ -17,7 +17,6 @@ import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
 import com.iapex.services.email.WebEmailService;
 import com.iapex.services.user.UserWebService;
-import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.util.List;
