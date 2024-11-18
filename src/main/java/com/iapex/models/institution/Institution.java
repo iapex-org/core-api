@@ -32,7 +32,7 @@ public class Institution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, unique = true, nullable = false)
+    @Column(length = 50, unique = true, nullable = false)
     private String name;
 
     @Column(length = 50, nullable = false)
@@ -60,9 +60,6 @@ public class Institution {
     private String image;
 
     private String imageUrl;
-
-    @Column(columnDefinition = "TEXT")
-    private String mapUrl;
 
     @Unique
     @Column(length = 50, nullable = false)
@@ -106,14 +103,6 @@ public class Institution {
 
     public void setOpeningHours(String openingHours) {
         this.openingHours = openingHours;
-    }
-
-    public String getMapUrl() {
-        return mapUrl;
-    }
-
-    public void setMapUrl(String mapUrl) {
-        this.mapUrl = mapUrl;
     }
 
     public String getEmails() {

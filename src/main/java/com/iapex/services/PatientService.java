@@ -81,7 +81,6 @@ public class PatientService {
             patient.setMedicalConditions(request.getMedicalConditions());
             patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
             patient.setInstitution(institution); // Asignar la institución del usuario autenticado
-            patient.setAdditionalNotes(request.getAdditionalNotes());
             patient.setActive(true);
 
             // Asociar las imágenes al paciente
@@ -150,8 +149,6 @@ public class PatientService {
                 patient.setMedicalConditions(request.getMedicalConditions());
             if (!Objects.equals(patient.getDistinctiveFeatures(), request.getDistinctiveFeatures()))
                 patient.setDistinctiveFeatures(request.getDistinctiveFeatures());
-            if (!Objects.equals(patient.getAdditionalNotes(), request.getAdditionalNotes()))
-                patient.setAdditionalNotes(request.getAdditionalNotes());
             if (patient.isActive() != request.isActive())
                 patient.setActive(request.isActive());
 
@@ -342,7 +339,6 @@ public class PatientService {
                 patient.getMedicalConditions(),
                 patient.getDistinctiveFeatures(),
                 patient.getInstitution(),
-                imageDTOs,
-                patient.getAdditionalNotes());
+                imageDTOs);
     }
 }

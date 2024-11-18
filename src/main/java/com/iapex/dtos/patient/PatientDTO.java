@@ -60,9 +60,6 @@ public class PatientDTO {
 
     private List<ImageDTO> images;
 
-    @Size(max = 255, message = "Las notas adicionales deben tener máximo 255 caracteres")
-    private String additionalNotes;
-
     // Constructor
     public PatientDTO() {
     }
@@ -72,7 +69,7 @@ public class PatientDTO {
                       Integer approximateAge, LocalDateTime registrationDateTime, String registeringUser, 
                       boolean active, String skinColor, String hair, String complexion, String eyeColor, 
                       Integer approximateHeight, String medicalConditions, String distinctiveFeatures, 
-                      Institution institution, List<ImageDTO> images, String additionalNotes) {
+                      Institution institution, List<ImageDTO> images) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -91,7 +88,6 @@ public class PatientDTO {
         this.distinctiveFeatures = distinctiveFeatures;
         this.institution = institution;
         this.images = images;
-        this.additionalNotes = additionalNotes;
     }
 
     public Long getId() {
@@ -228,14 +224,6 @@ public class PatientDTO {
 
     public void setImages(List<ImageDTO> images) {
         this.images = images;
-    }
-
-    public String getAdditionalNotes() {
-        return additionalNotes;
-    }
-
-    public void setAdditionalNotes(String additionalNotes) {
-        this.additionalNotes = additionalNotes;
     }
 
     public boolean isActive() {

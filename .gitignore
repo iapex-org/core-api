@@ -34,3 +34,6 @@ build/
 
 ### Carpeta de imagenes ###
 /mediafiles/
+
+### application.properties ###
+/src/main/resources/application.properties

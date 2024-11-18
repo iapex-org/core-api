@@ -184,7 +184,7 @@ public class InstitutionController {
             Response response = institutionService.register(request);
             return ResponseEntity.ok(response);
         } catch (InstitutionAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(new Response(e.getMessage()));
+            return ResponseEntity.status(409).body(new Response(e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(new Response("Ha ocurrido un error: " + e.getMessage()));
