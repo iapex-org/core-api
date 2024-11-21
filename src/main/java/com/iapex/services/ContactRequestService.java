@@ -40,22 +40,23 @@ public class ContactRequestService {
 
     /**
      * Obtiene el conteo de solicitudes de contacto agrupadas por estado y el total.
+     * 
      * @return Map<String, Long> Mapa con el conteo por cada estado y el total
      */
     public Map<String, Long> getContactRequestStatusCount() {
         try {
             List<ContactRequestCount> statusCounts = contactRequestRepositoryImpl.getContactRequestStatusCount();
             Map<String, Long> result = new LinkedHashMap<>(); // LinkedHashMap para mantener el orden
-            
+
             long total = 0;
             for (ContactRequestCount count : statusCounts) {
                 result.put(count.getStatus(), count.getCount());
                 total += count.getCount();
             }
-            
+
             // Agregar el total al final del mapa
             result.put("total", total);
-            
+
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +66,7 @@ public class ContactRequestService {
 
     public Map<String, Long> getInstitutionStatistics() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() 
+        if (authentication == null || !authentication.isAuthenticated()
                 || authentication.getPrincipal().equals("anonymousUser")) {
             throw new AccessDeniedException("Usuario no autenticado");
         }
@@ -76,8 +77,8 @@ public class ContactRequestService {
             throw new Exception("Usuario no tiene una institución asignada");
         }
 
-        List<ContactRequestCount> statusCounts = 
-            contactRequestRepositoryImpl.getContactRequestStatusCountByInstitution(institution.getId());
+        List<ContactRequestCount> statusCounts = contactRequestRepositoryImpl
+                .getContactRequestStatusCountByInstitution(institution.getId());
 
         Map<String, Long> result = new LinkedHashMap<>();
         long total = 0;
@@ -158,7 +159,8 @@ public class ContactRequestService {
                 }
             }
 
-            // Actualizar el usuario atendiendo si está presente en la solicitud y no se actualizó automáticamente
+            // Actualizar el usuario atendiendo si está presente en la solicitud y no se
+            // actualizó automáticamente
             if (!userUpdated && request.getAttendingUser() != null && !request.getAttendingUser().trim().isEmpty()) {
                 // Verificar si el usuario tiene permiso para cambiar el usuario atendiendo
                 if (!currentUser.getUsername().equals(request.getAttendingUser())) {
@@ -191,8 +193,7 @@ public class ContactRequestService {
             return new Response("Error al actualizar la solicitud de contacto: " + e.getMessage());
         }
     }
-    
-    
+
     public List<ContactRequestDTO> getContactRequestsByInstitution() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -207,7 +208,6 @@ public class ContactRequestService {
             return Collections.emptyList();
         }
     }
-    
 
     private ContactRequestDTO convertToDTO(ContactRequest contactRequest) {
         Patient patient = contactRequest.getPatient();
@@ -225,7 +225,6 @@ public class ContactRequestService {
                 contactRequest.getRelationship(),
                 contactRequest.getRequestDateTime(),
                 contactRequest.getMessage(),
-                contactRequest.getStatus().toLowerCase()
-                );
-               }
+                contactRequest.getStatus());
+    }
 }

@@ -36,7 +36,7 @@ public class WebEmailService {
 
     public String sendPasswordResetUserWebEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
-        String resetUrl = "http://localhost:4200/access/restore-password?code=" + verificationCode;
+        String resetUrl = "http://localhost:4200/auth/restore-password?code=" + verificationCode;
 
         try {
             MimeMessage message = mailSender.createMimeMessage();

@@ -15,22 +15,22 @@ public class Direction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 25, nullable = false)
     private String state;
 
-	@Column(length = 50, nullable = false)
+	@Column(length = 25, nullable = false)
     private String city;
 
-    @Column(length = 25, nullable = false)
+    @Column(length = 5, nullable = false)
     private String postalCode;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 25, nullable = false)
     private String neighborhood;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 25, nullable = false)
     private String street;
 
-    @Column(length = 25,  nullable = false)
+    @Column(length = 5,  nullable = false)
     private String number;
 
     // Constructor

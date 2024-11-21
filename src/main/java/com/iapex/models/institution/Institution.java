@@ -51,9 +51,6 @@ public class Institution {
     @Column(columnDefinition = "TEXT")
     private String phoneNumbers;
 
-    @Column(columnDefinition = "TEXT")
-    private String websites;
-
     @Temporal(TemporalType.DATE)
     private Date registrationDateTime;
 
@@ -62,7 +59,7 @@ public class Institution {
     private String imageUrl;
 
     @Unique
-    @Column(length = 50, nullable = false)
+    @Column(length = 25, nullable = false)
     private String verificationKey;
 
     @JsonIgnoreProperties({"institution"})
@@ -144,15 +141,7 @@ public class Institution {
     public void setPhoneNumbers(String phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
     }
-
-    public String getWebsites() {
-        return websites;
-    }
-
-    public void setWebsites(String websites) {
-        this.websites = websites;
-    }
-
+    
     public String getVerificationKey() {
         return verificationKey;
     }

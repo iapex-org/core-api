@@ -44,7 +44,6 @@ public class InstitutionService {
         institution.setImageUrl(request.getImageUrl());
         institution.setType(request.getType());
         institution.setPhoneNumbers(request.getPhoneNumbers());
-        institution.setWebsites(request.getWebsites());
         institution.setVerificationKey(request.getVerificationKey());
         
         // CONFIGURAR DIRECTION
@@ -82,7 +81,6 @@ public class InstitutionService {
         if (!Objects.equals(institution.getImageUrl(), request.getImageUrl())) institution.setImageUrl(request.getImageUrl());
         if (!Objects.equals(institution.getType(), request.getType())) institution.setType(request.getType());
         if (!Objects.equals(institution.getPhoneNumbers(), request.getPhoneNumbers())) institution.setPhoneNumbers(request.getPhoneNumbers());
-        if (!Objects.equals(institution.getWebsites(), request.getWebsites())) institution.setWebsites(request.getWebsites());
         if (!Objects.equals(institution.getVerificationKey(), request.getVerificationKey())) institution.setVerificationKey(request.getVerificationKey());
         if (institution.isActive() != request.isActive()) institution.setActive(request.isActive());
 
@@ -174,7 +172,6 @@ public class InstitutionService {
         dto.setImageUrl(institution.getImageUrl());
         dto.setType(institution.getType());
         dto.setPhoneNumbers(institution.getPhoneNumbers());
-        dto.setWebsites(institution.getWebsites());
         dto.setVerificationKey(institution.getVerificationKey());
         dto.setActive(institution.isActive());
         dto.setRegistrationDateTime(institution.getRegistrationDateTime());
