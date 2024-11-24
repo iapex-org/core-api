@@ -39,13 +39,11 @@ public class InstitutionService {
         Institution institution = new Institution();
         institution.setName(request.getName());
         institution.setOpeningHours(request.getOpeningHours());
-        institution.setMapUrl(request.getMapUrl());
         institution.setEmails(request.getEmails());
         institution.setImage(request.getImage());
         institution.setImageUrl(request.getImageUrl());
         institution.setType(request.getType());
         institution.setPhoneNumbers(request.getPhoneNumbers());
-        institution.setWebsites(request.getWebsites());
         institution.setVerificationKey(request.getVerificationKey());
         
         // CONFIGURAR DIRECTION
@@ -78,13 +76,11 @@ public class InstitutionService {
 
         if (!Objects.equals(institution.getName(), request.getName())) institution.setName(request.getName());
         if (!Objects.equals(institution.getOpeningHours(), request.getOpeningHours())) institution.setOpeningHours(request.getOpeningHours());
-        if (!Objects.equals(institution.getMapUrl(), request.getMapUrl())) institution.setMapUrl(request.getMapUrl());
         if (!Objects.equals(institution.getEmails(), request.getEmails())) institution.setEmails(request.getEmails());
         if (!Objects.equals(institution.getImage(), request.getImage())) institution.setImage(request.getImage());
         if (!Objects.equals(institution.getImageUrl(), request.getImageUrl())) institution.setImageUrl(request.getImageUrl());
         if (!Objects.equals(institution.getType(), request.getType())) institution.setType(request.getType());
         if (!Objects.equals(institution.getPhoneNumbers(), request.getPhoneNumbers())) institution.setPhoneNumbers(request.getPhoneNumbers());
-        if (!Objects.equals(institution.getWebsites(), request.getWebsites())) institution.setWebsites(request.getWebsites());
         if (!Objects.equals(institution.getVerificationKey(), request.getVerificationKey())) institution.setVerificationKey(request.getVerificationKey());
         if (institution.isActive() != request.isActive()) institution.setActive(request.isActive());
 
@@ -171,13 +167,11 @@ public class InstitutionService {
         dto.setId(institution.getId());
         dto.setName(institution.getName());
         dto.setOpeningHours(institution.getOpeningHours());
-        dto.setMapUrl(institution.getMapUrl());
         dto.setEmails(institution.getEmails());
         dto.setImage(institution.getImage());
         dto.setImageUrl(institution.getImageUrl());
         dto.setType(institution.getType());
         dto.setPhoneNumbers(institution.getPhoneNumbers());
-        dto.setWebsites(institution.getWebsites());
         dto.setVerificationKey(institution.getVerificationKey());
         dto.setActive(institution.isActive());
         dto.setRegistrationDateTime(institution.getRegistrationDateTime());

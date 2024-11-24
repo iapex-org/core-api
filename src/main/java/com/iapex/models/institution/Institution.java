@@ -32,7 +32,7 @@ public class Institution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, unique = true, nullable = false)
+    @Column(length = 50, unique = true, nullable = false)
     private String name;
 
     @Column(length = 50, nullable = false)
@@ -51,9 +51,6 @@ public class Institution {
     @Column(columnDefinition = "TEXT")
     private String phoneNumbers;
 
-    @Column(columnDefinition = "TEXT")
-    private String websites;
-
     @Temporal(TemporalType.DATE)
     private Date registrationDateTime;
 
@@ -61,11 +58,8 @@ public class Institution {
 
     private String imageUrl;
 
-    @Column(columnDefinition = "TEXT")
-    private String mapUrl;
-
     @Unique
-    @Column(length = 50, nullable = false)
+    @Column(length = 25, nullable = false)
     private String verificationKey;
 
     @JsonIgnoreProperties({"institution"})
@@ -108,14 +102,6 @@ public class Institution {
         this.openingHours = openingHours;
     }
 
-    public String getMapUrl() {
-        return mapUrl;
-    }
-
-    public void setMapUrl(String mapUrl) {
-        this.mapUrl = mapUrl;
-    }
-
     public String getEmails() {
         return emails;
     }
@@ -155,15 +141,7 @@ public class Institution {
     public void setPhoneNumbers(String phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
     }
-
-    public String getWebsites() {
-        return websites;
-    }
-
-    public void setWebsites(String websites) {
-        this.websites = websites;
-    }
-
+    
     public String getVerificationKey() {
         return verificationKey;
     }

@@ -230,9 +230,9 @@ public class PatientController {
             List<ImageDTO> imageDTOs = new ArrayList<>();
 
             if (imageFiles != null && !imageFiles.isEmpty()) {
-                if (imageFiles.size() < 2 || imageFiles.size() > 4) {
+                if (imageFiles.size() < 3 || imageFiles.size() > 6) {
                     return ResponseEntity.badRequest()
-                            .body(new Response("Debe subir entre 2 y 4 archivos de imagen."));
+                            .body(new Response("Debe subir entre 3 y 6 archivos de imagen."));
                 }
 
                 // Asegurarse de que la lista de imágenes en patientDTO esté inicializada
@@ -278,8 +278,6 @@ public class PatientController {
                     .body(new Response("Ha ocurrido un error al actualizar el paciente: " + e.getMessage()));
         }
     }
-
-    
     
     @PreAuthorize("hasAuthority('USER_WEB') or hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")

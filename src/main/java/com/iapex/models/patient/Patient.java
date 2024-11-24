@@ -81,9 +81,6 @@ public class Patient {
 
 	@OneToMany(mappedBy = "patient", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Image> images;
-	
-	@Column(length = 255)
-    private String additionalNotes;
 
 	// Getters and Setters
     public Long getId() {
@@ -220,14 +217,6 @@ public class Patient {
 
     public void setImages(List<Image> images) {
         this.images = images;
-    }
-
-    public String getAdditionalNotes() {
-        return additionalNotes;
-    }
-
-    public void setAdditionalNotes(String additionalNotes) {
-        this.additionalNotes = additionalNotes;
     }
 
     public boolean isActive() {

@@ -7,28 +7,28 @@ public class InstitutionDTO {
 
     private Long id;
 
-    @Size(max = 100, message = "El nombre de la institución no puede tener más de 100 caracteres")
+    @Size(max = 50, message = "El nombre de la institución no puede tener más de 50 caracteres")
     private String name;
 
     @Size(max = 50, message = "El tipo de institución no puede tener más de 50 caracteres")
     private String type;
 
-    @Size(max = 50, message = "El estado no debe exceder los 50 caracteres")
+    @Size(max = 25, message = "El estado no debe exceder los 50 caracteres")
     private String state;
 
-    @Size(max = 50, message = "La ciudad no debe exceder los 50 caracteres")
+    @Size(max = 25, message = "La ciudad no debe exceder los 50 caracteres")
     private String city;
 
-    @Size(max = 25, message = "El código postal no debe exceder los 25 caracteres")
+    @Size(max = 5, message = "El código postal no debe exceder los 25 caracteres")
     private String postalCode;
 
-    @Size(max = 50, message = "El vecindario no debe exceder los 50 caracteres")
+    @Size(max = 25, message = "El vecindario no debe exceder los 50 caracteres")
     private String neighborhood;
 
-    @Size(max = 50, message = "La calle no debe exceder los 50 caracteres")
+    @Size(max = 25, message = "La calle no debe exceder los 50 caracteres")
     private String street;
 
-    @Size(max = 25, message = "El número de dirección no debe exceder los 25 caracteres")
+    @Size(max = 5, message = "El número de dirección no debe exceder los 25 caracteres")
     private String number;
 
     @Size(max = 100, message = "El horario de apertura no puede tener más de 100 caracteres")
@@ -39,9 +39,6 @@ public class InstitutionDTO {
 
     @Size(max = 255, message = "Los números de teléfono no pueden tener más de 255 caracteres")
     private String phoneNumbers;
-    
-    @Size(max = 255, message = "Las URLs de los sitios web no pueden tener más de 255 caracteres")
-    private String websites;
 
     private Date registrationDateTime;
 
@@ -49,9 +46,7 @@ public class InstitutionDTO {
 
     private String imageUrl;
 
-    private String mapUrl;
-
-    @Size(max = 50, message = "La clave de verificación no puede tener más de 50 caracteres")
+    @Size(max = 25, message = "La clave de verificación no puede tener más de 50 caracteres")
     private String verificationKey;
 
     private boolean active;
@@ -84,15 +79,6 @@ public class InstitutionDTO {
     public void setOpeningHours(String openingHours) {
         this.openingHours = openingHours;
     }
-
-    public String getMapUrl() {
-        return mapUrl;
-    }
-
-    public void setMapUrl(String mapUrl) {
-        this.mapUrl = mapUrl;
-    }
-
     public String getEmails() {
         return emails;
     }
@@ -131,14 +117,6 @@ public class InstitutionDTO {
 
     public void setPhoneNumbers(String phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
-    }
-
-    public String getWebsites() {
-        return websites;
-    }
-
-    public void setWebsites(String websites) {
-        this.websites = websites;
     }
 
     public String getVerificationKey() {
