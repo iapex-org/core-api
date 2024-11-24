@@ -21,7 +21,7 @@ public class IapexApiRestApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-				        .allowedOrigins("http://localhost:4200", "http://localhost:8100")
+				        .allowedOrigins("http://localhost:4200")
 				        .allowedMethods("*")
 				        .allowedHeaders("*");
 			}

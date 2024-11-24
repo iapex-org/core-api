@@ -32,7 +32,7 @@ public enum RoleEnum {
             case "SUPER_ADMIN":
                 return SUPER_ADMIN;
             default:
-                throw new IllegalArgumentException("Role no reconocido: " + roleStr);
+                throw new IllegalArgumentException("Rol no reconocido: " + roleStr);
         }
     }
 }

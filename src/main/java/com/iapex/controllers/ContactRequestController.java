@@ -45,7 +45,7 @@ public class ContactRequestController {
 
     // Obtiene las solicitudes de contacto por la institución del usuario
     // autenticado
-    @PreAuthorize("hasAuthority('USER_WEB')")
+    //@PreAuthorize("hasAuthority('USER_WEB')")
     @GetMapping("/me/institution")
     public ResponseEntity<List<ContactRequestDTO>> getContactRequestsByInstitution() {
         List<ContactRequestDTO> contactRequests = contactRequestService.getContactRequestsByInstitution();
@@ -69,7 +69,7 @@ public class ContactRequestController {
     }
 
     // Actualiza una solicitud de contacto por ID
-    @PreAuthorize("hasAuthority('USER_WEB')")
+    //@PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateContactRequestById(@PathVariable Long id,
             @RequestBody UpdateContactRequestDTO request) {
