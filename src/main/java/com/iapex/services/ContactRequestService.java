@@ -25,6 +25,7 @@ import com.iapex.models.user.UserWeb;
 import com.iapex.repositories.ContactRequestRepository;
 import com.iapex.repositories.ContactRequestRepositoryImpl;
 import com.iapex.repositories.PatientRepository;
+import com.iapex.services.notification.NotificationService;
 
 @Service
 public class ContactRequestService {
@@ -35,6 +36,9 @@ public class ContactRequestService {
     @Autowired
     private PatientRepository patientRepository;
 
+    @Autowired 
+    private NotificationService notificationService;
+    
     @Autowired
     private ContactRequestRepositoryImpl contactRequestRepositoryImpl;
 
@@ -110,6 +114,8 @@ public class ContactRequestService {
         contactRequest.setStatus("NUEVA");
 
         contactRequestRepository.save(contactRequest);
+        Institution institution = contactRequest.getPatient().getInstitution();
+        notificationService.createNotification(contactRequest, institution);
         return new Response("Solicitud de contacto enviada exitosamente");
     }
 
