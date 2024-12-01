@@ -25,8 +25,8 @@ public class MembershipController {
     @Autowired
     private MembershipService membershipService;
 
-    // Obtener todas las membresías    
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // Obtener todas las membresías
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<MembershipDTO>> getAllMemberships() {
         List<MembershipDTO> memberships = membershipService.getAllMemberships();
@@ -34,7 +34,7 @@ public class MembershipController {
     }
 
     // Obtener membresía por ID
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getMembershipById(@PathVariable Long id) {
         try {
@@ -47,7 +47,7 @@ public class MembershipController {
 
     // Formato que admite 2024-07-15T01:56:00
     // Crear una membresía
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    // @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Response> createMembership(@RequestBody MembershipDTO request) {
         try {
@@ -63,8 +63,6 @@ public class MembershipController {
         }
     }
 
-    // Actualizar una membresía
-    //@PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateMembership(@PathVariable Long id, @RequestBody MembershipDTO request) {
         try {
@@ -72,6 +70,9 @@ public class MembershipController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (InstitutionNotFoundException e) {
             return new ResponseEntity<>(new Response(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            // Manejo de la excepción cuando la membresía está desactivada
+            return new ResponseEntity<>(new Response(e.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<>(new Response("Error inesperado al actualizar la membresía: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
