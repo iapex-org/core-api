@@ -3,50 +3,71 @@ package com.iapex.models.notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.iapex.models.user.UserWeb;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
 public class Notification {
 
+    // Identificador único de la notificación
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
-    private String region;
+    // Asunto de la notificación
+    @Column(length = 100, nullable = false)
+    private String subject;
 
+    // Cuerpo o mensaje de la notificación
+    @Column(length = 255, nullable = false)
+    private String body;
+
+    // Fecha y hora de envío de la notificación
+    @Column(nullable = false)
+    private LocalDateTime sendDate;
+
+    // Fecha y hora en que se atendió la notificación
+    private LocalDateTime attendDateTime;
+
+    // Estado de atención de la notificación
     @Column(nullable = false)
     private boolean attended;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "institution_id", nullable = false)
-    private Institution institution;
+    // Usuario que atendió la notificación
+    @ManyToOne
+    @JoinColumn(name = "id_attended_by")
+    private UserWeb attendedBy;
 
+    // Relación con una solicitud de contacto
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_request_id", nullable = false)
     private ContactRequest contactRequest;
+
+    // Institución relacionada con la notificación
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "institution_id", nullable = false)
+    private Institution institution;
 
     // Constructor vacío
     public Notification() {
     }
 
     // Constructor con argumentos
-    public Notification(ContactRequest contactRequest, String region, Institution institution, boolean attended) {
+    public Notification(ContactRequest contactRequest, String subject, String body, LocalDateTime sendDate,
+                        Institution institution, boolean attended, UserWeb attendedBy, LocalDateTime attendDateTime) {
         this.contactRequest = contactRequest;
-        this.region = region;
+        this.subject = subject;
+        this.body = body;
+        this.sendDate = sendDate;
         this.institution = institution;
         this.attended = attended;
+        this.attendedBy = attendedBy;
+        this.attendDateTime = attendDateTime;
     }
 
     // Getters y Setters
@@ -58,28 +79,36 @@ public class Notification {
         this.id = id;
     }
 
-    public ContactRequest getContactRequest() {
-        return contactRequest;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setContactRequest(ContactRequest contactRequest) {
-        this.contactRequest = contactRequest;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    public String getRegion() {
-        return region;
+    public String getBody() {
+        return body;
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void setBody(String body) {
+        this.body = body;
     }
 
-    public Institution getInstitution() {
-        return institution;
+    public LocalDateTime getSendDate() {
+        return sendDate;
     }
 
-    public void setInstitution(Institution institution) {
-        this.institution = institution;
+    public void setSendDate(LocalDateTime sendDate) {
+        this.sendDate = sendDate;
+    }
+
+    public LocalDateTime getAttendDateTime() {
+        return attendDateTime;
+    }
+
+    public void setAttendDateTime(LocalDateTime attendDateTime) {
+        this.attendDateTime = attendDateTime;
     }
 
     public boolean isAttended() {
@@ -88,5 +117,29 @@ public class Notification {
 
     public void setAttended(boolean attended) {
         this.attended = attended;
+    }
+
+    public UserWeb getAttendedBy() {
+        return attendedBy;
+    }
+
+    public void setAttendedBy(UserWeb attendedBy) {
+        this.attendedBy = attendedBy;
+    }
+
+    public ContactRequest getContactRequest() {
+        return contactRequest;
+    }
+
+    public void setContactRequest(ContactRequest contactRequest) {
+        this.contactRequest = contactRequest;
+    }
+
+    public Institution getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution(Institution institution) {
+        this.institution = institution;
     }
 }

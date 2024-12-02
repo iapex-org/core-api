@@ -4,87 +4,94 @@ import java.time.LocalDateTime;
 
 public class NotificationDTO {
 
-    // ID de la notificación
-    private Long id; 
-    // ID de la solicitud de contacto
+    private Long id;
     private Long contactRequestId;
-    // Nombre de la persona desaparecida
-    private String missingPersonName;
-    // Nombre de la persona interesada
-    private String interestedPersonName;
-    // Fecha y hora de la solicitud
-    private LocalDateTime requestDateTime;
-    // Región de la solicitud
-    private String region;
-    // Estado de la notificación
+    private String subject;
+    private String body;
+    private LocalDateTime sendDate;
+    private LocalDateTime attendDateTime;
     private boolean attended;
+    private String attendedBy;
 
     // Constructor
-    public NotificationDTO(Long id, Long contactRequestId, String missingPersonName, String interestedPersonName,
-            LocalDateTime requestDateTime, String region, boolean attended) {
+    // Constructor actualizado
+    public NotificationDTO(Long id, Long contactRequestId, String subject, String body,
+            LocalDateTime sendDate, LocalDateTime attendDateTime,
+            boolean attended, String attendedBy) {
         this.id = id;
         this.contactRequestId = contactRequestId;
-        this.missingPersonName = missingPersonName;
-        this.interestedPersonName = interestedPersonName;
-        this.requestDateTime = requestDateTime;
-        this.region = region;
+        this.subject = subject;
+        this.body = body;
+        this.sendDate = sendDate;
+        this.attendDateTime = attendDateTime;
         this.attended = attended;
+        this.attendedBy = attendedBy;
     }
 
-    // Getters y setters
+    // Getters
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public Long getContactRequestId() {
         return contactRequestId;
     }
 
-    public void setContactRequestId(Long contactRequestId) {
-        this.contactRequestId = contactRequestId;
+    public String getSubject() {
+        return subject;
     }
 
-    public String getMissingPersonName() {
-        return missingPersonName;
+    public String getBody() {
+        return body;
     }
 
-    public void setMissingPersonName(String missingPersonName) {
-        this.missingPersonName = missingPersonName;
+    public LocalDateTime getSendDate() {
+        return sendDate;
     }
 
-    public String getInterestedPersonName() {
-        return interestedPersonName;
-    }
-
-    public void setInterestedPersonName(String interestedPersonName) {
-        this.interestedPersonName = interestedPersonName;
-    }
-
-    public LocalDateTime getRequestDateTime() {
-        return requestDateTime;
-    }
-
-    public void setRequestDateTime(LocalDateTime requestDateTime) {
-        this.requestDateTime = requestDateTime;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
+    public LocalDateTime getAttendDateTime() {
+        return attendDateTime;
     }
 
     public boolean isAttended() {
         return attended;
     }
 
+    public String getAttendedBy() {
+        return attendedBy;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setContactRequestId(Long contactRequestId) {
+        this.contactRequestId = contactRequestId;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setSendDate(LocalDateTime sendDate) {
+        this.sendDate = sendDate;
+    }
+
+    public void setAttendDateTime(LocalDateTime attendDateTime) {
+        this.attendDateTime = attendDateTime;
+    }
+
     public void setAttended(boolean attended) {
         this.attended = attended;
     }
+
+    public void setAttendedBy(String attendedBy) {
+        this.attendedBy = attendedBy;
+    }
 }
+

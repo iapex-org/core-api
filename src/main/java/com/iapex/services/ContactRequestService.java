@@ -36,9 +36,9 @@ public class ContactRequestService {
     @Autowired
     private PatientRepository patientRepository;
 
-    @Autowired 
+    @Autowired
     private NotificationService notificationService;
-    
+
     @Autowired
     private ContactRequestRepositoryImpl contactRequestRepositoryImpl;
 
@@ -98,14 +98,17 @@ public class ContactRequestService {
 
     @Transactional
     public Response createContactRequest(ContactRequestDTO request) throws Exception {
+        // Crear la nueva solicitud de contacto
         ContactRequest contactRequest = new ContactRequest();
         contactRequest.setInterestedPersonName(request.getInterestedPersonName());
         contactRequest.setMissingPersonName(request.getMissingPersonName());
 
+        // Obtener el paciente por ID
         Patient patient = patientRepository.findById(request.getPatient())
                 .orElseThrow(() -> new Exception("Paciente no encontrado con el ID proporcionado"));
         contactRequest.setPatient(patient);
 
+        // Asignar los datos de la solicitud
         contactRequest.setPhoneNumber(request.getPhoneNumber());
         contactRequest.setEmail(request.getEmail());
         contactRequest.setRelationship(request.getRelationship());
@@ -113,9 +116,18 @@ public class ContactRequestService {
         contactRequest.setMessage(request.getMessage());
         contactRequest.setStatus("NUEVA");
 
+        // Guardar la solicitud de contacto
         contactRequestRepository.save(contactRequest);
-        Institution institution = contactRequest.getPatient().getInstitution();
+
+        // Obtener la institución asociada al paciente
+        Institution institution = patient.getInstitution();
+        if (institution == null) {
+            throw new IllegalStateException("El paciente no está asociado a ninguna institución.");
+        }
+
+        // Crear la notificación
         notificationService.createNotification(contactRequest, institution);
+
         return new Response("Solicitud de contacto enviada exitosamente");
     }
 

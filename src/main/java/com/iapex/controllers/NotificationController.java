@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iapex.dtos.notification.NotificationDTO;
 import com.iapex.models.institution.Institution;
+import com.iapex.models.response.PageResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
 import com.iapex.services.notification.NotificationService;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -34,24 +34,26 @@ public class NotificationController {
     // Obtener notificaciones con paginación y filtro
     // http://localhost:8080/api/v1/notifications?page=0&size=10&attended=true
     // http://localhost:8080/api/v1/notifications?page=0&size=10&attended=false
-
-    @GetMapping
-    public ResponseEntity<Page<NotificationDTO>> getNotifications(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(required = false) Boolean attended) {
-        // Obtener el usuario actual
-        UserWeb currentUser = (UserWeb) authentication.getPrincipal();
-        Institution institution = currentUser.getInstitution();
-        // Obtener las notificaciones con paginación y filtro
-        Page<NotificationDTO> notifications = notificationService.getNotificationsByInstitution(
-                institution.getId(),
-                attended,
-                page,
-                size);
-        return ResponseEntity.ok(notifications);
-    }
+        @GetMapping
+        public ResponseEntity<PageResponse<NotificationDTO>> getNotifications(
+                Authentication authentication,
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "5") int size,
+                @RequestParam(required = false) Boolean attended) {
+            
+            // Obtener el usuario actual
+            UserWeb currentUser = (UserWeb) authentication.getPrincipal();
+            Institution institution = currentUser.getInstitution();
+            
+            // Obtener las notificaciones con paginación y filtro
+            PageResponse<NotificationDTO> notifications = notificationService.getNotificationsByInstitution(
+                    institution.getId(),
+                    attended,
+                    page,
+                    size);
+                    
+            return ResponseEntity.ok(notifications);
+        }
 
     // Endpoint para actualizar el estado de una notificación
     //http://localhost:8080/api/v1/notifications/17?attended=false
@@ -80,3 +82,4 @@ public class NotificationController {
         return ResponseEntity.ok(response);
     }
 }
+
