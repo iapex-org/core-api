@@ -158,7 +158,7 @@ public class UserWebController {
         try {
             UserWeb userWeb = userWebService.findByEmail(email);
             if (userWeb != null) {
-                CompletableFuture<String> future = webEmailService.sendPasswordResetUserWebEmailAsync(userWeb);
+                CompletableFuture<String> future = webEmailService.sendPasswordResetEmailAsync(userWeb);
                 future.exceptionally(ex -> {
                     return null;
                 });
@@ -179,7 +179,7 @@ public class UserWebController {
         try {
             UserWeb userWeb = userWebService.findByEmail(email);
             if (userWeb != null) {
-                CompletableFuture<String> future = webEmailService.sendPasswordResetUserWebEmailAsync(userWeb);
+                CompletableFuture<String> future = webEmailService.sendPasswordResetEmailAsync(userWeb);
                 future.exceptionally(ex -> {
                     return null;
                 });

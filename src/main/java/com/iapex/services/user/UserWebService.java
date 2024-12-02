@@ -116,7 +116,7 @@ public class UserWebService {
         userWeb.setInstitution(institution);
 
         userWebRepository.save(userWeb);
-        CompletableFuture<String> emailFuture = webEmailService.sendVerificationUserWebEmailAsync(userWeb);
+        CompletableFuture<String> emailFuture = webEmailService.sendVerificationEmailAsync(userWeb);
         emailFuture.thenAccept(verificationCode -> {
         }).exceptionally(ex -> {
             return null;
@@ -149,7 +149,7 @@ public class UserWebService {
         }
         if (!userWeb.isConfirmed()) {
             throw new RuntimeException(
-                    "El usuario no está confirmado. Por favor, revise su correo electrónico para confirmar su cuenta.");
+                    "El usuario no está confirmado. Por favor, confirme su cuenta.");
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new RuntimeException("Debe proporcionar una contraseña");
