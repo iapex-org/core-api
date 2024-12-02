@@ -38,8 +38,7 @@ public class NotificationController {
         public ResponseEntity<PageResponse<NotificationDTO>> getNotifications(
                 Authentication authentication,
                 @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "5") int size,
-                @RequestParam(required = false) Boolean attended) {
+                @RequestParam(defaultValue = "5") int size) {
             
             // Obtener el usuario actual
             UserWeb currentUser = (UserWeb) authentication.getPrincipal();
@@ -48,7 +47,6 @@ public class NotificationController {
             // Obtener las notificaciones con paginación y filtro
             PageResponse<NotificationDTO> notifications = notificationService.getNotificationsByInstitution(
                     institution.getId(),
-                    attended,
                     page,
                     size);
                     
