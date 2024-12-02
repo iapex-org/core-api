@@ -82,11 +82,11 @@ public class UserMobileService {
      * AUTENTICA A UN USUARIO.
      * 
      * ESTE MÉTODO VERIFICA LAS CREDENCIALES DEL USUARIO Y GENERA UN TOKEN JWT SI LA AUTENTICACIÓN 
-     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ CONFIRMADO Y SI LA CONTRASEÑA ES CORRECTA.
+     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ AUTENTICADO Y SI LA CONTRASEÑA ES CORRECTA.
      * 
      * @param request LOS DATOS DE AUTENTICACIÓN DEL USUARIO.
      * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE ÉXITO.
-     * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
+     * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON INCORRECTOS, O SI EL USUARIO NO ESTÁ AUTENTICADO.
      */
     public AuthenticationResponse authenticate(UserMobileAuthenticationDTO request) {
     	UserMobile userMobile;
@@ -97,7 +97,7 @@ public class UserMobileService {
             throw new RuntimeException("Debe proporcionar correo electrónico");
         }
         if (!userMobile.isConfirmed()) {
-            throw new RuntimeException("El usuario no está confirmado. Por favor, revise su correo electrónico para confirmar su cuenta.");
+            throw new RuntimeException("El usuario no está autenticado. Por favor, revise su correo electrónico para confirmar su cuenta.");
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new RuntimeException("Debe proporcionar una contraseña");

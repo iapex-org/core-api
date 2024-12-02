@@ -12,6 +12,7 @@ import com.iapex.dtos.user.UserWebAuthenticationDTO;
 import com.iapex.dtos.user.UserWebDTO;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
+import com.iapex.exceptions.AuthenticateEmailException;
 import com.iapex.models.response.AuthenticationResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
@@ -144,6 +145,9 @@ public class UserWebController {
         try {
             AuthenticationResponse authResponse = userWebService.authenticateWeb(request);
             return ResponseEntity.ok(authResponse);
+            // Manejo de excepción personalizada con código 442
+        } catch (AuthenticateEmailException e) {
+            return ResponseEntity.status(442).body(new Response(e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(e.getMessage()));
         } catch (Exception e) {

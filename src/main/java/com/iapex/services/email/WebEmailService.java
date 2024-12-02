@@ -109,6 +109,7 @@ public class WebEmailService {
 
     public String sendVerificationEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
+        String verifyEmailUrl = "http://localhost:4200/auth/verify-email";
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -132,9 +133,10 @@ public class WebEmailService {
                     "        <img src=\"https://i.ibb.co/PcNxsy8/verify-email.png\" width=\"130px\" alt=\"Verificar e-mail\" style=\"margin-top: 20px;\">\n"
                     +
                     "        <h1 style=\"color: #333;\">Verifique su correo</h1>\n" +
-                    "        <p style=\"margin-bottom: 20px; line-height: 1.6; color: #555;\">Hola, "
-                    + userWeb.getUsername()
-                    + ". <br>Tu dirección de correo electrónico ha sido registrada en tu cuenta de Encuéntrame. Para continuar, ingrese el código de seis dígitos mostrado a continuación en la página de verificación de correo.</p>\n"
+                    "        <p style=\"margin-bottom: 20px; line-height: 1.6; color: #555;\">Hola, " + userWeb.getUsername()
+                    + ". <br>Tu dirección de correo electrónico ha sido registrada en tu cuenta de Encuéntrame. Para continuar, ingrese el código de seis dígitos mostrado a continuación en la página de verificación de correo:\n"
+                    + "<a href=\"" + verifyEmailUrl
+                    + "\" style=\"display: inline-block; margin: 10px auto; padding: 15px 30px; background-color: #1F89EA; color: #ffffff; font-size: 16px; text-decoration: none; border-radius: 10px;\">Verificar cuenta</a>\n"
                     +
                     "        <div style=\"text-align: center;\">\n" +
                     "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"

@@ -20,6 +20,7 @@ import com.iapex.dtos.user.UserWebDTO;
 import com.iapex.enums.RoleEnum;
 import com.iapex.exceptions.InstitutionNotFoundException;
 import com.iapex.exceptions.UserAlreadyExistsException;
+import com.iapex.exceptions.AuthenticateEmailException;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.response.AuthenticationResponse;
 import com.iapex.models.response.Response;
@@ -129,14 +130,14 @@ public class UserWebService {
      * 
      * ESTE MÉTODO VERIFICA LAS CREDENCIALES DEL USUARIO Y GENERA UN TOKEN JWT SI LA
      * AUTENTICACIÓN
-     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ CONFIRMADO Y SI LA CONTRASEÑA
+     * ES EXITOSA. TAMBIÉN REVISA SI EL USUARIO ESTÁ AUTENTICADO Y SI LA CONTRASEÑA
      * ES CORRECTA.
      * 
      * @param request LOS DATOS DE AUTENTICACIÓN DEL USUARIO.
      * @return UNA RESPUESTA DE AUTENTICACIÓN CON EL TOKEN JWT Y UN MENSAJE DE
      *         ÉXITO.
      * @throws RuntimeException SI EL CORREO ELECTRÓNICO O LA CONTRASEÑA SON
-     *                          INCORRECTOS, O SI EL USUARIO NO ESTÁ CONFIRMADO.
+     *                          INCORRECTOS, O SI EL USUARIO NO ESTÁ AUTENTICADO.
      */
     public AuthenticationResponse authenticateWeb(UserWebAuthenticationDTO request) {
         UserWeb userWeb;
@@ -148,8 +149,7 @@ public class UserWebService {
             throw new RuntimeException("Debe proporcionar correo electrónico");
         }
         if (!userWeb.isConfirmed()) {
-            throw new RuntimeException(
-                    "El usuario no está confirmado. Por favor, confirme su cuenta.");
+            throw new AuthenticateEmailException("El usuario no está autenticado. Por favor, autentique su cuenta.");
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new RuntimeException("Debe proporcionar una contraseña");
@@ -270,7 +270,7 @@ public class UserWebService {
     public Date calculateExpireDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 10);
+        calendar.add(Calendar.MINUTE, 1000);
         return calendar.getTime();
     }
 
