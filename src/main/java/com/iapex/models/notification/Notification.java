@@ -22,7 +22,7 @@ public class Notification {
     private String subject;
 
     // Cuerpo o mensaje de la notificación
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
 
     // Fecha y hora de envío de la notificación

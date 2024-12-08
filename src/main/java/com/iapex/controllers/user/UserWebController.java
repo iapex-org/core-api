@@ -84,17 +84,25 @@ public class UserWebController {
     @GetMapping("/confirm/resend")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
-            CompletableFuture<String> future = webEmailService.resendVerificationCode(email);
-            ResponseEntity<Response> response = ResponseEntity.accepted()
-                    .body(new Response("Se ha iniciado el proceso de reenvío del código de verificación"));
-            future.thenAccept(verificationCode -> {
-            }).exceptionally(ex -> {
-                return null;
-            });
-            return response;
+            System.out.println("Iniciando reenvío del código de verificación para: " + email);
+
+            // Intentar reenviar el código de verificación de manera sincrónica
+            try {
+                String verificationCode = webEmailService.resendVerificationCode(email).join(); // Bloquear hasta que
+                                                                                                // termine
+                System.out.println("Código reenviado exitosamente: " + verificationCode);
+                return ResponseEntity.ok()
+                        .body(new Response("El código de verificación ha sido reenviado exitosamente."));
+            } catch (Exception e) {
+                System.err.println("Error durante el reenvío del código de verificación: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new Response(
+                                "Ocurrió un error al intentar reenviar el código de verificación. Intente nuevamente más tarde."));
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new Response("Error al iniciar el proceso de reenvío: " + e.getMessage()));
+            System.err.println("Error interno en el servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
         }
     }
 
@@ -160,18 +168,32 @@ public class UserWebController {
     @PostMapping("/password-reset/request")
     public ResponseEntity<?> requestPasswordReset(@RequestParam String email) {
         try {
+            System.out.println("Iniciando solicitud de restablecimiento de contraseña para: " + email);
+
+            // Buscar el usuario por correo electrónico
             UserWeb userWeb = userWebService.findByEmail(email);
             if (userWeb != null) {
-                CompletableFuture<String> future = webEmailService.sendPasswordResetEmailAsync(userWeb);
-                future.exceptionally(ex -> {
-                    return null;
-                });
-                return ResponseEntity.accepted()
-                        .body(new Response(
-                                "Se ha iniciado el proceso de envío de instrucciones para restablecer la contraseña"));
+                System.out.println("Usuario encontrado: " + userWeb.getUsername());
+
+                // Enviar correo sin asincronismo para garantizar que el cliente reciba feedback
+                // sobre el resultado
+                try {
+                    webEmailService.sendPasswordResetEmailAsync(userWeb).join(); // Bloquear hasta que termine
+                    return ResponseEntity.ok()
+                            .body(new Response("Correo enviado exitosamente. Revise su bandeja de entrada."));
+                } catch (Exception e) {
+                    System.err.println("Error durante el envío de correo: " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new Response(
+                                    "Ocurrió un error al enviar el correo. Intente nuevamente o informe al administrador."));
+                }
             }
-            return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
+
+            System.out.println("Correo no encontrado: " + email);
+            return ResponseEntity.badRequest()
+                    .body(new Response("El correo no está registrado en la aplicación."));
         } catch (Exception e) {
+            System.err.println("Error interno en el servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
         }
@@ -181,18 +203,34 @@ public class UserWebController {
     @PostMapping("/password-reset/resend")
     public ResponseEntity<?> resendPasswordReset(@RequestParam String email) {
         try {
+            System.out.println("Iniciando reenvío de correo para restablecimiento de contraseña para: " + email);
+
+            // Buscar el usuario por correo electrónico
             UserWeb userWeb = userWebService.findByEmail(email);
             if (userWeb != null) {
-                CompletableFuture<String> future = webEmailService.sendPasswordResetEmailAsync(userWeb);
-                future.exceptionally(ex -> {
-                    return null;
-                });
-                return ResponseEntity.accepted()
-                        .body(new Response(
-                                "Se ha iniciado el proceso de envío de un nuevo correo con instrucciones para restablecer la contraseña."));
+                System.out.println("Usuario encontrado: " + userWeb.getUsername());
+
+                try {
+                    // Enviar el correo de manera sincrónica
+                    String verificationCode = webEmailService.sendPasswordResetEmailAsync(userWeb).join();
+                    System.out.println("Correo reenviado exitosamente. Código de verificación: " + verificationCode);
+
+                    return ResponseEntity.ok()
+                            .body(new Response(
+                                    "Se ha enviado exitosamente un nuevo correo con instrucciones para restablecer la contraseña. Revise su bandeja de entrada."));
+                } catch (Exception e) {
+                    System.err.println("Error durante el reenvío del correo de restablecimiento: " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new Response(
+                                    "Ocurrió un error al intentar reenviar el correo de restablecimiento. Intente nuevamente más tarde."));
+                }
             }
-            return ResponseEntity.badRequest().body(new Response("El correo no está registrado en la aplicación."));
+
+            System.out.println("Correo no registrado: " + email);
+            return ResponseEntity.badRequest()
+                    .body(new Response("El correo no está registrado en la aplicación."));
         } catch (Exception e) {
+            System.err.println("Error interno en el servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response("Error al procesar la solicitud: " + e.getMessage()));
         }
