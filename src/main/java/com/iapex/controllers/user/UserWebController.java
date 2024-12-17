@@ -19,10 +19,12 @@ import com.iapex.models.user.UserWeb;
 import com.iapex.services.email.WebEmailService;
 import com.iapex.services.user.UserWebService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
@@ -67,37 +69,50 @@ public class UserWebController {
         return ResponseEntity.ok(users);
     }
 
-    // Confirmar usuario
-    @GetMapping("/confirm")
-    public ResponseEntity<?> confirmUser(@RequestParam("code") String code) {
+    // Verificar el correo del usuario con el código de verificación
+    @GetMapping("/verify-email")
+    public void verifyEmail(@RequestParam("code") String code, HttpServletResponse response) {
         try {
             webEmailService.verifyUserWebWithCode(code);
-            return ResponseEntity.ok(new Response("Usuario verificado correctamente"));
+            // Redirigir al frontend indicando éxito
+            response.sendRedirect("http://localhost:4200/auth/email-verification?status=success");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Usuario no encontrado"));
+            try {
+                // Redirigir al frontend indicando fallo
+                response.sendRedirect(
+                        "http://localhost:4200/auth/email-verification?status=error&message=Usuario%20no%20encontrado");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new Response("Error al verificar el usuario: " + e.getMessage()));
+            try {
+                // Redirigir al frontend con el mensaje de error
+                response.sendRedirect(
+                        "http://localhost:4200/auth/email-verification?status=error&message=" + e.getMessage());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     // Solicitar correo con el código de verificación
-    @GetMapping("/confirm/resend")
-    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+    @GetMapping("/verify-email/request")
+    public ResponseEntity<?> requestVerifyEmail(@RequestParam String email) {
         try {
-            System.out.println("Iniciando reenvío del código de verificación para: " + email);
+            System.out.println("Iniciando envío del código de verificación para: " + email);
 
             // Intentar reenviar el código de verificación de manera sincrónica
             try {
                 String verificationCode = webEmailService.resendVerificationCode(email).join(); // Bloquear hasta que
                                                                                                 // termine
-                System.out.println("Código reenviado exitosamente: " + verificationCode);
+                System.out.println("Código enviado exitosamente: " + verificationCode);
                 return ResponseEntity.ok()
-                        .body(new Response("El código de verificación ha sido reenviado exitosamente."));
+                        .body(new Response("El código de verificación ha sido enviado exitosamente."));
             } catch (Exception e) {
-                System.err.println("Error durante el reenvío del código de verificación: " + e.getMessage());
+                System.err.println("Error durante el envío del código de verificación: " + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(new Response(
-                                "Ocurrió un error al intentar reenviar el código de verificación. Intente nuevamente más tarde."));
+                                "Ocurrió un error al intentar enviar el código de verificación. Intente nuevamente más tarde."));
             }
         } catch (Exception e) {
             System.err.println("Error interno en el servidor: " + e.getMessage());

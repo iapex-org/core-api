@@ -29,6 +29,17 @@ public class WebEmailService {
     @Autowired
     private UserWebRepository userWebRepository;
 
+    @Async("taskExecutor")
+    public CompletableFuture<String> sendPasswordResetEmailAsync(UserWeb userWeb) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendPasswordResetEmail(userWeb);
+            } catch (MessagingException e) {
+                throw new CompletionException(e);
+            }
+        });
+    }
+
     public String sendPasswordResetEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
         String resetPasswordUrl = "http://localhost:4200/auth/restore-password?code=" + verificationCode;
@@ -57,7 +68,7 @@ public class WebEmailService {
                     +
                     "        <h1 style=\"font-size: 24px; margin-bottom: 25px;\">Reestablezca su contraseña</h1>\n" +
                     "        <p style=\"margin-bottom: 20px; line-height: 1.6;\">Hola, " + userWeb.getUsername()
-                    + ".<br> Ha solicitado restablecer su contraseña. Haga clic en el siguiente enlace para continuar con el proceso:</p>\n"
+                    + ".<br>Su dirección de correo electrónico ha sido ingresada para solicitar restablecer su contraseña. Haga clic en el siguiente botón para continuar con el proceso:</p>\n"
                     +
                     "        <a href=\"" + resetPasswordUrl
                     + "\" style=\"display: inline-block; margin: 10px auto; padding: 15px 30px; background-color: #1F89EA; color: #ffffff; font-size: 16px; text-decoration: none; border-radius: 10px;\">Restablecer contraseña</a>\n"
@@ -109,7 +120,7 @@ public class WebEmailService {
 
     public String sendVerificationEmail(UserWeb userWeb) throws MessagingException {
         String verificationCode = generateVerificationCode();
-        String verifyEmailUrl = "http://localhost:4200/auth/verify-email";
+        String verifyEmailUrl = "http://localhost:8080/api/v1/users/web/verify-email?code=" + verificationCode;
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -119,6 +130,7 @@ public class WebEmailService {
                     "<html lang=\"es\">\n" +
                     "<head>\n" +
                     "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
                     "    <title>Verificación de correo</title>\n" +
                     "</head>\n" +
                     "<body style=\"margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f9f9f9;\">\n"
@@ -132,31 +144,15 @@ public class WebEmailService {
                     "        </div>\n" +
                     "        <img src=\"https://i.ibb.co/PcNxsy8/verify-email.png\" width=\"130px\" alt=\"Verificar e-mail\" style=\"margin-top: 20px;\">\n"
                     +
-                    "        <h1 style=\"color: #333;\">Verifique su correo</h1>\n" +
+                    "        <h1 style=\"color: #333;\">Verifique su correo electrónico</h1>\n" +
                     "        <p style=\"margin-bottom: 20px; line-height: 1.6; color: #555;\">Hola, " + userWeb.getUsername()
-                    + ". <br>Tu dirección de correo electrónico ha sido registrada en tu cuenta de Encuéntrame. Para continuar, ingrese el código de seis dígitos mostrado a continuación en la página de verificación de correo:\n"
-                    + "<a href=\"" + verifyEmailUrl
-                    + "\" style=\"display: inline-block; margin: 10px auto; padding: 15px 30px; background-color: #1F89EA; color: #ffffff; font-size: 16px; text-decoration: none; border-radius: 10px;\">Verificar cuenta</a>\n"
+                    + ". <br>Su dirección de correo electrónico ha sido registrada en una cuenta de Encuéntrame. Haga clic en el siguiente botón para continuar con el proceso:</p>\n"
                     +
-                    "        <div style=\"text-align: center;\">\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(0) + "</span>\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(1) + "</span>\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(2) + "</span>\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(3) + "</span>\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(4) + "</span>\n" +
-                    "            <span style=\"display: inline-block; margin: 0 5px; padding: 15px; font-size: 20px; color: #ffffff; border-radius: 5px; width: 40px; background-color: #1F89EA;\">"
-                    + verificationCode.charAt(5) + "</span>\n" +
-                    "        </div>\n" +
-                    "        <div style=\"border-bottom: 1px solid #dddddd; margin: 20px 0;\"></div>\n" +
-                    "        <div style=\"margin: 25px 0; font-size: 14px; color: #555555; text-align: center;\">\n" +
+                    "        <a href=\"" + verifyEmailUrl
+                    + "\" style=\"display: inline-block; margin: 10px auto; padding: 15px 30px; background-color: #1F89EA; color: #ffffff; font-size: 16px; text-decoration: none; border-radius: 10px;\">Verificar correo electrónico</a>\n"
+                    +
                     "            <p><b>Nota:</b> Si no reconoce este correo o no recuerda haberlo solicitado, ignore este mensaje.</p>\n"
                     +
-                    "        </div>\n" +
                     "        <div style=\"background-color: #dddddd; padding: 10px 20px; margin-top: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; color: #525252; text-align: center;\">\n"
                     +
                     "            <p>Atentamente, el equipo de Encuéntrame. Todos los derechos reservados | © 2024</p>\n"
@@ -186,17 +182,6 @@ public class WebEmailService {
         } catch (MessagingException | MailSendException e) {
             throw new MessagingException("Error al enviar el correo electrónico de verificación: " + e.getMessage());
         }
-    }
-
-    @Async("taskExecutor")
-    public CompletableFuture<String> sendPasswordResetEmailAsync(UserWeb userWeb) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return sendPasswordResetEmail(userWeb);
-            } catch (MessagingException e) {
-                throw new CompletionException(e);
-            }
-        });
     }
 
     // OBTENER EL CORREO ELECTRÓNICO ASOCIADO CON UN CÓDIGO DE VERIFICACIÓN
