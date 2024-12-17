@@ -75,12 +75,12 @@ public class UserWebController {
         try {
             webEmailService.verifyUserWebWithCode(code);
             // Redirigir al frontend indicando éxito
-            response.sendRedirect("http://localhost:4200/auth/email-verification?status=success");
+            response.sendRedirect("http://localhost:4200/auth/email-verified?status=success");
         } catch (EntityNotFoundException e) {
             try {
                 // Redirigir al frontend indicando fallo
                 response.sendRedirect(
-                        "http://localhost:4200/auth/email-verification?status=error&message=Usuario%20no%20encontrado");
+                        "http://localhost:4200/auth/email-verified?status=error&message=Usuario%20no%20encontrado");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -88,7 +88,7 @@ public class UserWebController {
             try {
                 // Redirigir al frontend con el mensaje de error
                 response.sendRedirect(
-                        "http://localhost:4200/auth/email-verification?status=error&message=" + e.getMessage());
+                        "http://localhost:4200/auth/email-verified?status=error&message=" + e.getMessage());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
