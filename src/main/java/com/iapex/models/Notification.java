@@ -1,7 +1,6 @@
-package com.iapex.models.notification;
+package com.iapex.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iapex.models.ContactRequest;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.user.UserWeb;
 
@@ -32,14 +31,10 @@ public class Notification {
     // Fecha y hora en que se atendió la notificación
     private LocalDateTime attendDateTime;
 
-    // Estado de atención de la notificación
-    @Column(nullable = false)
-    private boolean attended;
-
     // Usuario que atendió la notificación
     @ManyToOne
-    @JoinColumn(name = "id_attended_by")
-    private UserWeb attendedBy;
+    @JoinColumn(name = "attending_user_id")
+    private UserWeb attendingUser;
 
     // Relación con una solicitud de contacto
     @JsonIgnore
@@ -59,14 +54,13 @@ public class Notification {
 
     // Constructor con argumentos
     public Notification(ContactRequest contactRequest, String subject, String body, LocalDateTime sendDate,
-                        Institution institution, boolean attended, UserWeb attendedBy, LocalDateTime attendDateTime) {
+                        Institution institution, UserWeb attendingUser, LocalDateTime attendDateTime) {
         this.contactRequest = contactRequest;
         this.subject = subject;
         this.body = body;
         this.sendDate = sendDate;
         this.institution = institution;
-        this.attended = attended;
-        this.attendedBy = attendedBy;
+        this.attendingUser = attendingUser;
         this.attendDateTime = attendDateTime;
     }
 
@@ -111,20 +105,12 @@ public class Notification {
         this.attendDateTime = attendDateTime;
     }
 
-    public boolean isAttended() {
-        return attended;
+    public UserWeb getAttendingUser() {
+        return attendingUser;
     }
 
-    public void setAttended(boolean attended) {
-        this.attended = attended;
-    }
-
-    public UserWeb getAttendedBy() {
-        return attendedBy;
-    }
-
-    public void setAttendedBy(UserWeb attendedBy) {
-        this.attendedBy = attendedBy;
+    public void setAttendingUser(UserWeb attendingUser) {
+        this.attendingUser = attendingUser;
     }
 
     public ContactRequest getContactRequest() {

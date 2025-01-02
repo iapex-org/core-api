@@ -21,7 +21,7 @@ import com.iapex.models.patient.Image;
 import com.iapex.models.patient.Patient;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
-import com.iapex.repositories.ContactRequestRepository;
+import com.iapex.repositories.contactRequest.ContactRequestRepository;
 import com.iapex.repositories.PatientRepository;
 import com.iapex.repositories.user.UserWebRepository;
 import com.iapex.services.files.StorageService;

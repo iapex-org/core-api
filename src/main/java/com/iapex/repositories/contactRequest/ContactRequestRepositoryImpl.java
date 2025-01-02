@@ -1,8 +1,7 @@
-package com.iapex.repositories;
+package com.iapex.repositories.contactRequest;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,6 @@ public class ContactRequestRepositoryImpl {
     
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public ContactRequestRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

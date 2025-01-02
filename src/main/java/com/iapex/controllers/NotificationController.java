@@ -15,7 +15,8 @@ import com.iapex.models.institution.Institution;
 import com.iapex.models.response.PageResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
-import com.iapex.services.notification.NotificationService;
+import com.iapex.services.NotificationService;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -58,9 +59,8 @@ public class NotificationController {
     //http://localhost:8080/api/v1/notifications/17?attended=true
     @PatchMapping("/{id}")
     public ResponseEntity<Response> updateNotificationStatus(
-            @PathVariable Long id,
-            @RequestParam boolean attended) {
-        Response response = notificationService.updateNotificationById(id, attended);
+            @PathVariable Long id) {
+        Response response = notificationService.updateNotificationById(id);
         return ResponseEntity.ok(response);
     }
 

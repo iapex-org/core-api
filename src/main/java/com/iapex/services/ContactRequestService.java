@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -18,14 +19,15 @@ import com.iapex.dtos.contactRequest.ContactRequestDTO;
 import com.iapex.dtos.contactRequest.UpdateContactRequestDTO;
 import com.iapex.enums.ContactRequestStatusEnum;
 import com.iapex.models.ContactRequest;
+import com.iapex.models.Notification;
 import com.iapex.models.institution.Institution;
 import com.iapex.models.patient.Patient;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
-import com.iapex.repositories.ContactRequestRepository;
-import com.iapex.repositories.ContactRequestRepositoryImpl;
+import com.iapex.repositories.NotificationRepository;
 import com.iapex.repositories.PatientRepository;
-import com.iapex.services.notification.NotificationService;
+import com.iapex.repositories.contactRequest.ContactRequestRepository;
+import com.iapex.repositories.contactRequest.ContactRequestRepositoryImpl;
 
 @Service
 public class ContactRequestService {
@@ -38,6 +40,9 @@ public class ContactRequestService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private ContactRequestRepositoryImpl contactRequestRepositoryImpl;
@@ -187,6 +192,22 @@ public class ContactRequestService {
 
                 contactRequest.setAttendingUser(currentUser);
                 userUpdated = true;
+            }
+
+            // Buscar la notificación asociada
+            Optional<Notification> notificationOptional = notificationRepository
+                    .findByContactRequestId(contactRequest.getId());
+            if (notificationOptional.isPresent()) {
+                Notification notification = notificationOptional.get();
+
+                // Si la notificación no ha sido atendida, actualizarla
+                if (notification.getAttendingUser() == null) {
+                    notification.setAttendDateTime(LocalDateTime.now());
+                    notification.setAttendingUser(currentUser);
+
+                    // Guardar los cambios en la notificación
+                    notificationRepository.save(notification);
+                }
             }
 
             // Guardar la solicitud de contacto con los cambios realizados

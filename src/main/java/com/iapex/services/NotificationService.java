@@ -1,20 +1,21 @@
-package com.iapex.services.notification;
+package com.iapex.services;
 
-import org.springframework.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.iapex.dtos.notification.NotificationDTO;
+import com.iapex.enums.ContactRequestStatusEnum;
 import com.iapex.models.ContactRequest;
+import com.iapex.models.Notification;
 import com.iapex.models.institution.Institution;
-import com.iapex.models.notification.Notification;
 import com.iapex.models.patient.Patient;
 import com.iapex.models.response.PageResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
-import com.iapex.repositories.notification.NotificationRepository;
+import com.iapex.repositories.contactRequest.ContactRequestRepository;
+import com.iapex.repositories.NotificationRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -30,6 +31,9 @@ public class NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private ContactRequestRepository contactRequestRepository;
 
     // Crear una notificación
     public void createNotification(ContactRequest contactRequest, Institution institution) {
@@ -82,11 +86,10 @@ public class NotificationService {
                         + ". El interesado es " + contactRequest.getInterestedPersonName()
                         + ", " + contactInfo
                         + ". La solicitud fue recibida el " + formattedRequestDate
-                        + " y está actualmente en estado \"Nueva\". Por favor, revise y gestione esta solicitud a la mayor brevedad posible.");
+                        + ". Por favor, revise y gestione esta solicitud a la mayor brevedad posible.");
 
         notification.setSubject("Nueva solicitud de contacto para el paciente " + patientIdentifier);
         notification.setSendDate(LocalDateTime.now());
-        notification.setAttended(false);
 
         // Guardar la notificación
         notificationRepository.save(notification);
@@ -107,53 +110,60 @@ public class NotificationService {
                 notification.getBody(),
                 notification.getSendDate(),
                 notification.getAttendDateTime(),
-                notification.isAttended(),
-                notification.getAttendedBy() != null
+                notification.getAttendingUser() != null
                         ? String.format("%s %s %s",
-                                notification.getAttendedBy().getName(),
-                                notification.getAttendedBy().getLastName(),
-                                notification.getAttendedBy().getSecondLastName())
+                                notification.getAttendingUser().getName(),
+                                notification.getAttendingUser().getLastName(),
+                                notification.getAttendingUser().getSecondLastName())
                         : null));
 
         return new PageResponse<>(notificationDTOs);
     }
 
     @Transactional
-    public Response updateNotificationById(Long id, boolean attended) {
-        // Get authenticated user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserWeb)) {
-            throw new IllegalStateException("No se pudo obtener el usuario autenticado.");
-        }
-        UserWeb currentUser = (UserWeb) authentication.getPrincipal();
-        System.out.println("Current user: " + currentUser.getId() + " - " + currentUser.getName()); // Debug log
+    public Response updateNotificationById(Long id) {
+        try {
+            // Obtener el usuario autenticado
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof UserWeb)) {
+                throw new IllegalStateException("No se pudo obtener el usuario autenticado.");
+            }
+            UserWeb currentUser = (UserWeb) authentication.getPrincipal();
+            System.out.println("Usuario actual: " + currentUser.getId() + " - " + currentUser.getName()); // Debug log
 
-        // Find notification
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notificación no encontrada con el ID: " + id));
+            // Buscar la notificación por ID
+            Notification notification = notificationRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Notificación no encontrada con el ID: " + id));
 
-        // Update notification
-        notification.setAttended(attended);
-        if (attended) {
+            // Marcar la notificación como atendida
             LocalDateTime now = LocalDateTime.now();
             notification.setAttendDateTime(now);
-            notification.setAttendedBy(currentUser);
+            notification.setAttendingUser(currentUser);
 
-            // Debug logs
-            System.out.println("Setting attendDateTime: " + now);
-            System.out.println("Setting attendedBy: " + currentUser.getId());
-        } else {
-            notification.setAttendDateTime(null);
-            notification.setAttendedBy(null);
+            // Verificar si hay una solicitud de contacto asociada
+            if (notification.getContactRequest() != null) {
+                ContactRequest contactRequest = notification.getContactRequest();
+
+                // Si la solicitud no está en estado EN_REVISION, actualizarla
+                if (ContactRequestStatusEnum.NUEVA.name().equals(contactRequest.getStatus())) {
+                    contactRequest.setStatus(ContactRequestStatusEnum.EN_REVISION.name());
+                    contactRequest.setAttendingUser(currentUser);
+                    contactRequestRepository.save(contactRequest); // Guardar cambios en la solicitud
+                    System.out.println("Solicitud de contacto actualizada a EN_REVISION: " + contactRequest.getId()); // Debug
+                                                                                                                      // log
+                }
+            }
+
+            // Guardar la notificación actualizada
+            notificationRepository.save(notification);
+            System.out.println("Notificación actualizada: " + notification.getId()); // Debug log
+
+            return new Response("El estado de la notificación ha sido actualizado correctamente.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Response("Error al actualizar la notificación: " + e.getMessage());
         }
-
-        // Save and verify
-        Notification savedNotification = notificationRepository.save(notification);
-        System.out.println("Saved notification - attendedBy: " +
-                (savedNotification.getAttendedBy() != null ? savedNotification.getAttendedBy().getId() : "null") +
-                ", attendDateTime: " + savedNotification.getAttendDateTime());
-
-        return new Response("El estado de la notificación ha sido actualizado correctamente.");
     }
 
     // Obtener una notificación por ID
@@ -168,12 +178,11 @@ public class NotificationService {
                 notification.getBody(),
                 notification.getSendDate(),
                 notification.getAttendDateTime(),
-                notification.isAttended(),
-                notification.getAttendedBy() != null
+                notification.getAttendingUser() != null
                         ? String.format("%s %s %s",
-                                notification.getAttendedBy().getName(),
-                                notification.getAttendedBy().getLastName(),
-                                notification.getAttendedBy().getSecondLastName())
+                                notification.getAttendingUser().getName(),
+                                notification.getAttendingUser().getLastName(),
+                                notification.getAttendingUser().getSecondLastName())
                         : null);
     }
 

@@ -1,4 +1,4 @@
-package com.iapex.repositories;
+package com.iapex.repositories.contactRequest;
 
 import java.util.List;
 

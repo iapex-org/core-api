@@ -10,22 +10,20 @@ public class NotificationDTO {
     private String body;
     private LocalDateTime sendDate;
     private LocalDateTime attendDateTime;
-    private boolean attended;
-    private String attendedBy;
+    private String attendingUser;
 
     // Constructor
     // Constructor actualizado
     public NotificationDTO(Long id, Long contactRequestId, String subject, String body,
             LocalDateTime sendDate, LocalDateTime attendDateTime,
-            boolean attended, String attendedBy) {
+            String attendingUser) {
         this.id = id;
         this.contactRequestId = contactRequestId;
         this.subject = subject;
         this.body = body;
         this.sendDate = sendDate;
         this.attendDateTime = attendDateTime;
-        this.attended = attended;
-        this.attendedBy = attendedBy;
+        this.attendingUser = attendingUser;
     }
 
     // Getters
@@ -53,12 +51,8 @@ public class NotificationDTO {
         return attendDateTime;
     }
 
-    public boolean isAttended() {
-        return attended;
-    }
-
-    public String getAttendedBy() {
-        return attendedBy;
+    public String getAttendingUser() {
+        return attendingUser;
     }
 
     // Setters
@@ -85,13 +79,7 @@ public class NotificationDTO {
     public void setAttendDateTime(LocalDateTime attendDateTime) {
         this.attendDateTime = attendDateTime;
     }
-
-    public void setAttended(boolean attended) {
-        this.attended = attended;
-    }
-
-    public void setAttendedBy(String attendedBy) {
-        this.attendedBy = attendedBy;
+    public void setAttendingUser(String attendingUser) {
+        this.attendingUser = attendingUser;
     }
 }
-
