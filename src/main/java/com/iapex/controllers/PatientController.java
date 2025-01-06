@@ -1,5 +1,6 @@
 package com.iapex.controllers;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -83,6 +85,33 @@ public class PatientController {
         }
     }
 
+    @GetMapping("/images/temp/{token}")
+    public ResponseEntity<?> getTemporaryImagesByToken(@PathVariable String token) {
+        try {
+            // Buscar todas las imágenes asociadas al token (tienen el mismo nombre de
+            // archivo)
+            List<String> filenames = storageService.findFilesByToken(token);
+
+            if (filenames.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new Response("No se encontraron imágenes asociadas al token."));
+            }
+
+            // Construir la lista de URLs de las imágenes
+            List<String> imageUrls = filenames.stream()
+                    .map(filename -> ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/api/v1/patients/images/")
+                            .path(filename)
+                            .toUriString())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(imageUrls);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al obtener las imágenes temporales."));
+        }
+    }
+
     // Pensado para ser usado en la app movil, ya que solo se deben mostrar los
     // pacientes no encontrados (aún activos)
     // Obtener todos los pacientes activos
@@ -126,6 +155,21 @@ public class PatientController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/upload-images-url")
+    public ResponseEntity<?> getUploadImagesUrl() {
+        try {
+            // Generar un token único para la sesión de carga de imágenes
+            String token = UUID.randomUUID().toString();
+            String url = "http://localhost:4200/upload-images?token=" + token;
+
+            // Retornar la URL con el token temporal
+            return ResponseEntity.ok(new Response(url));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al generar la URL."));
         }
     }
 
@@ -205,6 +249,61 @@ public class PatientController {
         }
     }
 
+    @PostMapping("/upload-temp-images")
+    public ResponseEntity<?> uploadTemporaryImages(
+            @RequestParam("token") String token,
+            @RequestParam("images") List<MultipartFile> imageFiles) {
+        try {
+            // Validar el token
+            if (token == null || token.isEmpty()) {
+                return ResponseEntity.badRequest().body(new Response("Token inválido."));
+            }
+
+            // Validar que las imágenes no estén vacías
+            if (imageFiles == null || imageFiles.isEmpty()) {
+                return ResponseEntity.badRequest().body(new Response("Debe adjuntar al menos una imagen."));
+            }
+
+            List<Image> images = new ArrayList<>();
+
+            // Procesar y almacenar las imágenes
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    // Obtener el nombre original del archivo y su extensión
+                    String originalFilename = imageFile.getOriginalFilename();
+
+                    // Crear el nuevo nombre del archivo con el token al principio
+                    String newFilename = token + "-" + originalFilename;
+
+                    // Usar el método saveFile pero pasándole el nuevo nombre ya modificado
+                    String storedFilename = storageService.saveFile(imageFile, newFilename);
+
+                    // Crear la URL de acceso
+                    String host = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+                    String imageUrl = ServletUriComponentsBuilder
+                            .fromHttpUrl(host)
+                            .path("/api/v1/patients/images/")
+                            .path(storedFilename)
+                            .toUriString();
+
+                    // Guardar la imagen en la base de datos
+                    Image image = new Image();
+                    image.setImage(storedFilename); // Ruta con el token como prefijo en el nombre
+                    image.setImageUrl(imageUrl);
+                    images.add(image);
+
+                    // Opcional: Guardar en la base de datos
+                    // imageRepository.save(image);
+                }
+            }
+
+            return ResponseEntity.ok(images);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Error al subir las imágenes."));
+        }
+    }
+
     // Actualizar un paciente
     @PreAuthorize("hasAuthority('USER_WEB')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -278,7 +377,7 @@ public class PatientController {
                     .body(new Response("Ha ocurrido un error al actualizar el paciente: " + e.getMessage()));
         }
     }
-    
+
     @PreAuthorize("hasAuthority('USER_WEB') or hasAuthority('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {

@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.net.MalformedURLException;
 
 @Service
@@ -30,7 +33,19 @@ public class FileSystemStorageService implements StorageService {
         rootLocation = Paths.get(mediaLocation);
         Files.createDirectories(rootLocation);
     }
-    
+
+    @Override
+    public List<String> findFilesByToken(String token) throws IOException {
+        try (Stream<Path> fileStream = Files.walk(rootLocation)) {
+            return fileStream
+                    .filter(Files::isRegularFile) // Solo archivos
+                    .filter(file -> file.getFileName().toString().startsWith(token)) // Filtrar archivos por token
+                                                                                     // (inicio del nombre)
+                    .map(rootLocation::relativize) // Obtener rutas relativas
+                    .map(Path::toString) // Convertir a cadena
+                    .collect(Collectors.toList()); // Colectar en una lista
+        }
+    }
 
     // GUARDA UN ARCHIVO EN EL SISTEMA DE ARCHIVOS CON EL NOMBRE ESPECIFICADO
     @Override
@@ -40,8 +55,8 @@ public class FileSystemStorageService implements StorageService {
                 throw new RuntimeException("No se puede almacenar un archivo vacío.");
             }
             Path destinationFile = rootLocation.resolve(Paths.get(filename))
-                                               .normalize()
-                                               .toAbsolutePath();
+                    .normalize()
+                    .toAbsolutePath();
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -50,7 +65,6 @@ public class FileSystemStorageService implements StorageService {
             throw new RuntimeException("No se pudo almacenar el archivo.", e);
         }
     }
-
 
     // CARGA UN ARCHIVO COMO UN RECURSO DESDE EL SISTEMA DE ARCHIVOS
     @Override
@@ -67,7 +81,6 @@ public class FileSystemStorageService implements StorageService {
             throw new RuntimeException("No se pudo leer el archivo: " + filename, e);
         }
     }
-
 
     // ELIMINA UN ARCHIVO DEL SISTEMA DE ARCHIVOS
     @Override
@@ -91,29 +104,24 @@ public class FileSystemStorageService implements StorageService {
             newFilename = baseName + "(" + index + ")." + extension;
             index++;
         }
-        return newFilename; }
+        return newFilename;
+    }
 
-    // VERIFICA SI UN ARCHIVO CON EL NOMBRE ESPECIFICADO EXISTE EN EL SISTEMA DE ARCHIVOS
+    // VERIFICA SI UN ARCHIVO CON EL NOMBRE ESPECIFICADO EXISTE EN EL SISTEMA DE
+    // ARCHIVOS
     private boolean fileExists(String filename) {
         Path file = rootLocation.resolve(filename).normalize().toAbsolutePath();
         return Files.exists(file);
     }
-    
-    
-    // GUARDA UNA IMAGEN EN EL DIRECTORIO ESPECIFICADO Y DEVUELVE EL NOMBRE DEL ARCHIVO GUARDADO
+
+    // GUARDA UNA IMAGEN EN EL DIRECTORIO ESPECIFICADO Y DEVUELVE EL NOMBRE DEL
+    // ARCHIVO GUARDADO
     public String saveImage(MultipartFile file) throws Exception {
-    	String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/";
-    	byte[] bytes = file.getBytes();
-    	Path path = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
-    	Files.write(path, bytes);
+        String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+        byte[] bytes = file.getBytes();
+        Path path = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
+        Files.write(path, bytes);
         // DEVOLVER EL NOMBRE DEL ARCHIVO:
         return file.getOriginalFilename();
     }
 }
-
-
-
-
-
-
-
