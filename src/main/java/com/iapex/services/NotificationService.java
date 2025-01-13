@@ -15,6 +15,7 @@ import com.iapex.models.response.PageResponse;
 import com.iapex.models.response.Response;
 import com.iapex.models.user.UserWeb;
 import com.iapex.repositories.contactRequest.ContactRequestRepository;
+import com.iapex.services.email.WebEmailService;
 import com.iapex.repositories.NotificationRepository;
 
 import jakarta.transaction.Transactional;
@@ -34,6 +35,9 @@ public class NotificationService {
 
     @Autowired
     private ContactRequestRepository contactRequestRepository;
+
+    @Autowired
+    private WebEmailService webEmailService;
 
     // Crear una notificación
     public void createNotification(ContactRequest contactRequest, Institution institution) {
@@ -144,13 +148,12 @@ public class NotificationService {
             if (notification.getContactRequest() != null) {
                 ContactRequest contactRequest = notification.getContactRequest();
 
-                // Si la solicitud no está en estado EN_REVISION, actualizarla
-                if (ContactRequestStatusEnum.NUEVA.name().equals(contactRequest.getStatus())) {
+            // Si la solicitud está en estado "NUEVA", cambiar el estado a "EN_REVISION" y enviar el correo
+            if (ContactRequestStatusEnum.NUEVA.name().equals(contactRequest.getStatus())) {
                     contactRequest.setStatus(ContactRequestStatusEnum.EN_REVISION.name());
                     contactRequest.setAttendingUser(currentUser);
                     contactRequestRepository.save(contactRequest); // Guardar cambios en la solicitud
-                    System.out.println("Solicitud de contacto actualizada a EN_REVISION: " + contactRequest.getId()); // Debug
-                                                                                                                      // log
+                    webEmailService.sendContactRequestStatusUpdateEmail(contactRequest); // Enviar correo de notificación si el estado es "NUEVA"
                 }
             }
 

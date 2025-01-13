@@ -28,6 +28,8 @@ import com.iapex.repositories.NotificationRepository;
 import com.iapex.repositories.PatientRepository;
 import com.iapex.repositories.contactRequest.ContactRequestRepository;
 import com.iapex.repositories.contactRequest.ContactRequestRepositoryImpl;
+import com.iapex.repositories.user.UserWebRepository;
+import com.iapex.services.email.WebEmailService;
 
 @Service
 public class ContactRequestService {
@@ -42,7 +44,13 @@ public class ContactRequestService {
     private NotificationService notificationService;
 
     @Autowired
+    private WebEmailService webEmailService;
+
+    @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserWebRepository userWebRepository;
 
     @Autowired
     private ContactRequestRepositoryImpl contactRequestRepositoryImpl;
@@ -133,6 +141,13 @@ public class ContactRequestService {
         // Crear la notificación
         notificationService.createNotification(contactRequest, institution);
 
+        // Enviar correos electrónicos a los usuarios de la institución
+        List<UserWeb> users = userWebRepository.findByInstitution(institution);
+        webEmailService.sendEmailsToWebUsers(contactRequest, users);
+
+        // Enviar correo electrónico al usuario que creó la solicitud
+        webEmailService.sendContactRequestAcknowledgementEmail(contactRequest);
+
         return new Response("Solicitud de contacto enviada exitosamente");
     }
 
@@ -166,9 +181,9 @@ public class ContactRequestService {
             if (request.getStatus() != null && !request.getStatus().trim().isEmpty()) {
                 ContactRequestStatusEnum newStatus;
                 try {
-                    newStatus = ContactRequestStatusEnum.valueOf(request.getStatus().toUpperCase().replace(" ", "_"));
+                    newStatus = ContactRequestStatusEnum.valueOf(request.getStatus());
                 } catch (IllegalArgumentException e) {
-                    return new Response("Error: El estado proporcionado no es válido");
+                    return new Response("El estado proporcionado no es válido");
                 }
 
                 // Actualizar solo si el nuevo estado es diferente al actual
@@ -179,6 +194,14 @@ public class ContactRequestService {
                     // Actualizar automáticamente el usuario atendiendo
                     contactRequest.setAttendingUser(currentUser);
                     userUpdated = true;
+
+                    System.out.println("Estado recibido: " + request.getStatus());
+
+                    // Verificar si el estado es "Nuevo" antes de enviar el correo
+                    if (newStatus.name().equals(ContactRequestStatusEnum.EN_REVISION.name())) {
+                        webEmailService.sendContactRequestStatusUpdateEmail(contactRequest);
+                        System.out.println("Correo enviado al usuario: " + contactRequest.getInterestedPersonName());
+                    }
                 }
             }
 
@@ -187,7 +210,7 @@ public class ContactRequestService {
             if (!userUpdated && request.getAttendingUser() != null && !request.getAttendingUser().trim().isEmpty()) {
                 // Verificar si el usuario tiene permiso para cambiar el usuario atendiendo
                 if (!currentUser.getUsername().equals(request.getAttendingUser())) {
-                    return new Response("Error: No tienes permiso para cambiar el usuario asociado a esta solicitud");
+                    return new Response("No tienes permiso para cambiar el usuario asociado a esta solicitud");
                 }
 
                 contactRequest.setAttendingUser(currentUser);
