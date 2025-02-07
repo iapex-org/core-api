@@ -1,13 +1,17 @@
 package com.iapex.dtos.user;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class UserWebAuthenticationDTO {
 
-    @NotNull(message = "El email es obligatorio")
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "El formato del email no es válido")
     private String email;
 
-    @NotNull(message = "La contraseña es obligatoria")
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 8, max = 16, message = "La contraseña debe tener entre 8 y 16 caracteres")
     private String password;
 
     // Getters and setters
@@ -26,5 +30,4 @@ public class UserWebAuthenticationDTO {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

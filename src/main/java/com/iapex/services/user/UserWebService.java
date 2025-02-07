@@ -92,38 +92,38 @@ public class UserWebService {
      * @throws Exception SI YA EXISTE UN USUARIO CON EL CORREO ELECTRÓNICO
      *                   PROPORCIONADO.
      */
-    public Response registerUser(UserWebDTO request) throws Exception {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            throw new IllegalArgumentException("Por favor ingresa un correo electrónico.");
+    public Response registerUser(UserWebDTO request) {
+        if (request.getEmail() == null || !request.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Debe proporcionar un correo válido.");
         }
-
+    
+        if (request.getPassword() == null || request.getPassword().length() < 6) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres.");
+        }
+    
         if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
+            throw new UserAlreadyExistsException("El correo ya está registrado.");
         }
-
+    
         UserWeb userWeb = new UserWeb();
         userWeb.setName(request.getName());
         userWeb.setEmail(request.getEmail());
         userWeb.setLastName(request.getLastName());
         userWeb.setSecondLastName(request.getSecondLastName());
-        userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
+        userWeb.setPassword(passwordEncoder.encode(request.getPassword())); // Contraseña segura
         userWeb.setPosition(request.getPosition());
         userWeb.setRole(request.getRole() != null ? request.getRole() : RoleEnum.USER_WEB);
         userWeb.setAccountVerified(false);
-
-        // Buscar la institución por su nombre
+    
         Institution institution = institutionRepository.findByName(request.getInstitution())
                 .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
         userWeb.setInstitution(institution);
-
+    
         userWebRepository.save(userWeb);
-        CompletableFuture<String> emailFuture = webEmailService.sendVerificationEmailAsync(userWeb);
-        emailFuture.thenAccept(verificationCode -> {
-        }).exceptionally(ex -> {
-            return null;
-        });
-        return new Response("Su registro fue exitoso. Por favor, verifica tu correo electrónico.");
-    }
+        CompletableFuture.runAsync(() -> webEmailService.sendVerificationEmailAsync(userWeb));
+    
+        return new Response("Registro exitoso. Verifique su correo.");
+    }    
 
     /**
      * AUTENTICA A UN USUARIO.
@@ -140,34 +140,29 @@ public class UserWebService {
      *                          INCORRECTOS, O SI EL USUARIO NO ESTÁ AUTENTICADO.
      */
     public AuthenticationResponse authenticateWeb(UserWebAuthenticationDTO request) {
-        UserWeb userWeb;
-        if (request.getEmail() != null) {
-            userWeb = userWebRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Correo electrónico no encontrado. Por favor, verifica que tu correo esté registrado correctamente en la aplicación."));
-        } else {
-            throw new RuntimeException("Debe proporcionar correo electrónico");
+        if (request.getEmail() == null || request.getPassword() == null || request.getPassword().isEmpty()) {
+            throw new BadCredentialsException("Debe proporcionar un correo y una contraseña válidos.");
         }
+    
+        UserWeb userWeb = userWebRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Correo electrónico no encontrado."));
+    
         if (!userWeb.isConfirmed()) {
-            throw new AuthenticateEmailException("El usuario no está autenticado. Por favor, autentique su cuenta.");
+            throw new AuthenticateEmailException("Debe verificar su cuenta antes de iniciar sesión.");
         }
-        if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw new RuntimeException("Debe proporcionar una contraseña");
-        }
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            userWeb.getEmail(),
-                            request.getPassword()));
-        } catch (BadCredentialsException e) {
-            throw new RuntimeException("Contraseña incorrecta");
-        }
+    
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+    
         String token = jwtService.generateTokenUserWeb(userWeb);
         Collection<? extends GrantedAuthority> authorities = userWeb.getAuthorities();
+    
         revokeAllTokenByUserWeb(userWeb);
         saveUserTokenWeb(token, userWeb);
+    
         return new AuthenticationResponse(token, "Inicio de sesión exitoso", authorities);
     }
+    
 
     /**
      * OBTIENE TODOS LOS USUARIOS INSTITUCIONALES.
@@ -203,7 +198,6 @@ public class UserWebService {
         dto.setLastName(userWeb.getLastName());
         dto.setSecondLastName(userWeb.getSecondLastName());
         dto.setEmail(userWeb.getEmail());
-        dto.setPassword(userWeb.getPassword()); // Nota: normalmente no se devuelve la contraseña
         dto.setPosition(userWeb.getPosition());
         dto.setInstitution(userWeb.getInstitution().getName());
         dto.setRole(userWeb.getRole());
@@ -223,16 +217,11 @@ public class UserWebService {
      */
     private void revokeAllTokenByUserWeb(UserWeb userWeb) {
         List<TokenWeb> validTokens = tokenWebRepository.findAllTokensByUser(userWeb.getId());
-        if (validTokens.isEmpty()) {
-            return;
+        if (!validTokens.isEmpty()) {
+            tokenWebRepository.deleteAll(validTokens); // Eliminar tokens en lugar de solo marcarlos como cerrados
         }
-
-        validTokens.forEach(token -> {
-            token.setLoggedOut(true);
-        });
-
-        tokenWebRepository.saveAll(validTokens);
     }
+    
 
     /**
      * GUARDA EL TOKEN DE USUARIO EN LA BASE DE DATOS.
@@ -270,7 +259,7 @@ public class UserWebService {
     public Date calculateExpireDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 1000);
+        calendar.add(Calendar.MINUTE, 1000000);
         return calendar.getTime();
     }
 
@@ -341,49 +330,31 @@ public class UserWebService {
     // ACTUALIZAR UN USUARIO POR SU ID.
     public Response updateUserWeb(Long id, UserWebDTO request) throws Exception {
         UserWeb userWeb = getUserWebById(id);
-        boolean emailChanged = false; // Verificar si el email está cambiando
-        if (!Objects.equals(userWeb.getEmail(), request.getEmail())) {
-            if (userWebRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new UserAlreadyExistsException("Ya existe un usuario registrado con este correo electrónico.");
-            }
-            emailChanged = true;
+    
+        if (!Objects.equals(userWeb.getEmail(), request.getEmail()) && userWebRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("Correo ya registrado.");
         }
-
-        // Actualizar campos
-        if (!Objects.equals(userWeb.getName(), request.getName()))
-            userWeb.setName(request.getName());
-        if (emailChanged)
-            userWeb.setEmail(request.getEmail());
-        if (!Objects.equals(userWeb.getLastName(), request.getLastName()))
-            userWeb.setLastName(request.getLastName());
-        if (!Objects.equals(userWeb.getSecondLastName(), request.getSecondLastName()))
-            userWeb.setSecondLastName(request.getSecondLastName());
-        if (request.getPassword() != null && !request.getPassword().isEmpty())
+    
+        userWeb.setName(request.getName());
+        userWeb.setLastName(request.getLastName());
+        userWeb.setSecondLastName(request.getSecondLastName());
+    
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             userWeb.setPassword(passwordEncoder.encode(request.getPassword()));
-        if (!Objects.equals(userWeb.getPosition(), request.getPosition()))
-            userWeb.setPosition(request.getPosition());
-        if (request.getRole() != null) {
-            if (!Objects.equals(userWeb.getRole(), request.getRole()))
-                userWeb.setRole(request.getRole());
-        } else {
-            request.setRole(userWeb.getRole());
         }
-
-        if (!Objects.equals(userWeb.getInstitution().getName(), request.getInstitution())) {
-            Institution institution = institutionRepository.findByName(request.getInstitution())
-                    .orElseThrow(() -> new InstitutionNotFoundException(
-                            "Institución no encontrada: " + request.getInstitution()));
-            userWeb.setInstitution(institution);
+    
+        userWeb.setPosition(request.getPosition());
+        
+        if (request.getRole() != null && userWeb.getRole() != RoleEnum.SUPER_ADMIN) { 
+            userWeb.setRole(request.getRole());
         }
-        if (emailChanged) {
-            userWeb.setAccountVerified(false);
-        }
+    
+        Institution institution = institutionRepository.findByName(request.getInstitution())
+                .orElseThrow(() -> new InstitutionNotFoundException("Institución no encontrada"));
+        userWeb.setInstitution(institution);
+    
         userWebRepository.save(userWeb);
-
-        if (emailChanged) {
-            return new Response(
-                    "El usuario ha sido actualizado exitosamente. Se ha enviado un correo de verificación al nuevo email.");
-        }
-        return new Response("El usuario ha sido actualizado exitosamente.");
+        return new Response("Usuario actualizado exitosamente.");
     }
+    
 }

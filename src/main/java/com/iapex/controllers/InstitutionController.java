@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/institutions")
 public class InstitutionController {
 
-	
-	
     @Autowired
     private InstitutionService institutionService;
 
