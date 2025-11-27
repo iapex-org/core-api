@@ -33,7 +33,8 @@ build/
 .vscode/
 
 ### Carpeta de imagenes ###
-/mediafiles/
+mediafiles/
 
-### application.properties ###
+### application.properties y variables de entorno ###
 /src/main/resources/application.properties
+.env
