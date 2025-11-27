@@ -482,9 +482,7 @@ public class WebEmailService {
 
         // Cuerpo del mensaje en texto corrido
         String notificationText = "Tu solicitud de contacto para " + contactRequest.getMissingPersonName()
-                + " a nombre de " + contactRequest.getInterestedPersonName()
-                + " se ha puesto en " + contactRequest.getStatus().toLowerCase().replace("_", " ")
-                + ". El usuario " + attendingUserFullName
+                + " se ha puesto en revisión. El usuario " + attendingUserFullName
                 + " será el encargado de darle seguimiento a tú solicitud.";
 
         String htmlBody = "<!DOCTYPE html>\n" +
