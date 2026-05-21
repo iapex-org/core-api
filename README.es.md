@@ -1,3 +1,4 @@
+
 # IAPEX — API REST Principal
 
 <p align="center">
@@ -118,4 +119,3 @@ Este proyecto está licenciado bajo GNU General Public License v3.0 — consulta
 
 **Apoyo Académico:**
 - Universidad Tecnológica del Centro de Veracruz
-- UNAM Cuautitlán
