@@ -1,4 +1,3 @@
-
 # IAPEX — API REST Principal
 
 <p align="center">
@@ -19,6 +18,10 @@
   <a href="https://github.com/iapex-org/core-api/issues">Reportar Bug</a>
   ·
   <a href="https://virtual.cuautitlan.unam.mx/intar/wp-content/uploads/sites/19/2025/12/166-A-Hybrid-Artificial-Intelligent-System-for-Missing-JORGE-CHRISTIAN-SERRANO-PUERTOS.pdf">Artículo de Investigación</a>
+</p>
+
+<p align="center">
+  <a href="README.md">🇬🇧 English</a> · <a href="README.es.md">🇪🇸 Español</a>
 </p>
 
 ---
@@ -110,12 +113,20 @@ Este proyecto está licenciado bajo GNU General Public License v3.0 — consulta
 ## Reconocimientos
 
 **Autores:**
-- Florentino Altamirano Misrael
-- Ortiz Pérez Alejandro
-- Serrano Puertos Jorge Christian
+- Serrano Puertos Jorge Christian — christian.serrano.puertos@gmail.com
+- Florentino Altamirano Misrael — misraelaltamirano@gmail.com
+- Ortiz Pérez Alejandro — alex03ortizperez@gmail.com
+
+**Colaboradores:**
+- Chávez Moreno Jose Eduardo
+- Fernández López Kevin Noé
 
 **Asesor:**
 - Escobar García Arturo
+
+**Interesados (Stakeholders):**
+- Guarneros Nolasco Luis Rolando
+- Cruz Ramos Nancy Aracely
 
 **Apoyo Académico:**
 - Universidad Tecnológica del Centro de Veracruz
