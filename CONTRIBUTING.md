@@ -1,124 +1,124 @@
-# Guía de contribución - IAPEX 🏥
+# Contributing to IAPEX Core API
 
-## Nuestro flujo (GitHub Flow)
+## Our Workflow (GitHub Flow)
 
-Simple y directo:
+Simple and direct:
 
-1.  Crea tu **rama** desde `main`.
-2.  Haz **commits** en inglés con conventional commits.
-3.  Abre un **pull request (PR)**.
-4.  Obtén **aprobación**.
-5.  **Mergea** y listo.
+1. Create your **branch** from `main`.
+2. Make **commits** in English using conventional commits.
+3. Open a **pull request (PR)**.
+4. Get **approval**.
+5. **Merge** and done.
 
 ---
 
-## Nomenclatura: ramas y commits
+## Naming: Branches and Commits
 
-### Ramas
+### Branches
 
-| Prefijo     | Uso                | Ejemplos                   |
+| Prefix     | Usage                | Examples                   |
 | :---------- | :----------------- | :------------------------- |
-| `feat/`     | Nuevas funciones   | `feat/facial-recognition`  |
-| `fix/`      | Corrección de bugs | `fix/search-validation`    |
-| `refactor/` | Mejoras de código  | `refactor/patient-service` |
-| `docs/`     | Documentación      | `docs/api-endpoints`       |
-| `test/`     | Pruebas            | `test/search-algorithm`    |
+| `feat/`     | New features       | `feat/facial-recognition`  |
+| `fix/`      | Bug fixes          | `fix/search-validation`    |
+| `refactor/` | Code improvements  | `refactor/patient-service` |
+| `docs/`     | Documentation      | `docs/api-endpoints`       |
+| `test/`     | Tests              | `test/search-algorithm`    |
 
-### Commits (tipo: asunto)
+### Commits (type: subject)
 
-| Tipo        | Descripción                 | Ejemplo                               |
+| Type       | Description                 | Example                               |
 | :---------- | :-------------------------- | :------------------------------------ |
-| `feat:`     | Nuevas funciones            | `feat: implement hybrid search`       |
-| `fix:`      | Corrección de bugs          | `fix: correct similarity calculation` |
-| `refactor:` | Reestructuración del código | `refactor: modularize search logic`   |
-| `docs:`     | Cambios en la documentación | `docs: update installation guide`     |
-| `test:`     | Añadir o modificar pruebas  | `test: add patient search tests`      |
+| `feat:`     | New features               | `feat: implement hybrid search`       |
+| `fix:`      | Bug fixes                  | `fix: correct similarity calculation` |
+| `refactor:` | Code restructuring          | `refactor: modularize search logic`   |
+| `docs:`     | Documentation changes       | `docs: update installation guide`     |
+| `test:`     | Add or modify tests        | `test: add patient search tests`      |
 
 ---
 
-## 🚀 Cómo contribuir (paso a paso)
+## How to Contribute (Step by Step)
 
-1.  **Actualiza `main`:**
+1. **Update `main`:**
 
     ```bash
     git switch main
     git pull origin main
     ```
 
-    _No uses `--rebase` a menos que sepas bien lo que haces._
+    _Don't use `--rebase` unless you know what you're doing._
 
-2.  **Crea tu rama:**
+2. **Create your branch:**
 
     ```bash
-    git branch feat/nueva-funcionalidad
-    git switch feat/nueva-funcionalidad
+    git branch feat/new-feature
+    git switch feat/new-feature
     ```
 
-    _Ej: `git branch feat/patient-search` y `git switch feat/patient-search`._
+    _E.g., `git branch feat/patient-search` and `git switch feat/patient-search`._
 
-3.  **Trabaja y haz commits:**
+3. **Work and commit:**
 
-    - Desarrolla tu código
-    - Haz commits **pequeños y frecuentes**
-    - Usa conventional commits
+    - Develop your code
+    - Make **small, frequent** commits
+    - Use conventional commits
 
     ```bash
     git add .
     git commit -m "feat: add patient similarity filter"
     ```
 
-4.  **Envía tu rama a GitHub:**
+4. **Push your branch to GitHub:**
 
     ```bash
-    git push -u origin feat/nueva-funcionalidad
+    git push -u origin feat/new-feature
     ```
 
-    _Solo la primera vez. Luego, `git push`._
+    _First time only. After that, `git push`._
 
-5.  **Abre un pull request (PR):**
-    - Ve a GitHub.
-    - **Usa la plantilla predeterminada:** Al crear el PR, completa la plantilla que aparece automáticamente (si existe en `.github/PULL_REQUEST_TEMPLATE.md`).
-    - **Título del PR:** Claro, sigue convención del commit principal (ej. `feat: add hybrid search mode`).
-    - **Descripción:**
-      - **Qué:** Resumen de cambios.
-      - **Por qué:** Justificación.
-      - **Cómo probar:** Pasos para el revisor.
-      - **Notas:** Cualquier extra (ej. "breaking changes", impacto en otros microservicios).
-
----
-
-## ✅ Para mergear necesitas:
-
-- ✅ **Aprobación** de un miembro del equipo
-- ✅ **Sin conflictos** con `main`
-- ✅ **Nomenclatura correcta** (ramas y commits)
-- ✅ **Documentación** actualizada (si aplica)
+5. **Open a Pull Request (PR):**
+    - Go to GitHub.
+    - **Use the template:** When creating the PR, fill out the template that appears automatically (located in `.github/PULL_REQUEST_TEMPLATE.md`).
+    - **PR Title:** Clear, follows the main commit convention (e.g., `feat: add hybrid search mode`).
+    - **Description:**
+        - **What:** Summary of changes.
+        - **Why:** Justification.
+        - **How to test:** Steps for the reviewer.
+        - **Notes:** Any extras (e.g., "breaking changes", impact on other services).
 
 ---
 
-## 💬 Revisión
+## Merge Requirements
 
-- **Actualiza:** Si te piden cambios, responde y actualiza tu PR.
-
----
-
-## ⚠️ Reglas clave
-
-### Antes de mergear
-
-- **¡No merge directo a `main` (siempre vía PR)!**
-- **¡No merge código que no compile!**
-- **¡No merge si rompe funcionalidad existente!**
-- **Obligatorio:** Usa la nomenclatura de ramas y commits.
-
-### Después de mergear
-
-- **Elimina tu rama** en GitHub.
-- Notifica al equipo sobre cambios importantes.
+- :white_check_mark: **Approval** from a team member
+- :white_check_mark: **No conflicts** with `main`
+- :white_check_mark: **Correct naming** (branches and commits)
+- :white_check_mark: **Updated documentation** (if applicable)
 
 ---
 
-## ❓ ¿Dudas?
+## Review Process
 
-- Abre un **Issue**.
-- Contacta a cualquier miembro del equipo.
+- **Update:** If changes are requested, respond and update your PR.
+
+---
+
+## Key Rules
+
+### Before Merging
+
+- **No direct push to `main` (always via PR)!**
+- **No merging code that doesn't compile!**
+- **No merging if it breaks existing functionality!**
+- **Mandatory:** Use branch and commit naming conventions.
+
+### After Merging
+
+- **Delete your branch** on GitHub.
+- Notify the team about important changes.
+
+---
+
+## Questions?
+
+- Open an **Issue**.
+- Contact any team member.

@@ -11,14 +11,34 @@
 	<groupId>com.iapex</groupId>
 	<artifactId>IAPEX-API-REST</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>IAPEX-API-REST</name>
-	<description>iapex</description>
+	<name>iapex-core-api</name>
+	<description>Core REST API for the IAPEX ecosystem - patient management, authentication, and institutional operations</description>
 	<url/>
 	<licenses>
-		<license/>
+		<license>
+			<name>GNU General Public License v3.0</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<name>Florentino Altamirano Misrael</name>
+			<email>misrael@iapex.org</email>
+			<organization>IAPEX</organization>
+			<organizationUrl>https://github.com/iapex-org</organizationUrl>
+		</developer>
+		<developer>
+			<name>Ortiz Pérez Alejandro</name>
+			<email>alejandro@iapex.org</email>
+			<organization>IAPEX</organization>
+			<organizationUrl>https://github.com/iapex-org</organizationUrl>
+		</developer>
+		<developer>
+			<name>Serrano Puertos Jorge Christian</name>
+			<email>jchristian@iapex.org</email>
+			<organization>IAPEX</organization>
+			<organizationUrl>https://github.com/iapex-org</organizationUrl>
+		</developer>
 	</developers>
 	<scm>
 		<connection/>
