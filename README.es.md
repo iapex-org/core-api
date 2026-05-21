@@ -60,7 +60,7 @@ Este repositorio contiene la **API REST Principal** — el servicio backend cent
 - **Caché** — Optimización de rendimiento con Caffeine cache
 - **PostgreSQL + MongoDB** — Datos relacionales con NoSQL para encodings/caché
 
-## Inicio Rápido
+## Inicio rápido
 
 ### Prerrequisitos
 
@@ -101,6 +101,42 @@ Compila y ejecuta:
 La API estará disponible en `http://localhost:8080`
 
 Documentación de la API: `http://localhost:8080/swagger-ui.html`
+
+## Arquitectura
+
+```
+┌─────────────────────────────────────────────────┐
+│                  Core API                        │
+│               Spring Boot 3.3                     │
+│                                                   │
+│  ┌──────────┐ ┌──────────┐ ┌────────────────┐   │
+│  │  Auth    │ │ Patient  │ │  Institution    │   │
+│  │  Module  │ │  Module  │ │  Module         │   │
+│  └────┬─────┘ └────┬─────┘ └───────┬────────┘    │
+│       │            │               │             │
+│  ┌────▼────────────▼───────────────▼────────┐    │
+│  │           Service Layer                  │    │
+│  └────┬────────────┬───────────────┬────────┘    │
+│       │            │               │             │
+│  ┌────▼────┐ ┌─────▼──────┐ ┌─────▼────────┐    │
+│  │Postgres │ │  MongoDB   │ │  Mail Server │    │
+│  └─────────┘ └────────────┘ └──────────────┘    │
+└─────────────────────────────────────────────────┘
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/login` | User authentication |
+| POST | `/api/v1/auth/register` | User registration |
+| GET | `/api/v1/patients` | List patients |
+| POST | `/api/v1/patients` | Create patient |
+| GET | `/api/v1/institutions` | List institutions |
+| POST | `/api/v1/contact-requests` | Submit contact request |
+| GET | `/api/v1/notifications` | List notifications |
+
+Full API documentation available via Swagger UI.
 
 ## Contribuciones
 
