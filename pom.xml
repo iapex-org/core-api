@@ -22,20 +22,20 @@
 	</licenses>
 	<developers>
 		<developer>
+			<name>Serrano Puertos Jorge Christian</name>
+			<email>christian.serrano.puertos@gmail.com</email>
+			<organization>IAPEX</organization>
+			<organizationUrl>https://github.com/iapex-org</organizationUrl>
+		</developer>
+		<developer>
 			<name>Florentino Altamirano Misrael</name>
-			<email>misrael@iapex.org</email>
+			<email>misraelaltamirano@gmail.com</email>
 			<organization>IAPEX</organization>
 			<organizationUrl>https://github.com/iapex-org</organizationUrl>
 		</developer>
 		<developer>
 			<name>Ortiz Pérez Alejandro</name>
-			<email>alejandro@iapex.org</email>
-			<organization>IAPEX</organization>
-			<organizationUrl>https://github.com/iapex-org</organizationUrl>
-		</developer>
-		<developer>
-			<name>Serrano Puertos Jorge Christian</name>
-			<email>jchristian@iapex.org</email>
+			<email>alex03ortizperez@gmail.com</email>
 			<organization>IAPEX</organization>
 			<organizationUrl>https://github.com/iapex-org</organizationUrl>
 		</developer>
